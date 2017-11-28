@@ -20,6 +20,21 @@ constexpr auto mp_sub(Array<T, N> u, Array<T, N> v) {
 }
 
 template <template <typename, size_t> class Array, typename T, size_t N>
+constexpr auto mp_add_ignore_last_carry(Array<T, N> a, Array<T, N> b) {
+  T carry = 0;
+  Array<T, N> r{};
+
+  for (auto i = 0; i < N; ++i) {
+    T aa = a[i];
+    T sum = aa + b[i];
+    T res = sum + carry;
+    carry = (sum < aa) | (res < sum);
+    r[i] = res;
+  }
+  return r;
+}
+
+template <template <typename, size_t> class Array, typename T, size_t N>
 constexpr auto mod_add(Array<T, N> a, Array<T, N> b, Array<T, N> modulus) {
   T carry = static_cast<T>(0);
   Array<T, N> r{};
