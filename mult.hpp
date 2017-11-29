@@ -5,7 +5,10 @@
 #include "addition.hpp"
 #include <cstddef>
 
+
 constexpr auto mul128(uint64_t a, uint64_t b) {
+  // code for this function is based on:
+  // https://stackoverflow.com/questions/28868367/getting-the-high-part-of-64-bit-integer-multiplication
   uint64_t a_lo = static_cast<uint32_t>(a);
   uint64_t a_hi = a >> 32;
   uint64_t b_lo = static_cast<uint32_t>(b);
@@ -41,23 +44,24 @@ constexpr auto mp_accum(Array<T, N1> accum, Array<T, N2> b) {
     carry = (sum < aa) | (res < sum);
     r[i] = res;
   }
+  //TODO: what should be done with the carry here?
   //r[N] = carry;
   return r;
 }
 
+//TODO do some benchmarking here
+
+
+// multiplication function that uses mul128 function 
 template <size_t accSize, template <typename, size_t> class Array, size_t N>
 constexpr auto mp_mul(Array<uint64_t, N> a, Array<uint64_t, N> b) {
   Array<uint64_t, accSize> accum{};
-
   for (auto j = 0; j < N; ++j) {
-
     Array<uint64_t, 2 * N> tmp{};
-
     uint64_t high = 0;
     for (auto i = 0; i < N; ++i) {
       Array<uint64_t, 2> prod{{a[i] * b[j], mul128(a[i], b[j])}};
       auto sum = mp_accum(prod, Array<uint64_t, 2>{{high, 0}});
-
       tmp[j + i] = sum[0];
       high = sum[1];
     }
@@ -66,6 +70,44 @@ constexpr auto mp_mul(Array<uint64_t, N> a, Array<uint64_t, N> b) {
   return accum;
 }
 
+// multiplication on diff input lengths
+template <int padding_limbs = 0, template <typename, size_t> class Array, size_t N1, size_t N2>
+constexpr auto mul(Array<uint64_t, N1> a, Array<uint64_t, N2> b) {
+  Array<uint64_t, N1+N2+padding_limbs> accum{};
+  for (auto j = 0; j < N2; ++j) {
+    Array<uint64_t, N1+N2> tmp{};
+    uint64_t high = 0;
+    for (auto i = 0; i < N1; ++i) {
+      Array<uint64_t, 2> prod{{a[i] * b[j], mul128(a[i], b[j])}};
+      auto sum = mp_accum(prod, Array<uint64_t, 2>{{high, 0}});
+      tmp[j + i] = sum[0];
+      high = sum[1];
+    }
+    accum = mp_accum(accum, tmp);
+  }
+  return accum;
+}
+//
+// multiplication on diff input lengths
+template <template <typename, size_t> class Array, size_t N1, size_t N2>
+constexpr auto approximate_mul(Array<uint64_t, N1> a, Array<uint64_t, N2> b) {
+  Array<uint64_t, N1+N2> accum{};
+  for (auto j = 0; j < N2; ++j) {
+    Array<uint64_t, N1+N2> tmp{};
+    uint64_t high = 0;
+    for (auto i = 0; i < N1; ++i) {
+      Array<uint64_t, 2> prod{{a[i] * b[j], mul128(a[i], b[j])}};
+      auto sum = mp_accum(prod, Array<uint64_t, 2>{{high, 0}});
+      tmp[j + i] = sum[0];
+      high = sum[1];
+    }
+    accum = mp_accum(accum, tmp);
+  }
+  return accum;
+}
+
+
+// without mul128 code, but using GCC and Clang's __uint128_t data type
 template <size_t accSize, template <typename, size_t> class Array, size_t N>
 constexpr auto mp_mul2(Array<uint64_t, N> a, Array<uint64_t, N> b) {
   Array<uint64_t, accSize> accum{};
