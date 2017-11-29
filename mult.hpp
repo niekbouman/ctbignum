@@ -87,25 +87,6 @@ constexpr auto mul(Array<uint64_t, N1> a, Array<uint64_t, N2> b) {
   }
   return accum;
 }
-//
-// multiplication on diff input lengths
-template <template <typename, size_t> class Array, size_t N1, size_t N2>
-constexpr auto approximate_mul(Array<uint64_t, N1> a, Array<uint64_t, N2> b) {
-  Array<uint64_t, N1+N2> accum{};
-  for (auto j = 0; j < N2; ++j) {
-    Array<uint64_t, N1+N2> tmp{};
-    uint64_t high = 0;
-    for (auto i = 0; i < N1; ++i) {
-      Array<uint64_t, 2> prod{{a[i] * b[j], mul128(a[i], b[j])}};
-      auto sum = mp_accum(prod, Array<uint64_t, 2>{{high, 0}});
-      tmp[j + i] = sum[0];
-      high = sum[1];
-    }
-    accum = mp_accum(accum, tmp);
-  }
-  return accum;
-}
-
 
 // without mul128 code, but using GCC and Clang's __uint128_t data type
 template <size_t accSize, template <typename, size_t> class Array, size_t N>
