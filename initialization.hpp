@@ -22,9 +22,9 @@ constexpr auto string_to_big_int(String str) {
         constexpr int i = boost::hana::value(c) - 48; // convert character to decimal
         return boost::hana::make_pair(
             mp_add_ignore_last_carry(boost::hana::first(state),
-                                     mul<-N>(limb_int<N,Array,T>(i),
+                                     mul<-static_cast<int>(N)>(limb_int<N,Array,T>(i),
                                                boost::hana::second(state))),
-            mul<-N>(limb_int<N, Array, T>(10), boost::hana::second(state)));
+            mul<-static_cast<int>(N)>(limb_int<N, Array, T>(10), boost::hana::second(state)));
       }));
 }
 
