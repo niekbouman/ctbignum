@@ -80,7 +80,7 @@ TEST_CASE("Multiplication") {
     constexpr big_int<2> b = {{51461, 0}};
     constexpr big_int<4> res = {{9223372035721038517, 25730, 0, 0}};
 
-    constexpr auto ans = mp_mul<4>(a, b);
+    constexpr auto ans = mul(a, b);
     static_assert(res == ans, "fail");
   }
   SECTION("") {
@@ -88,8 +88,8 @@ TEST_CASE("Multiplication") {
     constexpr big_int<2> b = {{8712364, 832176}};
     constexpr big_int<4> res = {{1315566964, 326042948, 19140048, 0}};
 
-    constexpr auto ans = mp_mul<4>(a, b);
-    constexpr auto ans2 = mp_mul2<4>(a, b);
+    constexpr auto ans = mul(a, b);
+    constexpr auto ans2 = mul2(a, b);
     static_assert(res == ans, "fail");
     static_assert(res == ans2, "fail");
   }
