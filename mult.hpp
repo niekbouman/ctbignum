@@ -6,6 +6,44 @@
 #include "slicing.hpp"
 #include <cstddef>
 
+template <template <typename, size_t> class Array, typename T, size_t N1, size_t N2>
+constexpr auto accumulate(Array<T, N1> accum, Array<T, N2> b) {
+  T carry = 0;
+  Array<T, N1> r{};
+
+  auto m = std::min(N1,N2);
+  for (auto i = 0; i < m; ++i) {
+    auto aa = accum[i];
+    auto sum = aa + b[i];
+    auto res = sum + carry;
+    carry = (sum < aa) | (res < sum);
+    r[i] = res;
+  }
+  if (N1>N2)
+    r[N2] = carry;
+  return r;
+}
+
+// this uses GCC and Clang's __uint128_t data type
+template <int padding_limbs = 0, template <typename, size_t> class Array, size_t N1, size_t N2>
+constexpr auto mul(Array<uint64_t, N1> a, Array<uint64_t, N2> b) {
+  Array<uint64_t, N1 + N2 + padding_limbs> accum{};
+  for (auto j = 0; j < N2; ++j) {
+    Array<uint64_t, N1 + N2> tmp{};
+    uint64_t high = 0;
+    for (auto i = 0; i < N1; ++i) {
+      __uint128_t prodsum = static_cast<__uint128_t>(a[i]) 
+                          * static_cast<__uint128_t>(b[j]) 
+                          + static_cast<__uint128_t>(high);
+      tmp[j + i] = static_cast<uint64_t>(prodsum);
+      high = prodsum >> 64;
+    }
+    accum = accumulate(accum, tmp);
+  }
+  return accum;
+}
+
+// for use with mul2 function (see below)
 constexpr auto mul128(uint64_t a, uint64_t b) {
   // code for this function is based on:
   // https://stackoverflow.com/questions/28868367/getting-the-high-part-of-64-bit-integer-multiplication
@@ -31,29 +69,10 @@ constexpr auto mul128(uint64_t a, uint64_t b) {
   return multhi;
 }
 
-template <template <typename, size_t> class Array, typename T, size_t N1, size_t N2>
-constexpr auto accumulate(Array<T, N1> accum, Array<T, N2> b) {
-  T carry = 0;
-  Array<T, N1> r{};
-
-  constexpr auto m = std::min(N1,N2);
-  for (auto i = 0; i < m; ++i) {
-    auto aa = accum[i];
-    auto sum = aa + b[i];
-    auto res = sum + carry;
-    carry = (sum < aa) | (res < sum);
-    r[i] = res;
-  }
-  //TODO: what should be done with the carry here?
-  //r[N] = carry;
-  return r;
-}
-
-//TODO: benchmark mul vs mul2
-
 // multiplication function on different input lengths that uses mul128 function
+// this function is approximately two times slower than the mul function that uses __uint128
 template <int padding_limbs = 0, template <typename, size_t> class Array, size_t N1, size_t N2>
-constexpr auto mul(Array<uint64_t, N1> a, Array<uint64_t, N2> b) {
+constexpr auto mul2(Array<uint64_t, N1> a, Array<uint64_t, N2> b) {
   Array<uint64_t, N1 + N2 + padding_limbs> accum{};
   for (auto j = 0; j < N2; ++j) {
     Array<uint64_t, N1 + N2> tmp{};
@@ -69,21 +88,5 @@ constexpr auto mul(Array<uint64_t, N1> a, Array<uint64_t, N2> b) {
   return accum;
 }
 
-// without mul128 code, but using GCC and Clang's __uint128_t data type
-template <int padding_limbs = 0, template <typename, size_t> class Array, size_t N1, size_t N2>
-constexpr auto mul2(Array<uint64_t, N1> a, Array<uint64_t, N2> b) {
-  Array<uint64_t, N1 + N2 + padding_limbs> accum{};
-  for (auto j = 0; j < N2; ++j) {
-    Array<uint64_t, N1 + N2> tmp{};
-    uint64_t high = 0;
-    for (auto i = 0; i < N1; ++i) {
-      __uint128_t prodsum = a[i] * b[j] + high;
-      tmp[j + i] = static_cast<uint64_t>(prodsum);
-      high = prodsum >> 64;
-    }
-    accum = accumulate(accum, tmp);
-  }
-  return accum;
-}
 
 #endif

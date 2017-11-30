@@ -14,6 +14,10 @@
 #include "barrett.hpp"  
 #include "print.hpp"
 
+#include<NTL/ZZ.h>
+#include<NTL/ZZ_p.h>
+
+
 template <size_t N> using big_int = sprout::array<uint64_t, N>;
 using namespace std;
 
@@ -107,24 +111,34 @@ TEST_CASE("String Initialization") {
 
 TEST_CASE("Barrett reduction") {
   constexpr auto prime = string_to_big_int<4>(BOOST_HANA_STRING("1606938044258990275541962092341162602522202993782792835301611"));
-  constexpr auto mu = string_to_big_int<8>(
+  constexpr auto mu = string_to_big_int<5>(
       BOOST_HANA_STRING("834369935906605500935555353972481294766681454045567488"
                         "2604411090793790119337922481889828929536"));
 
-  constexpr auto x = string_to_big_int<8>(
+  constexpr auto x = string_to_big_int<5>(
       BOOST_HANA_STRING("1725436586697640946858688965569256363112777243042596638790631055949891"
                         ));
 
   constexpr auto ans = string_to_big_int<4>(
       BOOST_HANA_STRING("1606938044258990275541962092341162602522202993782540505973038"));
 
-  print("prime",prime);
-  print("mu",mu);
-  print("x",x);
-  print("ans",ans);
-  //print(mu);
-  //barrett_reduction(x,prime,mu);
   static_assert(barrett_reduction(x,prime,mu) == ans, "fail");
+  REQUIRE(barrett_reduction(x,prime,mu) == ans);
+
+}
+
+TEST_CASE("") {
+
+  using NTL::ZZ;
+  using NTL::ZZ_p;
+  using NTL::conv;
+
+  auto modulus = conv<ZZ>("1606938044258990275541962092341162602522202993782792835301611");
+  ZZ_p::init(modulus);
+
+
+  ZZ_p x = conv<ZZ_p>(modulus-1);
+  print(x._ZZ_p__rep.size());
 
 
 }

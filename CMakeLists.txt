@@ -29,6 +29,8 @@ link_directories ("/opt/local/lib")
 #add_definitions(-DNDEBUG)
 
 add_executable(unittests unit_tests.cpp tests_main.cpp)
-#target_link_libraries (unittests)
+target_link_libraries (unittests ntl)
 
+add_executable(bench bench.cpp)
+target_link_libraries(bench benchmark ntl)
 

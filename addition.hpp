@@ -8,6 +8,7 @@ template <template <typename, size_t> class Array, typename T, size_t N>
 constexpr auto mp_sub(Array<T, N> u, Array<T, N> v) {
   T carry = static_cast<T>(0);
   Array<T, N> r{};
+
   for (auto i = 0; i < N; ++i) {
     auto uu = u[i];
     auto diff = uu - v[i];
@@ -23,6 +24,7 @@ template <template <typename, size_t> class Array, typename T, size_t N>
 constexpr auto mp_sub_carry_out(Array<T, N> u, Array<T, N> v) {
   T carry = static_cast<T>(0);
   Array<T, N+1> r{};
+
   for (auto i = 0; i < N; ++i) {
     auto uu = u[i];
     auto diff = uu - v[i];
@@ -31,6 +33,7 @@ constexpr auto mp_sub_carry_out(Array<T, N> u, Array<T, N> v) {
     r[i] = res;
   }
   r[N] = carry;
+
   return r;
 }
 
@@ -47,6 +50,7 @@ constexpr auto mp_add_ignore_last_carry(Array<T, N> a, Array<T, N> b) {
     carry = (sum < aa) | (res < sum);
     r[i] = res;
   }
+
   return r;
 }
 
@@ -63,9 +67,9 @@ constexpr auto mod_add(Array<T, N> a, Array<T, N> b, Array<T, N> modulus) {
     r[i] = res;
   }
 
-  if (carry || !greater_than(modulus, r)) {
+  if (carry || !greater_than(modulus, r)) 
     r = mp_sub(r, modulus);
-  }
+
   return r;
 }
 
