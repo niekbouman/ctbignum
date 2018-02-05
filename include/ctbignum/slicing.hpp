@@ -4,6 +4,8 @@
 #include <cstddef>
 #include <sprout/array.hpp>
 
+namespace cbn {
+
 template <size_t Begin, size_t End, size_t Padding=0, template <typename, size_t> class Array,
           typename T, size_t N1>
 constexpr auto take(Array<T, N1> t) {
@@ -48,4 +50,5 @@ constexpr auto unary_encoding() {
   return res;
 }
 
+}
 #endif

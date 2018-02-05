@@ -1,11 +1,12 @@
 #ifndef CT_MULT_HPP
 #define CT_MULT_HPP
 
-#include "relational_ops.hpp"
-#include "addition.hpp"
-#include "slicing.hpp"
+#include <ctbignum/relational_ops.hpp>
+#include <ctbignum/addition.hpp>
+#include <ctbignum/slicing.hpp>
 #include <cstddef>
 
+namespace cbn {
 template <template <typename, size_t> class Array, typename T, size_t N1, size_t N2>
 constexpr auto accumulate(Array<T, N1> accum, Array<T, N2> b) {
   T carry = 0;
@@ -89,4 +90,5 @@ constexpr auto mul2(Array<uint64_t, N1> a, Array<uint64_t, N2> b) {
 }
 
 
+}
 #endif

@@ -1,19 +1,21 @@
 #ifndef CT_ADDITION_HPP
 #define CT_ADDITION_HPP
 
-#include "relational_ops.hpp"
+#include <ctbignum/relational_ops.hpp>
 #include <cstddef>
 
+namespace cbn {
+
 template <template <typename, size_t> class Array, typename T, size_t N>
-constexpr auto mp_sub(Array<T, N> u, Array<T, N> v) {
+constexpr auto mp_sub(Array<T, N> a, Array<T, N> b) {
   T carry = static_cast<T>(0);
   Array<T, N> r{};
 
   for (auto i = 0; i < N; ++i) {
-    auto uu = u[i];
-    auto diff = uu - v[i];
+    auto aa = a[i];
+    auto diff = aa - b[i];
     auto res = diff - carry;
-    carry = (diff > uu) | (res > diff);
+    carry = (diff > aa) | (res > diff);
     r[i] = res;
   }
 
@@ -21,15 +23,15 @@ constexpr auto mp_sub(Array<T, N> u, Array<T, N> v) {
 }
 
 template <template <typename, size_t> class Array, typename T, size_t N>
-constexpr auto mp_sub_carry_out(Array<T, N> u, Array<T, N> v) {
+constexpr auto mp_sub_carry_out(Array<T, N> a, Array<T, N> b) {
   T carry = static_cast<T>(0);
   Array<T, N+1> r{};
 
   for (auto i = 0; i < N; ++i) {
-    auto uu = u[i];
-    auto diff = uu - v[i];
+    auto aa = a[i];
+    auto diff = aa - b[i];
     auto res = diff - carry;
-    carry = (diff > uu) | (res > diff);
+    carry = (diff > aa) | (res > diff);
     r[i] = res;
   }
   r[N] = carry;
@@ -79,5 +81,7 @@ constexpr auto mod_add_(Array<T, N> a, Array<T, N> b) {
   Array<T, sizeof...(Modulus)> modulus{{Modulus...}};
   return mod_add(a, b, modulus);
 }
+
+} // end namespace cbn
 
 #endif

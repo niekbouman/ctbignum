@@ -1,9 +1,11 @@
 #ifndef CT_STRINGINIT_HPP
 #define CT_STRINGINIT_HPP
 
-#include "mult.hpp"
+#include <ctbignum/mult.hpp>
 #include <boost/hana.hpp>
 #include <cstddef>
+
+namespace cbn {
 
 template <int N, template<typename,size_t> class Array, typename T>
 constexpr auto limb_int(unsigned long v) {
@@ -27,5 +29,7 @@ constexpr auto string_to_big_int(String str) {
             mul<-static_cast<int>(N)>(limb_int<N, Array, T>(10), boost::hana::second(state)));
       }));
 }
+
+} // namespace
 
 #endif

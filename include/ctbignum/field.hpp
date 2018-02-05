@@ -1,8 +1,10 @@
 #ifndef CT_FIELD_HPP
 #define CT_FIELD_HPP
 
-#include "addition.hpp"
+#include <ctbignum/addition.hpp>
 #include <cstddef>
+
+namespace cbn {
 
 template <size_t... Modulus> struct Zq {
   template <template <typename, size_t> class Array, typename T, size_t N>
@@ -12,4 +14,5 @@ template <size_t... Modulus> struct Zq {
   }
 };
 
+}
 #endif

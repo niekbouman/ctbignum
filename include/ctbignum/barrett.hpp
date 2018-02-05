@@ -3,11 +3,13 @@
 
 #include <cstddef> // std::size_t
 
-#include "relational_ops.hpp"
-#include "slicing.hpp"
-#include "mult.hpp"
-#include "addition.hpp"
-#include "print.hpp"
+#include <ctbignum/relational_ops.hpp>
+#include <ctbignum/slicing.hpp>
+#include <ctbignum/mult.hpp>
+#include <ctbignum/addition.hpp>
+//#include "print.hpp"
+
+namespace cbn {
 
 template <template <typename, std::size_t> class Array, typename T, std::size_t N1,
           std::size_t N2, std::size_t N3>
@@ -38,5 +40,6 @@ auto barrett_reduction(Array<T, N1> x, Array<T, N2> modulus,
     r = mp_sub(r, padded_mod);
 
   return first<N2>(r);
+}
 }
 #endif

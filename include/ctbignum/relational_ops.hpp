@@ -4,6 +4,8 @@
 #include <cstddef>
 #include <sprout/array.hpp>
 
+namespace cbn {
+
 template <typename T, size_t N>
 constexpr bool greater_than(sprout::array<T, N> a, sprout::array<T, N> b) {
   using sprout::begin;
@@ -21,4 +23,5 @@ constexpr bool is_equal(sprout::array<T, N> a, sprout::array<T, N> b) {
   return sprout::equal(begin(a), end(a), begin(b), end(b));
 }
 
+}
 #endif
