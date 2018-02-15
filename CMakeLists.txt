@@ -1,36 +1,87 @@
-cmake_minimum_required (VERSION 2.8)
-set( CMAKE_EXPORT_COMPILE_COMMANDS ON )
-project (finitefield)
+cmake_minimum_required(VERSION 3.0.0)
 
-if(CMAKE_SYSTEM_NAME STREQUAL Darwin)
-  set(MACOSX true)
-elseif(CMAKE_SYSTEM_NAME STREQUAL Linux)
-  set(LINUX true)
+##
+## PROJECT
+## name and version
+##
+project(njbouman_ctbignum VERSION 3.1.0 LANGUAGES CXX)
+
+##
+## INCLUDE
+##
+##
+include(ExternalProject)
+
+##
+## OPTIONS
+##
+option(CTBIGNUM_BuildTests "Build the unit tests when BUILD_TESTING is enabled." ON)
+
+##
+## CONFIGURATION
+##
+set(NJBOUMAN_CTBIGNUM_TARGET_NAME               ${PROJECT_NAME})
+set(NJBOUMAN_CTBIGNUM_CONFIG_INSTALL_DIR        "lib/cmake/${PROJECT_NAME}")
+set(NJBOUMAN_CTBIGNUM_INCLUDE_INSTALL_DIR       "include")
+set(NJBOUMAN_CTBIGNUM_TARGETS_EXPORT_NAME       "${PROJECT_NAME}Targets")
+set(NJBOUMAN_CTBIGNUM_CMAKE_CONFIG_TEMPLATE     "cmake/config.cmake.in")
+set(NJBOUMAN_CTBIGNUM_CMAKE_CONFIG_DIR          "${CMAKE_CURRENT_BINARY_DIR}/cmake_config")
+set(NJBOUMAN_CTBIGNUM_CMAKE_VERSION_CONFIG_FILE "${NJBOUMAN_CTBIGNUM_CMAKE_CONFIG_DIR}/${PROJECT_NAME}ConfigVersion.cmake")
+set(NJBOUMAN_CTBIGNUM_CMAKE_PROJECT_CONFIG_FILE "${NJBOUMAN_CTBIGNUM_CMAKE_CONFIG_DIR}/${PROJECT_NAME}Config.cmake")
+set(NJBOUMAN_CTBIGNUM_INCLUDE_BUILD_DIR "${PROJECT_SOURCE_DIR}/include/")
+
+##
+## TARGET
+## create target and add include path
+##
+add_library(${NJBOUMAN_CTBIGNUM_TARGET_NAME} INTERFACE)
+
+target_include_directories(
+    ${NJBOUMAN_CTBIGNUM_TARGET_NAME}
+    INTERFACE
+    $<BUILD_INTERFACE:${NJBOUMAN_CTBIGNUM_INCLUDE_BUILD_DIR}>
+    $<INSTALL_INTERFACE:include>
+)
+
+##
+## TESTS
+## create and configure the unit test target
+##
+include(CTest) #adds option BUILD_TESTING (default ON)
+
+if(BUILD_TESTING AND CTBIGNUM_BuildTests)
+    enable_testing()
+    add_subdirectory(test)
 endif()
 
-if(MACOSX)
-  set(CMAKE_CXX_FLAGS "-std=c++1z -stdlib=libc++  -Weverything  -pedantic -Wno-sign-conversion -Wno-sign-compare -Wno-c++98-compat -Wno-range-loop-analysis -Wno-shorten-64-to-32 -Wno-padded -Wno-comma -Wno-conversion -Wno-weak-vtables -Wno-c++98-compat-pedantic -Wno-unneeded-member-function")
-elseif(LINUX)
-endif()
+##
+## INSTALL
+## install header files, generate and install cmake config files for find_package()
+##
+include(CMakePackageConfigHelpers)
+write_basic_package_version_file(
+    ${NJBOUMAN_CTBIGNUM_CMAKE_VERSION_CONFIG_FILE} COMPATIBILITY SameMajorVersion
+)
+configure_package_config_file(
+    ${NJBOUMAN_CTBIGNUM_CMAKE_CONFIG_TEMPLATE}
+    ${NJBOUMAN_CTBIGNUM_CMAKE_PROJECT_CONFIG_FILE}
+    INSTALL_DESTINATION ${NJBOUMAN_CTBIGNUM_CONFIG_INSTALL_DIR}
+)
 
-set(EXTRA_LIBS ${EXTRA_LIBS} pthread)
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
-
-find_package(Boost)
-# the order of the libs matters for linking!
-include_directories(SYSTEM ${Boost_INCLUDE_DIR})
-link_directories (${Boost_LIBRARY_DIRS})
-
-include_directories(SYSTEM "/opt/local/include")
-link_directories ("/opt/local/lib")
-
-
-# for production code: remove debugging stuff:
-#add_definitions(-DNDEBUG)
-
-add_executable(unittests unit_tests.cpp tests_main.cpp)
-target_link_libraries (unittests ntl)
-
-add_executable(bench bench.cpp)
-target_link_libraries(bench benchmark ntl)
-
+install(
+    DIRECTORY ${NJBOUMAN_CTBIGNUM_INCLUDE_BUILD_DIR}
+    DESTINATION ${NJBOUMAN_CTBIGNUM_INCLUDE_INSTALL_DIR}
+)
+install(
+    FILES ${NJBOUMAN_CTBIGNUM_CMAKE_PROJECT_CONFIG_FILE} ${NJBOUMAN_CTBIGNUM_CMAKE_VERSION_CONFIG_FILE}
+    DESTINATION ${NJBOUMAN_CTBIGNUM_CONFIG_INSTALL_DIR}
+)
+install(
+    TARGETS ${NJBOUMAN_CTBIGNUM_TARGET_NAME}
+    EXPORT ${NJBOUMAN_CTBIGNUM_TARGETS_EXPORT_NAME}
+    INCLUDES DESTINATION ${NJBOUMAN_CTBIGNUM_INCLUDE_INSTALL_DIR}
+)
+install(
+    EXPORT ${NJBOUMAN_CTBIGNUM_TARGETS_EXPORT_NAME}
+    DESTINATION ${NJBOUMAN_CTBIGNUM_CONFIG_INSTALL_DIR}
+)

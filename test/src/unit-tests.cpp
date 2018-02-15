@@ -6,13 +6,15 @@
 #include <sprout/array.hpp>
 #include <iostream>
 
-#include "addition.hpp"
-#include "field.hpp"
-#include "mult.hpp"
-#include "initialization.hpp"  
-#include "slicing.hpp"  
-#include "barrett.hpp"  
-#include "print.hpp"
+#include <ctbignum/addition.hpp>
+#include <ctbignum/field.hpp>
+#include <ctbignum/mult.hpp>
+#include <ctbignum/initialization.hpp>
+#include <ctbignum/slicing.hpp>
+#include <ctbignum/barrett.hpp>
+#include <ctbignum/montgomery.hpp>
+//#include <ctbignum/print.hpp>
+#include <ctbignum/print.hpp>
 
 #include<NTL/ZZ.h>
 #include<NTL/ZZ_p.h>
@@ -21,7 +23,10 @@
 template <size_t N> using big_int = sprout::array<uint64_t, N>;
 using namespace std;
 
+
 TEST_CASE("Addition") {
+
+  using namespace cbn;
 
   constexpr big_int<2> a = {{0UL, 9223372036854775808UL}};
   constexpr big_int<2> b = {{0UL, 9223372036854775808UL}};
@@ -48,6 +53,11 @@ TEST_CASE("Addition") {
 }
 
 TEST_CASE("subtraction") {
+
+  using namespace cbn;
+  using cbn::detail::first;
+  using cbn::detail::unary_encoding;
+
   constexpr big_int<2> a = {{15, 0}};
   constexpr big_int<2> b = {{10, 0}};
   constexpr big_int<2> d = {{6, 0}};
@@ -67,6 +77,8 @@ TEST_CASE("subtraction") {
 
 TEST_CASE("For any prime p, assert that p + 0 = 0 mod p") {
 
+  using namespace cbn;
+
   constexpr big_int<2> p = {{181UL, 13835058055282163712UL}};
   constexpr big_int<2> zero = {{0UL, 0UL}};
   constexpr big_int<2> correct_answer = zero;
@@ -79,6 +91,7 @@ TEST_CASE("For any prime p, assert that p + 0 = 0 mod p") {
 
 TEST_CASE("Multiplication") {
 
+  using namespace cbn;
   SECTION("") {
     constexpr big_int<2> a = {{9223372036854753777UL, 0}};
     constexpr big_int<2> b = {{51461, 0}};
@@ -101,6 +114,7 @@ TEST_CASE("Multiplication") {
 
 TEST_CASE("String Initialization") {
 
+  using namespace cbn;
   auto s = BOOST_HANA_STRING("6513020836420374401749667047018991798096360820");
   constexpr auto num = string_to_big_int<4>(s);
   constexpr big_int<4> res = {{1315566964, 326042948, 19140048, 0}};
@@ -110,6 +124,9 @@ TEST_CASE("String Initialization") {
 }
 
 TEST_CASE("Barrett reduction") {
+
+  using namespace cbn;
+
   constexpr auto prime = string_to_big_int<4>(BOOST_HANA_STRING("1606938044258990275541962092341162602522202993782792835301611"));
   constexpr auto mu = string_to_big_int<5>(
       BOOST_HANA_STRING("834369935906605500935555353972481294766681454045567488"
@@ -127,6 +144,18 @@ TEST_CASE("Barrett reduction") {
 
 }
 
+TEST_CASE("Montgomery reduction") {
+  using namespace cbn;
+  constexpr auto modulus = string_to_big_int<2>(BOOST_HANA_STRING("1267650600228229401496703205653"));
+  constexpr uint64_t mprime = 1265300135019788739UL;
+  constexpr auto T = string_to_big_int<4>(BOOST_HANA_STRING("1532495540865888858358347027150309183618739122183602175"));
+  constexpr auto ans = string_to_big_int<2>(BOOST_HANA_STRING("730531796855002292035529737298"));
+
+  static_assert(montgomery_reduction(T,modulus,mprime) == ans, "fail");
+  REQUIRE(montgomery_reduction(T,modulus,mprime) == ans);
+}
+
+
 TEST_CASE("") {
 
   using NTL::ZZ;
@@ -138,7 +167,7 @@ TEST_CASE("") {
 
 
   ZZ_p x = conv<ZZ_p>(modulus-1);
-  print(x._ZZ_p__rep.size());
+  //print(x._ZZ_p__rep.size());
 
 
 }

@@ -22,6 +22,11 @@ auto barrett_reduction(Array<T, N1> x, Array<T, N2> modulus,
   // skip<N>(x) corresponds with right-shifting x by N limbs
   // first<N>(x) corresponds with x modulo (2^64)^N
 
+  using detail::skip;
+  using detail::first;
+  using detail::unary_encoding;
+  using detail::pad;
+
   auto q2approx = mul(skip<N2 - 1>(x), skip<N2 - 1>(mu));
   auto q3 = skip<2>(q2approx);
   

@@ -35,10 +35,13 @@ constexpr auto mul(Array<uint64_t, N1> a, Array<uint64_t, N2> b) {
     for (auto i = 0; i < N1; ++i) {
       __uint128_t prodsum = static_cast<__uint128_t>(a[i]) 
                           * static_cast<__uint128_t>(b[j]) 
-                          + static_cast<__uint128_t>(high);
-      tmp[j + i] = static_cast<uint64_t>(prodsum);
+                          + static_cast<__uint128_t>(high);     // seems to go wrong if operand is very short
+      tmp[j + i] = static_cast<uint64_t>(prodsum);          
       high = prodsum >> 64;
     }
+    auto high_word = detail::place_at<N1+N2>(high,j+N1);
+
+    accum = accumulate(accum, high_word);
     accum = accumulate(accum, tmp);
   }
   return accum;
@@ -84,6 +87,7 @@ constexpr auto mul2(Array<uint64_t, N1> a, Array<uint64_t, N2> b) {
       tmp[j + i] = sum[0];
       high = sum[1];
     }
+    // should we here also write the remaining high word to the proper location? 
     accum = accumulate(accum, tmp);
   }
   return accum;
