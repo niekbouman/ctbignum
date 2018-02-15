@@ -1,10 +1,12 @@
 cmake_minimum_required(VERSION 3.0.0)
 
+# This cmake file was inspired by that of nlohmann/json
+
 ##
 ## PROJECT
 ## name and version
 ##
-project(njbouman_ctbignum VERSION 3.1.0 LANGUAGES CXX)
+project(njbouman_ctbignum VERSION 0.1 LANGUAGES CXX)
 
 ##
 ## INCLUDE
@@ -16,6 +18,7 @@ include(ExternalProject)
 ## OPTIONS
 ##
 option(CTBIGNUM_BuildTests "Build the unit tests when BUILD_TESTING is enabled." ON)
+option(CTBIGNUM_BuildBenchmarks "Build the benchmarks." ON)
 
 ##
 ## CONFIGURATION
@@ -52,6 +55,10 @@ include(CTest) #adds option BUILD_TESTING (default ON)
 if(BUILD_TESTING AND CTBIGNUM_BuildTests)
     enable_testing()
     add_subdirectory(test)
+endif()
+
+if(CTBIGNUM_BuildBenchmarks)
+    add_subdirectory(benchmarks)
 endif()
 
 ##
