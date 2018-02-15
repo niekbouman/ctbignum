@@ -4,12 +4,12 @@
 #include <random>
 #include <sprout/array.hpp>
 
-#include "all.hpp"
+#include <ctbignum/all.hpp>
 
 template <size_t N> using big_int = sprout::array<uint64_t, N>;
 
 static void modadd(benchmark::State &state) {
-  constexpr auto prime = string_to_big_int<4>(BOOST_HANA_STRING(
+  constexpr auto prime = cbn::string_to_big_int<4>(BOOST_HANA_STRING(
       "1606938044258990275541962092341162602522202993782792835301611"));
 
   std::default_random_engine generator;
@@ -24,7 +24,7 @@ static void modadd(benchmark::State &state) {
   }
 
   for (auto _ : state) {
-    benchmark::DoNotOptimize(mod_add(x, y, prime));
+    benchmark::DoNotOptimize(cbn::mod_add(x, y, prime));
   }
 }
 
@@ -47,9 +47,9 @@ static void modadd_ntl(benchmark::State &state) {
 }
 
 static void modmul(benchmark::State &state) {
-  constexpr auto prime = string_to_big_int<4>(BOOST_HANA_STRING(
+  constexpr auto prime = cbn::string_to_big_int<4>(BOOST_HANA_STRING(
       "1606938044258990275541962092341162602522202993782792835301611"));
-  constexpr auto mu = string_to_big_int<5>(
+  constexpr auto mu = cbn::string_to_big_int<5>(
       BOOST_HANA_STRING("834369935906605500935555353972481294766681454045567488"
                         "2604411090793790119337922481889828929536"));
 
@@ -65,15 +65,15 @@ static void modmul(benchmark::State &state) {
   }
 
   for (auto _ : state) {
-    auto j = mul(x, y);
-    auto k = barrett_reduction(j, prime, mu);
+    auto j = cbn::mul(x, y);
+    auto k = cbn::barrett_reduction(j, prime, mu);
     benchmark::DoNotOptimize(k);
   }
 }
 static void modmul2(benchmark::State &state) {
-  constexpr auto prime = string_to_big_int<4>(BOOST_HANA_STRING(
+  constexpr auto prime = cbn::string_to_big_int<4>(BOOST_HANA_STRING(
       "1606938044258990275541962092341162602522202993782792835301611"));
-  constexpr auto mu = string_to_big_int<5>(
+  constexpr auto mu = cbn::string_to_big_int<5>(
       BOOST_HANA_STRING("834369935906605500935555353972481294766681454045567488"
                         "2604411090793790119337922481889828929536"));
 
@@ -89,7 +89,7 @@ static void modmul2(benchmark::State &state) {
   }
 
   for (auto _ : state) {
-    benchmark::DoNotOptimize(barrett_reduction(mul2(x, y), prime, mu));
+    benchmark::DoNotOptimize(cbn::barrett_reduction(cbn::mul2(x, y), prime, mu));
   }
 }
 
@@ -116,6 +116,8 @@ static void modmul_ntl(benchmark::State &state) {
 }
 
 static void reduce(benchmark::State &state) {
+  using namespace cbn;
+
   constexpr auto prime = string_to_big_int<4>(BOOST_HANA_STRING(
       "1606938044258990275541962092341162602522202993782792835301611"));
   constexpr auto mu = string_to_big_int<8>(
@@ -164,6 +166,7 @@ static void big_int_from_string_ntl(benchmark::State &state) {
   }
 }
 static void big_int_from_string(benchmark::State &state) {
+  using namespace cbn;
   using NTL::ZZ;
   using NTL::ZZ_p;
   using NTL::conv;
@@ -176,6 +179,7 @@ static void big_int_from_string(benchmark::State &state) {
 }
 
 static void modadd_immediate(benchmark::State &state) {
+  using namespace cbn;
   constexpr auto prime = string_to_big_int<4>(BOOST_HANA_STRING(
       "1606938044258990275541962092341162602522202993782792835301611"));
 
@@ -246,6 +250,7 @@ static void modadd_immediate_ntl(benchmark::State &state) {
 }
 
 static void mul_immediate(benchmark::State &state) {
+  using namespace cbn;
 
   auto y = string_to_big_int<4>(BOOST_HANA_STRING(
       "1000431856504897268487649876408467273524360183457791240097764"));
@@ -274,6 +279,7 @@ static void mul_immediate(benchmark::State &state) {
   }
 }
 static void mul2_immediate(benchmark::State &state) {
+  using namespace cbn;
 
   auto y = string_to_big_int<4>(BOOST_HANA_STRING(
       "1000431856504897268487649876408467273524360183457791240097764"));
@@ -353,7 +359,7 @@ static void mul_(benchmark::State &state) {
   }
 
   for (auto _ : state) {
-    auto k = mul(x, y);
+    auto k = cbn::mul(x, y);
     benchmark::DoNotOptimize(k);
   }
 }
@@ -370,7 +376,7 @@ static void mul2_(benchmark::State &state) {
   }
 
   for (auto _ : state) {
-    auto k = mul2(x, y);
+    auto k = cbn::mul2(x, y);
     benchmark::DoNotOptimize(k);
   }
 }
