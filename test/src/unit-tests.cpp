@@ -13,6 +13,7 @@
 #include <ctbignum/slicing.hpp>
 #include <ctbignum/barrett.hpp>
 #include <ctbignum/montgomery.hpp>
+#include <ctbignum/division.hpp>
 //#include <ctbignum/print.hpp>
 
 #include<NTL/ZZ.h>
@@ -154,6 +155,33 @@ TEST_CASE("Montgomery reduction") {
   REQUIRE(montgomery_reduction(T,modulus,mprime) == ans);
 }
 
+TEST_CASE("Division") {
+  using namespace cbn;
+
+  constexpr auto u = string_to_big_int<6>(BOOST_HANA_STRING(
+      "49252507745493099015348800125179517256349674088081808334935366755307"
+      "15221437151326426783281860614455100828498788859"));
+  constexpr auto v = string_to_big_int<4>(
+      BOOST_HANA_STRING("144740111546645244279463731260859884816587480832050705"
+                        "04932198000989141205031"));
+
+  constexpr auto remainder = string_to_big_int<4>(
+      BOOST_HANA_STRING("14474011154664524427946373126085988468387735773288470429860588311150180958754"));
+
+  constexpr auto quotient = string_to_big_int<3>(
+      BOOST_HANA_STRING("340282366920938463463374607431768211455"));
+  
+
+
+
+  constexpr auto ans = div(u,v);
+
+  static_assert(ans.first == quotient, "fail");
+  static_assert(ans.second == remainder, "fail");
+
+  //static_assert(montgomery_reduction(T,modulus,mprime) == ans, "fail");
+  //REQUIRE(montgomery_reduction(T,modulus,mprime) == ans);
+}
 
 TEST_CASE("") {
 

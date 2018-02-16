@@ -21,6 +21,20 @@ constexpr auto take(Array<T, N1> t) {
   return res;
 }
 
+template <size_t ResultLength, template <typename, size_t> class Array,
+          typename T, size_t N1>
+constexpr auto take(Array<T, N1> t, const size_t Begin, const size_t End) {
+  //static_assert(End >= Begin, "invalid range");
+  //static_assert(End - Begin <= N1, "invalid range");
+
+  Array<T, ResultLength> res{};
+  for (auto i = Begin; i < End; ++i) {
+    res[i-Begin] = t[i];
+  }
+
+  return res;
+}
+
 template <size_t N, template <typename, size_t> class Array, typename T,
           size_t N1>
 constexpr auto skip(Array<T, N1> t) {
