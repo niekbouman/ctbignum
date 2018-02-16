@@ -123,6 +123,19 @@ TEST_CASE("String Initialization") {
   static_assert(res == num, "fail");
 }
 
+TEST_CASE("String Initialization -- auto length deduction") {
+
+  using namespace cbn;
+  auto s = BOOST_HANA_STRING("6513020836420374401749667047018991798096360820");
+  constexpr auto num = string_to_big_int(s);
+
+  constexpr big_int<3> res = {{1315566964, 326042948, 19140048}};
+
+  REQUIRE(num == res);
+  static_assert(num == res, "fail");
+}
+
+
 TEST_CASE("Barrett reduction") {
 
   using namespace cbn;
