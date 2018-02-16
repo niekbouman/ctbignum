@@ -28,12 +28,12 @@ Currently, the library supports the following operations
 
 ### Example
 ```cpp
-// String Initialization
+// String Initialization (with automatic deduction of number of limbs)
 
-constexpr auto number = cbn::string_to_big_int<4>(
+constexpr auto number = cbn::string_to_big_int(
     BOOST_HANA_STRING("6513020836420374401749667047018991798096360820"));
 
-constexpr big_int<4> expected_result = {{1315566964, 326042948, 19140048, 0}};
+constexpr big_int<3> expected_result = {{1315566964, 326042948, 19140048}};
 
 static_assert(number == expected_result, "initialization failure");
 ```
