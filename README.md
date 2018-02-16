@@ -3,14 +3,25 @@
 ### Description
 This is a header-only template library for compile-time fixed-width big-integer computations.
 
-Currently, the library supports addition, subtraction, multiplication, comparison, modular addition, Montgomery reduction, Barrett reduction, and initialization from a compile-time string.
+Currently, the library supports the following operations
+- addition, 
+- subtraction, 
+- multiplication (naive O(n^2) "schoolbook" multiplication)
+- division (Donald Knuth's algorithm D)
+- comparison (lexicographical compare from the Sprout C++ Libraries),
+- modular addition,
+- Montgomery reduction,
+- Barrett reduction, 
+- initialization from a compile-time string (using BOOST_HANA_STRING)
 
 ### Requirements
-- Boost.Hana
-- Sprout
+- Boost.Hana (Louis Dionne)
+- Sprout C++ Libraries (Bolero Murakami)
 
 ### Requirements (for the benchmarks)
 - NTL (Victor Shoup's number theory library)
+- SCIPR lab's libff
+- GMP (libff dependency)
 - Google Benchmark
 
 ### Example
