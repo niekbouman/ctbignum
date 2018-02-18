@@ -1,13 +1,13 @@
 #ifndef CT_STRINGINIT_HPP
 #define CT_STRINGINIT_HPP
 
-#include <ctbignum/mult.hpp>
 #include <boost/hana.hpp>
 #include <cstddef>
+#include <ctbignum/mult.hpp>
 
 namespace cbn {
 
-template <int N, template<typename,size_t> class Array, typename T>
+template <int N, template <typename, size_t> class Array, typename T>
 constexpr auto limb_int(unsigned long v) {
   Array<T, N> r{};
   r[0] = v;
@@ -16,7 +16,7 @@ constexpr auto limb_int(unsigned long v) {
 
 template <size_t N, template <typename, size_t> class Array, typename T>
 constexpr auto tight_length(Array<T, N> num) {
-  // count the effective number of limbs 
+  // count the effective number of limbs
   // (ignoring zero-limbs at the most-significant-limb side)
   int L = N;
   while (L > 0 && num[L - 1] == 0)

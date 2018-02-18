@@ -15,5 +15,20 @@ MinSizeRel."
    
 endif()
 
-target_include_directories(bench PRIVATE ${NJBOUMAN_CTBIGNUM_INCLUDE_BUILD_DIR})
-target_link_libraries(bench benchmark ntl)
+find_package(GMP)
+
+# optimizations for libff
+add_definitions(-DUSE_ASM)
+add_definitions(-DNDEBUG)
+set(
+    CMAKE_CXX_FLAGS
+    "${CMAKE_CXX_FLAGS} -flto -fuse-linker-plugin"
+)
+set(
+   CMAKE_EXE_LINKER_FLAGS
+    "${CMAKE_EXE_LINKER_FLAGS} -flto"
+)
+
+
+target_include_directories(bench PRIVATE ${NJBOUMAN_CTBIGNUM_INCLUDE_BUILD_DIR} ${GMP_INCLUDES})
+target_link_libraries(bench benchmark ntl ${GMP_LIBRARIES})

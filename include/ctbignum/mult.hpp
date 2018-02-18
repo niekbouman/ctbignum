@@ -47,6 +47,30 @@ constexpr auto mul(Array<uint64_t, N1> a, Array<uint64_t, N2> b) {
   return accum;
 }
 
+// this uses GCC and Clang's __uint128_t data type
+template <size_t ResultLength, template <typename, size_t> class Array, size_t N1, size_t N2>
+constexpr auto partial_mul(Array<uint64_t, N1> a, Array<uint64_t, N2> b) {
+  Array<uint64_t, ResultLength> accum{};
+  for (auto j = 0; j < N2; ++j) {
+    Array<uint64_t, ResultLength> tmp{};
+    uint64_t high = 0;
+    auto m = std::min(N1, ResultLength-j);
+    for (auto i = 0; i < m; ++i) {
+      __uint128_t prodsum = static_cast<__uint128_t>(a[i]) 
+                          * static_cast<__uint128_t>(b[j]) 
+                          + static_cast<__uint128_t>(high);     // seems to go wrong if operand is very short
+      tmp[j + i] = static_cast<uint64_t>(prodsum);          
+      high = prodsum >> 64;
+    }
+    if (j+N1 < ResultLength ){ 
+      auto high_word = detail::place_at<ResultLength>(high,j+N1);
+      accum = accumulate(accum, high_word);
+    }
+    accum = accumulate(accum, tmp);
+  }
+  return accum;
+}
+
 // for use with mul2 function (see below)
 constexpr auto mul128(uint64_t a, uint64_t b) {
   // code for this function is based on:

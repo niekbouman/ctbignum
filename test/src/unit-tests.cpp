@@ -152,8 +152,10 @@ TEST_CASE("Barrett reduction") {
   constexpr auto ans = string_to_big_int<4>(
       BOOST_HANA_STRING("1606938044258990275541962092341162602522202993782540505973038"));
 
-  static_assert(barrett_reduction(x,prime,mu) == ans, "fail");
-  REQUIRE(barrett_reduction(x,prime,mu) == ans);
+  //static_assert(barrett_reduction(x,prime,mu) == ans, "fail");
+  //REQUIRE(barrett_reduction(x,prime,mu) == ans);
+  static_assert(barrett_reduction<235, 0, 0, 256>(x) == ans, "fail");
+  REQUIRE(barrett_reduction<235, 0, 0, 256>(x) == ans);
 
 }
 

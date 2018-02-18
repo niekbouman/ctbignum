@@ -118,11 +118,11 @@ static void modmul_ntl(benchmark::State &state) {
 static void reduce(benchmark::State &state) {
   using namespace cbn;
 
-  constexpr auto prime = string_to_big_int<4>(BOOST_HANA_STRING(
-      "1606938044258990275541962092341162602522202993782792835301611"));
-  constexpr auto mu = string_to_big_int<8>(
-      BOOST_HANA_STRING("834369935906605500935555353972481294766681454045567488"
-                        "2604411090793790119337922481889828929536"));
+  //constexpr auto prime = string_to_big_int<4>(BOOST_HANA_STRING(
+  //    "1606938044258990275541962092341162602522202993782792835301611"));
+  //constexpr auto mu = string_to_big_int<8>(
+  //    BOOST_HANA_STRING("834369935906605500935555353972481294766681454045567488"
+  //                      "2604411090793790119337922481889828929536"));
 
   std::default_random_engine generator;
   std::uniform_int_distribution<uint64_t> distribution(0);
@@ -132,9 +132,16 @@ static void reduce(benchmark::State &state) {
   for (int i = 0; i < 5; ++i) {
     x[i] = distribution(generator);
   }
+  // precompute mu
+  
+  //constexpr auto z =  detail::unary_encoding<8,9>();
+  //constexpr auto quot_rem  = div(z,prime);
+  //constexpr auto quot_rem  = div(detail::unary_encoding<2*N2,2*N2+1>(),modulus);
+  //constexpr auto mu = quot_rem.first;
 
   for (auto _ : state) {
-    benchmark::DoNotOptimize(barrett_reduction(x, prime, mu));
+    //benchmark::DoNotOptimize(barrett_reduction(x, prime, mu));
+    benchmark::DoNotOptimize(barrett_reduction<235, 0, 0, 256>(x));
   }
 }
 
@@ -398,9 +405,73 @@ static void mul_ntl(benchmark::State &state) {
   }
 }
 
+//#include "modulus.hpp"
+#include <libff/algebra/fields/fp.hpp>
+#include <libff/algebra/fields/bigint.hpp>
+
+static void montmul_libff(benchmark::State &state) {
+
+  using namespace libff;
+  //extern bigint<4L> mymodulus;
+  static auto mymodulus = libff::bigint<static_cast<mp_size_t>(4)>("14474011154664524427946373126085988481658748083205070504932198000989141205031");
+
+  using GF253 = Fp_model<4L, mymodulus>;
+
+  GF253::euler = bigint<static_cast<mp_size_t>(4)>("723700557733226221397318656"
+                                                   "304299424082937404160253525"
+                                                   "2466099000494570602515");
+  GF253::t = bigint<static_cast<mp_size_t>(4)>("7237005577332262213973186563042"
+                                               "9942408293740416025352524660990"
+                                               "00494570602515");
+  GF253::t_minus_1_over_2 = bigint<static_cast<mp_size_t>(4)>(
+      "361850278866613110698659328152149712041468702080126762623304950024728530"
+      "1257");
+  GF253::Rsquared = bigint<static_cast<mp_size_t>(4)>("97344");
+  GF253::Rcubed = bigint<static_cast<mp_size_t>(4)>(
+      "144740111546645244279463731260859884816587480832050705049321980009891108"
+      "33703");
+  GF253::s = 1;
+  GF253::num_bits = 253;
+  GF253::inv = 10405855631323336809UL;
+
+  // auto x = NTL::RandomBits_ZZ(4*64);
+  // auto y = NTL::RandomBits_ZZ(4*64);
+  // ZZ z;
+
+  GF253 x, y, z;
+
+  x.random_element();
+  y.random_element();
+
+  for (auto _ : state) {
+    z = x * y;
+    benchmark::DoNotOptimize(z);
+  }
+}
+
+static void mont_reduction(benchmark::State &state) {
 
 
+  auto prime = cbn::string_to_big_int(
+          BOOST_HANA_STRING("14474011154664524427946373126085988481658748083205"
+                            "070504932198000989141205031"));
 
+
+  auto inv = 10405855631323336809UL;
+
+  std::default_random_engine generator;
+  std::uniform_int_distribution<uint64_t> distribution(0);
+
+  big_int<8> x;
+  for (int i = 0; i < 8; ++i) 
+    x[i] = distribution(generator);
+
+
+  for (auto _ : state) {
+    auto z = cbn::montgomery_reduction(x, prime, inv);
+    benchmark::DoNotOptimize(z);
+  }
+}
 
 
 // BENCHMARK(creation);
@@ -423,6 +494,8 @@ BENCHMARK(mul_ntl);
 BENCHMARK(modmul);
 BENCHMARK(modmul2);
 BENCHMARK(modmul_ntl);
+BENCHMARK(montmul_libff);
+BENCHMARK(mont_reduction);
 BENCHMARK(reduce);
 BENCHMARK(reduce_ntl);
 BENCHMARK(big_int_from_string);

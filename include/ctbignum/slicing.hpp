@@ -23,13 +23,13 @@ constexpr auto take(Array<T, N1> t) {
 
 template <size_t ResultLength, template <typename, size_t> class Array,
           typename T, size_t N1>
-constexpr auto take(Array<T, N1> t, const size_t Begin, const size_t End) {
+constexpr auto take(Array<T, N1> t, const size_t Begin, const size_t End, const size_t Offset = 0) {
   //static_assert(End >= Begin, "invalid range");
   //static_assert(End - Begin <= N1, "invalid range");
 
   Array<T, ResultLength> res{};
   for (auto i = Begin; i < End; ++i) {
-    res[i-Begin] = t[i];
+    res[i-Begin+Offset] = t[i];
   }
 
   return res;
@@ -39,6 +39,7 @@ template <size_t N, template <typename, size_t> class Array, typename T,
           size_t N1>
 constexpr auto skip(Array<T, N1> t) {
   // skip first N limbs
+  // skip<N>(x) corresponds with right-shifting x by N limbs
   return take<N, N1>(t);
 }
 
@@ -46,6 +47,7 @@ template <size_t N, template <typename, size_t> class Array, typename T,
           size_t N1>
 constexpr auto first(Array<T, N1> t) {
   // take first N limbs
+  // first<N>(x) corresponds with x modulo (2^64)^N
   return take<0, N>(t);
 }
 
@@ -55,6 +57,14 @@ constexpr auto pad(Array<T, N1> t) {
   // add N extra limbs (at msb side)
   return take<0, N1, N>(t);
 }
+
+template <size_t ResultLength, template <typename, size_t> class Array, typename T,
+          size_t N1>
+constexpr auto limbwise_shift_left(Array<T, N1> t, const size_t k) {
+  // shift left by k limbs (and produce output of limb-length ResultLength)
+  return take<ResultLength>(t, 0, N1, k);
+}
+
 
 template <size_t K, size_t N,
           template <typename, size_t> class Array = sprout::array,

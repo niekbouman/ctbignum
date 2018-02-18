@@ -29,13 +29,14 @@ constexpr auto montgomery_reduction(Array<T, N1> A, Array<T, N2> m,
   using detail::first;
   using detail::unary_encoding;
   using detail::pad;
+  using detail::limbwise_shift_left;
 
  
   auto accum = pad<1>(A);
 
   for (auto i = 0; i < N2; ++i) {
     Array<T, 1> u_i = {accum[i] * mprime};
-    auto prod = mul(m, unary_encoding<N2>(i));
+    auto prod = limbwise_shift_left<N2+1>(m, i);
     auto prod2 = mul(u_i, prod);
     accum = accumulate(accum, prod2);
   }
