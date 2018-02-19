@@ -82,6 +82,25 @@ constexpr auto mod_add_(Array<T, N> a, Array<T, N> b) {
   return mod_add(a, b, modulus);
 }
 
+template <template <typename, size_t> class Array, typename T, size_t N1, size_t N2>
+constexpr auto accumulate(Array<T, N1> accum, Array<T, N2> b) {
+  T carry = 0;
+  Array<T, N1> r{};
+
+  auto m = std::min(N1,N2);
+  for (auto i = 0; i < m; ++i) {
+    auto aa = accum[i];
+    auto sum = aa + b[i];
+    auto res = sum + carry;
+    carry = (sum < aa) | (res < sum);
+    r[i] = res;
+  }
+  if (N1>N2)
+    r[N2] = carry;
+  return r;
+}
+
+
 } // end namespace cbn
 
 #endif

@@ -47,11 +47,11 @@ static void modadd_ntl(benchmark::State &state) {
 }
 
 static void modmul(benchmark::State &state) {
-  constexpr auto prime = cbn::string_to_big_int<4>(BOOST_HANA_STRING(
+  constexpr auto prime = cbn::string_to_index_seq(BOOST_HANA_STRING(
       "1606938044258990275541962092341162602522202993782792835301611"));
-  constexpr auto mu = cbn::string_to_big_int<5>(
-      BOOST_HANA_STRING("834369935906605500935555353972481294766681454045567488"
-                        "2604411090793790119337922481889828929536"));
+  //constexpr auto mu = cbn::string_to_big_int<5>(
+  //    BOOST_HANA_STRING("834369935906605500935555353972481294766681454045567488"
+  //                      "2604411090793790119337922481889828929536"));
 
   std::default_random_engine generator;
   std::uniform_int_distribution<uint64_t> distribution(0);
@@ -66,7 +66,7 @@ static void modmul(benchmark::State &state) {
 
   for (auto _ : state) {
     auto j = cbn::mul(x, y);
-    auto k = cbn::barrett_reduction(j, prime, mu);
+    auto k = cbn::barrett_reduction(j, prime); //, mu);
     benchmark::DoNotOptimize(k);
   }
 }
@@ -144,6 +144,31 @@ static void reduce(benchmark::State &state) {
     benchmark::DoNotOptimize(barrett_reduction<235, 0, 0, 256>(x));
   }
 }
+
+static void reduce_intseq(benchmark::State &state) {
+  using namespace cbn;
+
+  //constexpr auto prime = string_to_big_int<4>(BOOST_HANA_STRING(
+  //    "1606938044258990275541962092341162602522202993782792835301611"));
+  //constexpr auto mu = string_to_big_int<8>(
+  //    BOOST_HANA_STRING("834369935906605500935555353972481294766681454045567488"
+  //                      "2604411090793790119337922481889828929536"));
+
+  std::default_random_engine generator;
+  std::uniform_int_distribution<uint64_t> distribution(0);
+
+  big_int<5> x;
+
+  for (int i = 0; i < 5; ++i) {
+    x[i] = distribution(generator);
+  }
+
+  for (auto _ : state) {
+    auto modulus = string_to_index_seq(BOOST_HANA_STRING("1606938044258990275541962092341162602522202993782792835301611"));
+    benchmark::DoNotOptimize(barrett_reduction(x,modulus));
+  }
+}
+
 
 static void reduce_ntl(benchmark::State &state) {
   using NTL::ZZ;
@@ -370,6 +395,28 @@ static void mul_(benchmark::State &state) {
     benchmark::DoNotOptimize(k);
   }
 }
+
+/*
+static void knuthmul_(benchmark::State &state) {
+
+  std::default_random_engine generator;
+  std::uniform_int_distribution<uint64_t> distribution(0);
+
+  big_int<4> x;
+  big_int<4> y;
+  for (int i = 0; i < 4; ++i) {
+    x[i] = distribution(generator);
+    y[i] = distribution(generator);
+  }
+
+  for (auto _ : state) {
+    auto k = cbn::knuth_mul(x, y);
+    benchmark::DoNotOptimize(k);
+  }
+}
+*/
+
+
 static void mul2_(benchmark::State &state) {
 
   std::default_random_engine generator;
@@ -404,6 +451,34 @@ static void mul_ntl(benchmark::State &state) {
     benchmark::DoNotOptimize(z);
   }
 }
+
+
+static void montmul(benchmark::State &state) {
+
+  auto prime = cbn::string_to_big_int(
+          BOOST_HANA_STRING("14474011154664524427946373126085988481658748083205"
+                            "070504932198000989141205031"));
+
+  auto inv = 10405855631323336809UL;
+  std::default_random_engine generator;
+  std::uniform_int_distribution<uint64_t> distribution(0);
+
+
+  big_int<4> x;
+  big_int<4> y;
+  for (int i = 0; i < 4; ++i) {
+    x[i] = distribution(generator);
+    y[i] = distribution(generator);
+  }
+
+  for (auto _ : state) {
+    auto z = cbn::montgomery_mul(x, y, prime, inv);
+    benchmark::DoNotOptimize(z);
+  }
+}
+
+
+
 
 //#include "modulus.hpp"
 #include <libff/algebra/fields/fp.hpp>
@@ -486,6 +561,7 @@ BENCHMARK(mul2_immediate);
 BENCHMARK(mul_immediate_ntl);
 
 BENCHMARK(mul_);
+//BENCHMARK(knuthmul_);
 BENCHMARK(mul2_);
 BENCHMARK(mul_ntl);
 
@@ -494,9 +570,12 @@ BENCHMARK(mul_ntl);
 BENCHMARK(modmul);
 BENCHMARK(modmul2);
 BENCHMARK(modmul_ntl);
+
+BENCHMARK(montmul);
 BENCHMARK(montmul_libff);
 BENCHMARK(mont_reduction);
 BENCHMARK(reduce);
+BENCHMARK(reduce_intseq);
 BENCHMARK(reduce_ntl);
 BENCHMARK(big_int_from_string);
 BENCHMARK(big_int_from_string_ntl);

@@ -50,17 +50,37 @@ constexpr auto string_to_big_int(String str) {
             boost::hana::value(c) - 48; // convert character to decimal
         return boost::hana::make_pair(
             mp_add_ignore_last_carry(
-                boost::hana::first(state),
-                mul<-static_cast<int>(N)>(limb_int<N, Array, T>(i),
-                                          boost::hana::second(state))),
-            mul<-static_cast<int>(N)>(limb_int<N, Array, T>(10),
-                                      boost::hana::second(state)));
+                boost::hana::first(state), partial_mul<N>( limb_int<1, Array, T>(i) , boost::hana::second(state) )),
+            partial_mul<N>(limb_int<1, Array, T>(10),boost::hana::second(state)));
+
+           //     mul<-static_cast<int>(N)>(limb_int<N, Array, T>(i),
+           //                               boost::hana::second(state))),
+           // mul<-static_cast<int>(N)>(limb_int<N, Array, T>(10),
+            //                          boost::hana::second(state)));
       }));
 
   constexpr auto L = (ExplicitLength != 0) ? ExplicitLength : tight_length(num);
   return detail::first<L>(num);
 }
 
-} // namespace
+namespace detail {
+template <typename String>
+constexpr std::size_t get_ith_limb(String s, const std::size_t i) {
+  return string_to_big_int(s)[i];
+}
+
+template <typename String, std::size_t... Is>
+constexpr auto string_to_index_seq_impl(String s, std::index_sequence<Is...>) {
+  return std::index_sequence<get_ith_limb(s, Is)...>{};
+}
+} // end of detail namespace
+
+template <typename String>
+constexpr auto string_to_index_seq(String s) {
+  const size_t N = cbn::string_to_big_int(s).size();
+  return detail::string_to_index_seq_impl(s, std::make_index_sequence<N>{});
+}
+
+} // end of cbn namespace
 
 #endif

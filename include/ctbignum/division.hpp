@@ -73,5 +73,44 @@ constexpr auto div(Array<uint64_t, NplusM> u, Array<uint64_t, N> v) {
 
   return std::make_pair(q, shift_right(detail::first<N>(us), k));
 }
+
+template <template <typename, size_t> class Array, size_t N>
+constexpr auto ext_gcd_imp(Array<uint64_t, N> a, Array<uint64_t, N> b) {
+
+  // todo make padding so that outputs have same length in both branches
+  if (a == Array<uint64_t, N>{})
+    return std::make_tuple(b, 0, 1);
+  else {
+
+    auto qr = div(b, a);
+
+    auto tup = egcd(qr.second, a);
+
+    auto g = std::get<0>(tup);
+    auto y = std::get<1>(tup);
+    auto x = std::get<2>(tup);
+    return std::make_tuple(g, mp_sub(x, mul(qr.first, y)), y);
+  }
 }
+}
+
+template <template <typename, size_t> class Array, size_t N1, size_t N2>
+constexpr auto ext_gcd(Array<uint64_t, N1> a, Array<uint64_t, N2> b) {
+
+  if (a == Array<uint64_t, N1>{})
+    return std::make_tuple(b, 0, 1);
+  else {
+
+    auto qr = div(b, a);
+
+    auto tup = egcd(qr.second, a);
+
+    auto g = std::get<0>(tup);
+    auto y = std::get<1>(tup);
+    auto x = std::get<2>(tup);
+    return std::make_tuple(g, mp_sub(x, mul(qr.first, y)), y);
+  }
+}
+}
+
 #endif

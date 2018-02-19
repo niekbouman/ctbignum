@@ -110,6 +110,20 @@ TEST_CASE("Multiplication") {
     static_assert(res == ans, "fail");
     static_assert(res == ans2, "fail");
   }
+
+  /*
+  SECTION("") {
+    constexpr big_int<2> a = {{151, 23}};
+    constexpr big_int<2> b = {{8712364, 832176}};
+    constexpr big_int<4> res = {{1315566964, 326042948, 19140048, 0}};
+
+    constexpr auto ans = knuth_mul(a, b);
+    constexpr auto ans2 = knuth_mul(a, b);
+    static_assert(res == ans, "fail");
+    static_assert(res == ans2, "fail");
+  }
+  */
+
 }
 
 TEST_CASE("String Initialization") {
@@ -170,6 +184,26 @@ TEST_CASE("Montgomery reduction") {
   REQUIRE(montgomery_reduction(T,modulus,mprime) == ans);
 }
 
+TEST_CASE("Montgomery mult") {
+  using namespace cbn;
+  
+  constexpr auto modulus = string_to_big_int(BOOST_HANA_STRING("1267650600228229401496703205653"));
+
+  constexpr uint64_t mprime = 1265300135019788739UL;
+
+  constexpr auto x = string_to_big_int(BOOST_HANA_STRING("924750812939937572408690850011"));
+  constexpr auto y = string_to_big_int(BOOST_HANA_STRING("478633290783786461322094322310"));
+
+  constexpr auto ans = montgomery_reduction(mul(x,y),modulus,mprime);
+
+
+  //static_assert(montgomery_mul(x, y, modulus, mprime) == ans, "fail");
+  REQUIRE(montgomery_mul(x,y,modulus,mprime) == ans);
+}
+
+
+
+
 TEST_CASE("Division") {
   using namespace cbn;
 
@@ -180,10 +214,10 @@ TEST_CASE("Division") {
       BOOST_HANA_STRING("144740111546645244279463731260859884816587480832050705"
                         "04932198000989141205031"));
 
-  constexpr auto remainder = string_to_big_int<4>(
+  constexpr auto rem = string_to_big_int<4>(
       BOOST_HANA_STRING("14474011154664524427946373126085988468387735773288470429860588311150180958754"));
 
-  constexpr auto quotient = string_to_big_int<3>(
+  constexpr auto quot = string_to_big_int<3>(
       BOOST_HANA_STRING("340282366920938463463374607431768211455"));
   
 
@@ -191,12 +225,40 @@ TEST_CASE("Division") {
 
   constexpr auto ans = div(u,v);
 
-  static_assert(ans.first == quotient, "fail");
-  static_assert(ans.second == remainder, "fail");
+  static_assert(ans.first == quot, "fail");
+  static_assert(ans.second == rem, "fail");
 
   //static_assert(montgomery_reduction(T,modulus,mprime) == ans, "fail");
   //REQUIRE(montgomery_reduction(T,modulus,mprime) == ans);
 }
+
+
+TEST_CASE("arrayconv") {
+
+  using namespace cbn;
+  //static constexpr std::array<size_t, 4> a {{1, 3, 5, 6}};
+  //constexpr auto s = 
+
+  constexpr auto x = string_to_big_int<5>(
+      BOOST_HANA_STRING("1725436586697640946858688965569256363112777243042596638790631055949891"
+                        ));
+
+  constexpr auto ans = string_to_big_int<4>(
+      BOOST_HANA_STRING("1606938044258990275541962092341162602522202993782540505973038"));
+
+  //static_assert(barrett_reduction(x,prime,mu) == ans, "fail");
+  //REQUIRE(barrett_reduction(x,prime,mu) == ans);
+  
+  auto modulus = string_to_index_seq(BOOST_HANA_STRING("1606938044258990275541962092341162602522202993782792835301611"));
+
+  static_assert(barrett_reduction(x,modulus) == ans, "fail");
+  REQUIRE(barrett_reduction(x,modulus) == ans);
+
+  static_assert(barrett_reduction<235, 0, 0, 256>(x) == ans, "fail");
+  REQUIRE(barrett_reduction<235, 0, 0, 256>(x) == ans);
+
+}
+
 
 TEST_CASE("") {
 

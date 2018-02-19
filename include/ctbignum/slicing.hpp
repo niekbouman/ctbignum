@@ -35,12 +35,12 @@ constexpr auto take(Array<T, N1> t, const size_t Begin, const size_t End, const 
   return res;
 }
 
-template <size_t N, template <typename, size_t> class Array, typename T,
+template <size_t N, size_t Padding = 0, template <typename, size_t> class Array, typename T,
           size_t N1>
 constexpr auto skip(Array<T, N1> t) {
   // skip first N limbs
   // skip<N>(x) corresponds with right-shifting x by N limbs
-  return take<N, N1>(t);
+  return take<N, N1, Padding>(t);
 }
 
 template <size_t N, template <typename, size_t> class Array, typename T,

@@ -7,68 +7,54 @@
 #include <cstddef>
 
 namespace cbn {
-template <template <typename, size_t> class Array, typename T, size_t N1, size_t N2>
-constexpr auto accumulate(Array<T, N1> accum, Array<T, N2> b) {
-  T carry = 0;
-  Array<T, N1> r{};
 
-  auto m = std::min(N1,N2);
-  for (auto i = 0; i < m; ++i) {
-    auto aa = accum[i];
-    auto sum = aa + b[i];
-    auto res = sum + carry;
-    carry = (sum < aa) | (res < sum);
-    r[i] = res;
+template <size_t padding_limbs = 0, template <typename, size_t> class Array,
+          size_t M, size_t N>
+constexpr auto mul(Array<uint64_t, M> u, Array<uint64_t, N> v) {
+  Array<uint64_t, M + N + padding_limbs> w{};
+
+  for (auto j = 0; j < N; ++j) {
+    if (v[j] == 0)
+      w[j + M] = static_cast<uint64_t>(0);
+    else {
+      uint64_t k = 0;
+      for (auto i = 0; i < M; ++i) {
+        __uint128_t t =
+            static_cast<__uint128_t>(u[i]) * static_cast<__uint128_t>(v[j]) +
+            w[i + j] + k;
+        w[i + j] = static_cast<uint64_t>(t);
+        k = t >> 64;
+      }
+      w[j + M] = k;
+    }
   }
-  if (N1>N2)
-    r[N2] = carry;
-  return r;
+  return w;
 }
 
-// this uses GCC and Clang's __uint128_t data type
-template <int padding_limbs = 0, template <typename, size_t> class Array, size_t N1, size_t N2>
-constexpr auto mul(Array<uint64_t, N1> a, Array<uint64_t, N2> b) {
-  Array<uint64_t, N1 + N2 + padding_limbs> accum{};
-  for (auto j = 0; j < N2; ++j) {
-    Array<uint64_t, N1 + N2> tmp{};
-    uint64_t high = 0;
-    for (auto i = 0; i < N1; ++i) {
-      __uint128_t prodsum = static_cast<__uint128_t>(a[i]) 
-                          * static_cast<__uint128_t>(b[j]) 
-                          + static_cast<__uint128_t>(high);     // seems to go wrong if operand is very short
-      tmp[j + i] = static_cast<uint64_t>(prodsum);          
-      high = prodsum >> 64;
-    }
-    auto high_word = detail::place_at<N1+N2>(high,j+N1);
+template <size_t ResultLength, template <typename, size_t> class Array,
+          size_t M, size_t N>
+constexpr auto partial_mul(Array<uint64_t, M> u, Array<uint64_t, N> v) {
+  Array<uint64_t, ResultLength> w{};
 
-    accum = accumulate(accum, high_word);
-    accum = accumulate(accum, tmp);
-  }
-  return accum;
-}
-
-// this uses GCC and Clang's __uint128_t data type
-template <size_t ResultLength, template <typename, size_t> class Array, size_t N1, size_t N2>
-constexpr auto partial_mul(Array<uint64_t, N1> a, Array<uint64_t, N2> b) {
-  Array<uint64_t, ResultLength> accum{};
-  for (auto j = 0; j < N2; ++j) {
-    Array<uint64_t, ResultLength> tmp{};
-    uint64_t high = 0;
-    auto m = std::min(N1, ResultLength-j);
-    for (auto i = 0; i < m; ++i) {
-      __uint128_t prodsum = static_cast<__uint128_t>(a[i]) 
-                          * static_cast<__uint128_t>(b[j]) 
-                          + static_cast<__uint128_t>(high);     // seems to go wrong if operand is very short
-      tmp[j + i] = static_cast<uint64_t>(prodsum);          
-      high = prodsum >> 64;
+  for (auto j = 0; j < N; ++j) {
+    if (v[j] == 0) {
+      if (j + M < ResultLength)
+        w[j + M] = static_cast<uint64_t>(0);
+    } else {
+      uint64_t k = 0;
+      const auto m = std::min(M, ResultLength - j);
+      for (auto i = 0; i < m; ++i) {
+        __uint128_t t =
+            static_cast<__uint128_t>(u[i]) * static_cast<__uint128_t>(v[j]) +
+            w[i + j] + k;
+        w[i + j] = static_cast<uint64_t>(t);
+        k = t >> 64;
+      }
+      if (j + M < ResultLength)
+        w[j + M] = k;
     }
-    if (j+N1 < ResultLength ){ 
-      auto high_word = detail::place_at<ResultLength>(high,j+N1);
-      accum = accumulate(accum, high_word);
-    }
-    accum = accumulate(accum, tmp);
   }
-  return accum;
+  return w;
 }
 
 // for use with mul2 function (see below)
@@ -116,7 +102,6 @@ constexpr auto mul2(Array<uint64_t, N1> a, Array<uint64_t, N2> b) {
   }
   return accum;
 }
-
 
 }
 #endif
