@@ -7,9 +7,10 @@ Currently, the library supports the following operations
 - addition, 
 - subtraction, 
 - multiplication (naive O(n^2) "schoolbook" multiplication)
-- division (Donald Knuth's algorithm D)
+- division: short division (single-limb divisor) and Donald Knuth's "algorithm D"
 - comparison (lexicographical compare from the Sprout C++ Libraries),
 - modular addition,
+- extended GCD and modular inverse,
 - Montgomery reduction,
 - Barrett reduction, 
 - initialization from a compile-time string (using BOOST_HANA_STRING)
