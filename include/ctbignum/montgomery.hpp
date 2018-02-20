@@ -60,14 +60,12 @@ constexpr auto montgomery_reduction(Array<T, N1> A, Array<T, N2> m,
 //constexpr auto barrett_reduction(Array<T, N1> x,
 //                                 std::index_sequence<Modulus...>) {
 
+// work in progress: to automatically compute mu
+/*
 template <template <typename, std::size_t> class Array, typename T,
           std::size_t N, T... Modulus>
 constexpr auto montgomery_mul(Array<T, N> x, Array<T, N> y,  std::integer_sequence<T,Modulus...>)
     
-
-   // Array<T, N> m,
-   //                           uint64_t mprime) 
-                              
   {
   // Montgomery multiplication
 
@@ -97,7 +95,7 @@ constexpr auto montgomery_mul(Array<T, N> x, Array<T, N> y,  std::integer_sequen
   return first<N>(A);
 }
 
-
+*/
 
 
 template <template <typename, std::size_t> class Array, typename T,

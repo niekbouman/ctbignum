@@ -54,9 +54,9 @@ constexpr auto barrett_reduction(Array<T, N1> x) {
 }
 
 template <template <typename, std::size_t> class Array, typename T,
-          std::size_t N1, std::size_t... Modulus>
+          std::size_t N1, T... Modulus>
 constexpr auto barrett_reduction(Array<T, N1> x,
-                                 std::index_sequence<Modulus...>) {
+                                 std::integer_sequence<T, Modulus...>) {
   return barrett_reduction<Modulus...>(x);
 }
 

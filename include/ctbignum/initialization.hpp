@@ -4,6 +4,7 @@
 #include <boost/hana.hpp>
 #include <cstddef>
 #include <ctbignum/mult.hpp>
+#include <ctbignum/utility.hpp>
 
 namespace cbn {
 
@@ -12,17 +13,6 @@ constexpr auto limb_int(unsigned long v) {
   Array<T, N> r{};
   r[0] = v;
   return r;
-}
-
-template <size_t N, template <typename, size_t> class Array, typename T>
-constexpr auto tight_length(Array<T, N> num) {
-  // count the effective number of limbs
-  // (ignoring zero-limbs at the most-significant-limb side)
-  int L = N;
-  while (L > 0 && num[L - 1] == 0)
-    --L;
-
-  return L;
 }
 
 // modified from Louis Dionne's string-to-num example
@@ -59,7 +49,7 @@ constexpr auto string_to_big_int(String str) {
             //                          boost::hana::second(state)));
       }));
 
-  constexpr auto L = (ExplicitLength != 0) ? ExplicitLength : tight_length(num);
+  constexpr auto L = (ExplicitLength != 0) ? ExplicitLength : detail::tight_length(num);
   return detail::first<L>(num);
 }
 
@@ -69,16 +59,16 @@ constexpr std::size_t get_ith_limb(String s, const std::size_t i) {
   return string_to_big_int(s)[i];
 }
 
-template <typename String, std::size_t... Is>
+template <typename T, typename String, std::size_t... Is>
 constexpr auto string_to_index_seq_impl(String s, std::index_sequence<Is...>) {
-  return std::index_sequence<get_ith_limb(s, Is)...>{};
+  return std::integer_sequence<T,get_ith_limb(s, Is)...>{};
 }
 } // end of detail namespace
 
-template <typename String>
+template <typename T=uint64_t, typename String>
 constexpr auto string_to_index_seq(String s) {
   const size_t N = cbn::string_to_big_int(s).size();
-  return detail::string_to_index_seq_impl(s, std::make_index_sequence<N>{});
+  return detail::string_to_index_seq_impl<T>(s, std::make_index_sequence<N>{});
 }
 
 } // end of cbn namespace

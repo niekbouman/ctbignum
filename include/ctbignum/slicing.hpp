@@ -58,6 +58,20 @@ constexpr auto pad(Array<T, N1> t) {
   return take<0, N1, N>(t);
 }
 
+template <template <typename, size_t> class Array, typename T,
+          size_t N1, size_t N2>
+constexpr auto join(Array<T, N1> a, Array<T, N2> b) {
+  Array<T, N1+N2> result {};
+
+  for (auto i = 0; i<N1; ++i)
+    result[i] = a[i];
+
+  for (auto i = 0; i<N2; ++i)
+    result[N1+i] = b[i];
+  
+  return result;
+}
+
 template <size_t ResultLength, template <typename, size_t> class Array, typename T,
           size_t N1>
 constexpr auto limbwise_shift_left(Array<T, N1> t, const size_t k) {

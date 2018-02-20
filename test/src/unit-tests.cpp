@@ -14,7 +14,7 @@
 #include <ctbignum/barrett.hpp>
 #include <ctbignum/montgomery.hpp>
 #include <ctbignum/division.hpp>
-//#include <ctbignum/print.hpp>
+#include <ctbignum/print.hpp>
 
 #include<NTL/ZZ.h>
 #include<NTL/ZZ_p.h>
@@ -231,6 +231,63 @@ TEST_CASE("Division") {
   //static_assert(montgomery_reduction(T,modulus,mprime) == ans, "fail");
   //REQUIRE(montgomery_reduction(T,modulus,mprime) == ans);
 }
+
+TEST_CASE("short div") {
+
+  using namespace cbn;
+
+  constexpr auto a = string_to_big_int(BOOST_HANA_STRING("12103081107736073677280037"));
+  constexpr auto b = string_to_big_int(BOOST_HANA_STRING("2893462387"));
+      
+  constexpr auto ans = string_to_big_int(BOOST_HANA_STRING("4182905975247458"));
+                                                       //   418290597524622793977
+
+  constexpr auto quotrem = cbn::short_div(a,b[0]);
+
+  static_assert(quotrem.first[0] == 4182905975247458, "fail");
+  static_assert(quotrem.second[0] == 936917791, "fail");
+
+  REQUIRE(quotrem.first[0] == 4182905975247458);
+  REQUIRE(quotrem.second[0] ==936917791);
+
+}
+
+
+TEST_CASE("gcd") {
+
+  using namespace cbn;
+
+  static constexpr auto a = string_to_index_seq(BOOST_HANA_STRING("1210308110773251360736775280037"));
+  static constexpr auto b = string_to_index_seq(BOOST_HANA_STRING("91726531791233920914026205331"));
+      
+  constexpr auto ans = string_to_big_int(BOOST_HANA_STRING("1505621586711374587419632790"));
+  
+
+  constexpr auto gcd = cbn::ext_gcd(a,b,std::make_integer_sequence<uint64_t,2>{});
+  //constexpr auto gcd = cbn::ext_gcd(a,b);
+
+  //auto N = a.size();
+  constexpr auto N = 2;
+  constexpr auto modinv = detail::take<N,2*N>(gcd);
+  static_assert(modinv == ans, "fail");
+
+}
+
+
+/*
+TEST_CASE("modular inverse") {
+
+  using namespace cbn;
+
+  constexpr auto a = string_to_big_int(BOOST_HANA_STRING("1210308110773251360736775280037"));
+  auto m = string_to_index_seq(BOOST_HANA_STRING("91726531791233920914026205331"));
+      
+  constexpr auto ans = string_to_big_int(BOOST_HANA_STRING("1505621586711374587419632790"));
+
+  static_assert(cbn::mod_inv(a,m) == ans, "fail");
+
+}
+*/
 
 
 TEST_CASE("arrayconv") {
