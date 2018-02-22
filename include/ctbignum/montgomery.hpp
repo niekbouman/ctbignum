@@ -34,7 +34,7 @@ constexpr auto montgomery_reduction(Array<T, N1> A,
   constexpr auto m = Array<T, N2>{Modulus...};
   constexpr auto inv = mod_inv(integer_sequence<T, Modulus...>{},
                                integer_sequence<T, 0, 1>{}); // m^{-1} mod 2^64
-  constexpr uint64_t mprime = -inv[0];
+  constexpr T mprime = -inv[0];
 
   auto accum = pad<1>(A);
 
@@ -52,7 +52,8 @@ constexpr auto montgomery_reduction(Array<T, N1> A,
   return first<N2>(result);
 }
 
-template <template <typename, std::size_t> class Array, typename T,
+template <typename DT = __uint128_t,
+          template <typename, std::size_t> class Array, typename T,
           std::size_t N, T... Modulus>
 constexpr auto montgomery_mul(Array<T, N> x, Array<T, N> y,
                               std::integer_sequence<T, Modulus...>) {
@@ -66,27 +67,24 @@ constexpr auto montgomery_mul(Array<T, N> x, Array<T, N> y,
   constexpr auto m = Array<T, N>{Modulus...};
   auto inv = mod_inv(integer_sequence<T, Modulus...>{},
                      integer_sequence<T, 0, 1>{}); // m^{-1} mod 2^64
-  uint64_t mprime = -inv[0];
+  T mprime = -inv[0];
 
   Array<T, N + 1> A{};
   for (auto i = 0; i < N; ++i) {
-    uint64_t u_i = (A[0] + x[i] * y[0]) * mprime;
+    T u_i = (A[0] + x[i] * y[0]) * mprime;
 
     // A += x[i] * y + u_i * m
-    uint64_t k = 0;
-    uint64_t k2 = 0;
+    T k = 0;
+    T k2 = 0;
 
     for (auto j = 0; j < N; ++j) {
-      __uint128_t t =
-          static_cast<__uint128_t>(y[j]) * static_cast<__uint128_t>(x[i]) +
-          A[j] + k;
-      __uint128_t t2 =
-          static_cast<__uint128_t>(m[j]) * static_cast<__uint128_t>(u_i) +
-          static_cast<uint64_t>(t) + k2;
+      DT t = static_cast<DT>(y[j]) * static_cast<DT>(x[i]) + A[j] + k;
+      DT t2 =
+          static_cast<DT>(m[j]) * static_cast<DT>(u_i) + static_cast<T>(t) + k2;
 
       A[j] = t2;
-      k = t >> 64;
-      k2 = t2 >> 64;
+      k = t >> std::numeric_limits<T>::digits;
+      k2 = t2 >> std::numeric_limits<T>::digits;
     }
     A[N] += k + k2;
 
@@ -104,8 +102,7 @@ constexpr auto montgomery_mul(Array<T, N> x, Array<T, N> y,
 
 template <template <typename, std::size_t> class Array, typename T,
           std::size_t N1, std::size_t N2>
-constexpr auto montgomery_reduction(Array<T, N1> A, Array<T, N2> m,
-                                    uint64_t mprime) {
+constexpr auto montgomery_reduction(Array<T, N1> A, Array<T, N2> m, T mprime) {
   // Montgomery reduction with runtime parameters
   //
   // inputs:
@@ -140,10 +137,11 @@ constexpr auto montgomery_reduction(Array<T, N1> A, Array<T, N2> m,
   return first<N2>(result);
 }
 
-template <template <typename, std::size_t> class Array, typename T,
+template <typename DT = __uint128_t,
+          template <typename, std::size_t> class Array, typename T,
           std::size_t N>
 constexpr auto montgomery_mul(Array<T, N> x, Array<T, N> y, Array<T, N> m,
-                              uint64_t mprime) {
+                              T mprime) {
   // Montgomery multiplication with runtime parameters
 
   using detail::skip;
@@ -153,23 +151,20 @@ constexpr auto montgomery_mul(Array<T, N> x, Array<T, N> y, Array<T, N> m,
   Array<T, N + 1> A{};
 
   for (auto i = 0; i < N; ++i) {
-    uint64_t u_i = (A[0] + x[i] * y[0]) * mprime;
+    T u_i = (A[0] + x[i] * y[0]) * mprime;
 
     // A += x[i] * y + u_i * m
-    uint64_t k = 0;
-    uint64_t k2 = 0;
+    T k = 0;
+    T k2 = 0;
 
     for (auto j = 0; j < N; ++j) {
-      __uint128_t t =
-          static_cast<__uint128_t>(y[j]) * static_cast<__uint128_t>(x[i]) +
-          A[j] + k;
-      __uint128_t t2 =
-          static_cast<__uint128_t>(m[j]) * static_cast<__uint128_t>(u_i) +
-          static_cast<uint64_t>(t) + k2;
+      DT t = static_cast<DT>(y[j]) * static_cast<DT>(x[i]) + A[j] + k;
+      DT t2 =
+          static_cast<DT>(m[j]) * static_cast<DT>(u_i) + static_cast<T>(t) + k2;
 
       A[j] = t2;
-      k = t >> 64;
-      k2 = t2 >> 64;
+      k = t >> std::numeric_limits<T>::digits;
+      k2 = t2 >> std::numeric_limits<T>::digits;
     }
     A[N] += k + k2;
 

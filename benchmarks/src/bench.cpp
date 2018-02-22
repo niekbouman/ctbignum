@@ -163,6 +163,7 @@ static void modmul_ntl(benchmark::State &state) {
   }
 }
 
+/*
 static void reduce(benchmark::State &state) {
   using namespace cbn;
 
@@ -192,6 +193,7 @@ static void reduce(benchmark::State &state) {
     benchmark::DoNotOptimize(barrett_reduction<235, 0, 0, 256>(x));
   }
 }
+*/
 
 static void reduce_intseq(benchmark::State &state) {
   using namespace cbn;
@@ -507,7 +509,7 @@ static void montmul(benchmark::State &state) {
           BOOST_HANA_STRING("14474011154664524427946373126085988481658748083205"
                             "070504932198000989141205031"));
 
-  auto inv = 10405855631323336809UL;
+  auto inv = 10405855631323336809ULL;
   std::default_random_engine generator;
   std::uniform_int_distribution<uint64_t> distribution(0);
 
@@ -629,7 +631,7 @@ static void mont_reduction(benchmark::State &state) {
                             "070504932198000989141205031"));
 
 
-  auto inv = 10405855631323336809UL;
+  auto inv = 10405855631323336809ULL;
 
   std::default_random_engine generator;
   std::uniform_int_distribution<uint64_t> distribution(0);
@@ -772,7 +774,7 @@ BENCHMARK(mont_reduction);
 BENCHMARK(mont_reduction_auto);
 */
 
-BENCHMARK(reduce);
+//BENCHMARK(reduce);
 BENCHMARK(reduce_intseq);
 BENCHMARK(reduce_ntl);
 
