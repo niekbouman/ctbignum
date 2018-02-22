@@ -14,6 +14,7 @@
 #include <ctbignum/barrett.hpp>
 #include <ctbignum/montgomery.hpp>
 #include <ctbignum/division.hpp>
+#include <ctbignum/gcd.hpp>
 #include <ctbignum/print.hpp>
 
 #include<NTL/ZZ.h>
@@ -168,8 +169,10 @@ TEST_CASE("Barrett reduction") {
 
   //static_assert(barrett_reduction(x,prime,mu) == ans, "fail");
   //REQUIRE(barrett_reduction(x,prime,mu) == ans);
-  static_assert(barrett_reduction<235, 0, 0, 256>(x) == ans, "fail");
-  REQUIRE(barrett_reduction<235, 0, 0, 256>(x) == ans);
+  
+  auto mod = string_to_index_seq(BOOST_HANA_STRING("1606938044258990275541962092341162602522202993782792835301611"));
+  static_assert(barrett_reduction(x, mod) == ans, "fail");
+  REQUIRE(barrett_reduction(x, mod) == ans);
 
 }
 
@@ -183,6 +186,9 @@ TEST_CASE("Montgomery reduction") {
   static_assert(montgomery_reduction(T,modulus,mprime) == ans, "fail");
   REQUIRE(montgomery_reduction(T,modulus,mprime) == ans);
 }
+
+
+
 
 TEST_CASE("Montgomery mult") {
   using namespace cbn;
@@ -199,6 +205,25 @@ TEST_CASE("Montgomery mult") {
 
   //static_assert(montgomery_mul(x, y, modulus, mprime) == ans, "fail");
   REQUIRE(montgomery_mul(x,y,modulus,mprime) == ans);
+  
+
+  auto modulus_seq = string_to_index_seq(BOOST_HANA_STRING("1267650600228229401496703205653"));
+
+  static_assert(montgomery_mul(x,y,modulus_seq) == ans);
+  //static_assert(montgomery_mul2(x,y,modulus_seq) == ans);
+}
+
+
+
+TEST_CASE("Montgomery reduction - automatic precomputation") {
+  using namespace cbn;
+  
+  constexpr auto modulus = string_to_index_seq(BOOST_HANA_STRING("1267650600228229401496703205653"));
+  constexpr auto T = string_to_big_int<4>(BOOST_HANA_STRING("1532495540865888858358347027150309183618739122183602175"));
+  constexpr auto ans = string_to_big_int<2>(BOOST_HANA_STRING("730531796855002292035529737298"));
+
+  static_assert(montgomery_reduction(T,modulus) == ans, "fail");
+  //REQUIRE(montgomery_reduction(T,modulus,mprime) == ans);
 }
 
 
@@ -223,9 +248,9 @@ TEST_CASE("Division") {
 
 
 
-  constexpr auto ans = div(u,v);
+  constexpr auto ans = divtight(u,v);
 
-  static_assert(ans.first == quot, "fail");
+  static_assert(detail::first<3>(ans.first) == quot, "fail");
   static_assert(ans.second == rem, "fail");
 
   //static_assert(montgomery_reduction(T,modulus,mprime) == ans, "fail");
@@ -263,7 +288,9 @@ TEST_CASE("gcd") {
   constexpr auto ans = string_to_big_int(BOOST_HANA_STRING("1505621586711374587419632790"));
   
 
-  constexpr auto gcd = cbn::ext_gcd(a,b,std::make_integer_sequence<uint64_t,2>{});
+  constexpr auto gcd = cbn::ext_gcd(a,b); 
+  
+  //,std::make_integer_sequence<uint64_t,2>{});
   //constexpr auto gcd = cbn::ext_gcd(a,b);
 
   //auto N = a.size();
@@ -273,21 +300,44 @@ TEST_CASE("gcd") {
 
 }
 
-
 /*
+TEST_CASE("gcd easy") {
+
+  using namespace cbn;
+
+  static constexpr auto a = string_to_index_seq(BOOST_HANA_STRING("1210308110773251360736775280037"));
+  static constexpr auto b = string_to_index_seq(BOOST_HANA_STRING("91726531791233920914026205331"));
+      
+  constexpr auto ans = string_to_big_int(BOOST_HANA_STRING("1505621586711374587419632790"));
+  
+
+  constexpr auto gcd = cbn::ext_gcd_(a,b); 
+  
+  //,std::make_integer_sequence<uint64_t,2>{});
+  //constexpr auto gcd = cbn::ext_gcd(a,b);
+
+  //auto N = a.size();
+  constexpr auto N = 2;
+  constexpr auto modinv = detail::take<N,2*N>(gcd);
+  static_assert(modinv == ans, "fail");
+
+}
+*/
+
+
+
 TEST_CASE("modular inverse") {
 
   using namespace cbn;
 
-  constexpr auto a = string_to_big_int(BOOST_HANA_STRING("1210308110773251360736775280037"));
+  constexpr auto x = string_to_index_seq(BOOST_HANA_STRING("1210308110773251360736775280037"));
   auto m = string_to_index_seq(BOOST_HANA_STRING("91726531791233920914026205331"));
       
   constexpr auto ans = string_to_big_int(BOOST_HANA_STRING("1505621586711374587419632790"));
 
-  static_assert(cbn::mod_inv(a,m) == ans, "fail");
+  static_assert(cbn::mod_inv(x,m) == ans, "fail");
 
 }
-*/
 
 
 TEST_CASE("arrayconv") {
@@ -311,8 +361,8 @@ TEST_CASE("arrayconv") {
   static_assert(barrett_reduction(x,modulus) == ans, "fail");
   REQUIRE(barrett_reduction(x,modulus) == ans);
 
-  static_assert(barrett_reduction<235, 0, 0, 256>(x) == ans, "fail");
-  REQUIRE(barrett_reduction<235, 0, 0, 256>(x) == ans);
+  //static_assert(barrett_reduction<235, 0, 0, 256>(x) == ans, "fail");
+  //REQUIRE(barrett_reduction<235, 0, 0, 256>(x) == ans);
 
 }
 

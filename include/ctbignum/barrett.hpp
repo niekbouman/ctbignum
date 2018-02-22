@@ -11,16 +11,19 @@
 
 namespace cbn {
 
-template <typename T, T... Modulus> constexpr auto precompute_mu() {
-  auto modulus = sprout::make_array(Modulus...);
+template <template <typename, std::size_t> class Array, typename T,
+          T... Modulus>
+constexpr auto precompute_mu() {
+  Array<T, sizeof...(Modulus)> modulus = {Modulus...};
   const size_t twoN = 2 * sizeof...(Modulus);
   auto quot_rem = div(detail::unary_encoding<twoN, twoN + 1>(), modulus);
   return quot_rem.first;
 }
 
-template <uint64_t... Modulus, template <typename, std::size_t> class Array,
-          typename T, std::size_t N1>
-constexpr auto barrett_reduction(Array<T, N1> x) {
+template <template <typename, std::size_t> class Array, typename T,
+          std::size_t N1, T... Modulus>
+constexpr auto barrett_reduction(Array<T, N1> x,
+                                 std::integer_sequence<T, Modulus...>) {
 
   // Barrett reduction, modulus as a template parameter.
 
@@ -30,7 +33,7 @@ constexpr auto barrett_reduction(Array<T, N1> x) {
   using detail::pad;
 
   auto modulus = sprout::make_array(Modulus...);
-  auto mu = precompute_mu<uint64_t, Modulus...>();
+  auto mu = precompute_mu<Array, uint64_t, Modulus...>();
   const size_t N2 = sizeof...(Modulus);
 
   auto q2approx = mul(skip<N2 - 1>(x), skip<N2 - 1>(mu));
@@ -51,13 +54,6 @@ constexpr auto barrett_reduction(Array<T, N1> x) {
     r = mp_sub(r, padded_mod);
 
   return first<N2>(r);
-}
-
-template <template <typename, std::size_t> class Array, typename T,
-          std::size_t N1, T... Modulus>
-constexpr auto barrett_reduction(Array<T, N1> x,
-                                 std::integer_sequence<T, Modulus...>) {
-  return barrett_reduction<Modulus...>(x);
 }
 
 template <template <typename, std::size_t> class Array, typename T,

@@ -5,6 +5,7 @@
 #include <sprout/array.hpp>
 
 #include <ctbignum/all.hpp>
+//#include <ctbignum/bigint.hpp>
 
 template <size_t N> using big_int = sprout::array<uint64_t, N>;
 
@@ -46,6 +47,7 @@ static void modadd_ntl(benchmark::State &state) {
   }
 }
 
+
 static void modmul(benchmark::State &state) {
   constexpr auto prime = cbn::string_to_index_seq(BOOST_HANA_STRING(
       "1606938044258990275541962092341162602522202993782792835301611"));
@@ -70,6 +72,52 @@ static void modmul(benchmark::State &state) {
     benchmark::DoNotOptimize(k);
   }
 }
+
+class MyFixture : public ::benchmark::Fixture {
+public:
+  void SetUp(const ::benchmark::State &state) {
+
+    std::default_random_engine generator;
+    std::uniform_int_distribution<uint64_t> distribution(0);
+
+    data.reserve(8 * 1000);
+
+    for (auto limb : data)
+      limb = distribution(generator);
+  }
+
+  void TearDown(const ::benchmark::State &state) { data.clear(); }
+
+  ~MyFixture() {}
+
+  std::vector<uint64_t> data;
+};
+
+/*
+BENCHMARK_F(MyFixture, fixture_mul)(benchmark::State &st) {
+
+  constexpr auto prime = cbn::string_to_index_seq(BOOST_HANA_STRING(
+      "1606938044258990275541962092341162602522202993782792835301611"));
+
+  size_t i = 0;
+  auto base_ptr = data.data();
+
+  for (auto _ : st) {
+
+    auto x = reinterpret_cast<big_int<4>*>(base_ptr + i);
+    auto y = reinterpret_cast<big_int<4>*>(base_ptr + i + 4);
+
+    auto j = cbn::mul(*x, *y);
+    auto k = cbn::barrett_reduction(j, prime);
+    benchmark::DoNotOptimize(k);
+
+    i += 8;
+    if (i == 8000)
+      i = 0;
+  }
+}
+*/
+
 static void modmul2(benchmark::State &state) {
   constexpr auto prime = cbn::string_to_big_int<4>(BOOST_HANA_STRING(
       "1606938044258990275541962092341162602522202993782792835301611"));
@@ -478,6 +526,55 @@ static void montmul(benchmark::State &state) {
 }
 
 
+static void montmul_auto(benchmark::State &state) {
+
+  auto prime = cbn::string_to_index_seq(
+          BOOST_HANA_STRING("14474011154664524427946373126085988481658748083205"
+                            "070504932198000989141205031"));
+
+  std::default_random_engine generator;
+  std::uniform_int_distribution<uint64_t> distribution(0);
+
+
+  big_int<4> x;
+  big_int<4> y;
+  for (int i = 0; i < 4; ++i) {
+    x[i] = distribution(generator);
+    y[i] = distribution(generator);
+  }
+
+  for (auto _ : state) {
+    auto z = cbn::montgomery_mul(x, y, prime);
+    benchmark::DoNotOptimize(z);
+  }
+}
+
+/*
+static void montmul_auto2(benchmark::State &state) {
+
+  auto prime = cbn::string_to_index_seq(
+          BOOST_HANA_STRING("14474011154664524427946373126085988481658748083205"
+                            "070504932198000989141205031"));
+
+  std::default_random_engine generator;
+  std::uniform_int_distribution<uint64_t> distribution(0);
+
+
+  big_int<4> x;
+  big_int<4> y;
+  for (int i = 0; i < 4; ++i) {
+    x[i] = distribution(generator);
+    y[i] = distribution(generator);
+  }
+
+  for (auto _ : state) {
+    auto z = cbn::montgomery_mul2(x, y, prime);
+    benchmark::DoNotOptimize(z);
+  }
+}
+*/
+
+
 
 
 //#include "modulus.hpp"
@@ -548,9 +645,85 @@ static void mont_reduction(benchmark::State &state) {
   }
 }
 
+/*
+static void mont_reduction2(benchmark::State &state) {
+
+
+  auto prime = cbn::string_to_index_seq(
+          BOOST_HANA_STRING("14474011154664524427946373126085988481658748083205"
+                            "070504932198000989141205031"));
+
+
+  auto inv = 10405855631323336809UL;
+
+  std::default_random_engine generator;
+  std::uniform_int_distribution<uint64_t> distribution(0);
+
+  big_int<8> x;
+  for (int i = 0; i < 8; ++i) 
+    x[i] = distribution(generator);
+
+
+  for (auto _ : state) {
+    auto z = cbn::montgomery_reduction2(x, prime);
+    benchmark::DoNotOptimize(z);
+  }
+}
+*/
+
+static void mont_reduction_auto(benchmark::State &state) {
+
+
+  auto prime = cbn::string_to_index_seq(
+          BOOST_HANA_STRING("14474011154664524427946373126085988481658748083205"
+                            "070504932198000989141205031"));
+
+
+  std::default_random_engine generator;
+  std::uniform_int_distribution<uint64_t> distribution(0);
+
+  big_int<8> x;
+  for (int i = 0; i < 8; ++i) 
+    x[i] = distribution(generator);
+
+
+  for (auto _ : state) {
+    auto z = cbn::montgomery_reduction(x, prime);
+    benchmark::DoNotOptimize(z);
+  }
+}
+
+/*
+static void mont_reduction_auto2(benchmark::State &state) {
+
+
+  auto prime = cbn::string_to_index_seq(
+          BOOST_HANA_STRING("14474011154664524427946373126085988481658748083205"
+                            "070504932198000989141205031"));
+
+
+  std::default_random_engine generator;
+  std::uniform_int_distribution<uint64_t> distribution(0);
+
+  big_int<8> x;
+  for (int i = 0; i < 8; ++i) 
+    x[i] = distribution(generator);
+
+
+  for (auto _ : state) {
+    auto z = cbn::montgomery_reduction2(x, prime);
+    benchmark::DoNotOptimize(z);
+  }
+}
+*/
+
+
 
 // BENCHMARK(creation);
 // BENCHMARK(creation_ntl);
+
+/*
+ 
 BENCHMARK(modadd);
 BENCHMARK(modadd_ntl);
 BENCHMARK(modadd_immediate);
@@ -571,13 +744,36 @@ BENCHMARK(modmul);
 BENCHMARK(modmul2);
 BENCHMARK(modmul_ntl);
 
+
 BENCHMARK(montmul);
+BENCHMARK(montmul_auto);
+//BENCHMARK(montmul_auto2);
 BENCHMARK(montmul_libff);
+//BENCHMARK(mont_reduction_auto2);
+BENCHMARK(big_int_from_string);
+BENCHMARK(big_int_from_string_ntl);
+
+BENCHMARK(modmul);
+BENCHMARK(modmul2);
+BENCHMARK(modmul_ntl);
+
+//BENCHMARK(montmul);
+BENCHMARK(montmul_auto);
+//BENCHMARK(montmul_auto2);
+BENCHMARK(montmul_libff);
+
+
+BENCHMARK(montmul);
+BENCHMARK(montmul_auto);
+BENCHMARK(montmul_libff);
+
 BENCHMARK(mont_reduction);
+//BENCHMARK(mont_reduction2);
+BENCHMARK(mont_reduction_auto);
+*/
+
 BENCHMARK(reduce);
 BENCHMARK(reduce_intseq);
 BENCHMARK(reduce_ntl);
-BENCHMARK(big_int_from_string);
-BENCHMARK(big_int_from_string_ntl);
 
 BENCHMARK_MAIN();

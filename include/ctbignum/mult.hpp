@@ -8,15 +8,31 @@
 
 namespace cbn {
 
+template <template <typename, std::size_t> class Array, typename T,
+          std::size_t N>
+constexpr auto short_mul(Array<T, N> a, T b) {
+
+  Array<T, N + 1> p{};
+  uint64_t k = 0;
+  for (auto j = 0; j < N; ++j) {
+    __uint128_t t =
+        static_cast<__uint128_t>(a[j]) * static_cast<__uint128_t>(b) + k;
+    p[j] = t;
+    k = t >> 64;
+  }
+  p[N] = k;
+  return p;
+}
+
 template <size_t padding_limbs = 0, template <typename, size_t> class Array,
           size_t M, size_t N>
 constexpr auto mul(Array<uint64_t, M> u, Array<uint64_t, N> v) {
   Array<uint64_t, M + N + padding_limbs> w{};
 
   for (auto j = 0; j < N; ++j) {
-    if (v[j] == 0)
-      w[j + M] = static_cast<uint64_t>(0);
-    else {
+    //if (v[j] == 0)
+    //  w[j + M] = static_cast<uint64_t>(0);
+    //else {
       uint64_t k = 0;
       for (auto i = 0; i < M; ++i) {
         __uint128_t t =
@@ -26,7 +42,7 @@ constexpr auto mul(Array<uint64_t, M> u, Array<uint64_t, N> v) {
         k = t >> 64;
       }
       w[j + M] = k;
-    }
+    //}
   }
   return w;
 }
