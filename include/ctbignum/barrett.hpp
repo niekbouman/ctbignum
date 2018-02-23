@@ -11,6 +11,7 @@
 
 namespace cbn {
 
+namespace detail {
 template <template <typename, std::size_t> class Array, typename T,
           T... Modulus>
 constexpr auto precompute_mu() {
@@ -19,6 +20,7 @@ constexpr auto precompute_mu() {
   auto quot_rem = div(detail::unary_encoding<twoN, twoN + 1>(), modulus);
   return quot_rem.first;
 }
+} // end namespace detail
 
 template <template <typename, std::size_t> class Array, typename T,
           std::size_t N1, T... Modulus>
@@ -32,9 +34,9 @@ constexpr auto barrett_reduction(Array<T, N1> x,
   using detail::unary_encoding;
   using detail::pad;
 
-  auto mu = precompute_mu<Array, T, Modulus...>();
+  auto mu = detail::precompute_mu<Array, T, Modulus...>();
   const std::size_t N2 = sizeof...(Modulus);
-  Array<T, N2> modulus = { Modulus... };
+  Array<T, N2> modulus = {Modulus...};
 
   auto q2approx = mul(skip<N2 - 1>(x), skip<N2 - 1>(mu));
   auto q3 = skip<2>(q2approx);
