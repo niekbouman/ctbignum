@@ -1,21 +1,18 @@
 #ifndef CT_GCD_HPP
 #define CT_GCD_HPP
 
-#include <array>
 #include <cstddef>
 #include <ctbignum/addition.hpp>
+#include <ctbignum/bigint.hpp>
 #include <ctbignum/division.hpp>
 #include <ctbignum/mult.hpp>
 #include <ctbignum/slicing.hpp>
 #include <ctbignum/utility.hpp>
-#include <ctbignum/bigint.hpp>
 
 namespace cbn {
 namespace detail {
 
-//template <typename, size_t> class Array, 
-template <typename T, T... A, T... B,
-          T... Is, size_t N = sizeof...(Is)>
+template <typename T, T... A, T... B, T... Is, size_t N = sizeof...(Is)>
 constexpr auto ext_gcd_impl(std::integer_sequence<T, A...>,
                             std::integer_sequence<T, B...>,
                             std::integer_sequence<T, Is...>) {
@@ -26,27 +23,20 @@ constexpr auto ext_gcd_impl(std::integer_sequence<T, A...>,
   using detail::skip;
   using detail::join;
 
-constexpr auto a = big_int<N ,T>{A...};
-constexpr auto b = big_int<N, T>{B...};
-constexpr auto dummy = big_int<N, T>{};
-
-  //constexpr auto a = Array<T, N>{A...};
-  //constexpr auto b = Array<T, N>{B...};
-  //constexpr auto dummy = Array<T, N>{};
+  constexpr auto a = big_int<N, T>{A...};
+  constexpr auto b = big_int<N, T>{B...};
+  constexpr auto dummy = big_int<N, T>{};
 
   constexpr bool a_equals_zero =
       std::is_same<std::integer_sequence<T, A...>,
                    std::integer_sequence<T, dummy[Is]...>>::value;
   if
-    //constexpr(a_equals_zero) return join(b,
-    //                                     join(Array<T, N>{0}, Array<T, N>{1}));
-    constexpr(a_equals_zero) return join(b,
-                                         join(big_int<N, T>{0}, big_int<N, T>{1}));
-
+    constexpr(a_equals_zero) return join(
+        b, join(big_int<N, T>{0}, big_int<N, T>{1}));
 
   else {
     constexpr auto L = detail::tight_length(std::integer_sequence<T, A...>{});
-    constexpr auto qr = meta_div<L>(b, a);
+    constexpr auto qr = div<L>(b, a);
     constexpr auto rem = qr.second;
     constexpr auto arg1 = pad<N - rem.size()>(rem);
 
@@ -65,34 +55,21 @@ constexpr auto dummy = big_int<N, T>{};
 }
 }
 
-/*
-template <template <typename, size_t> class Array, typename T, std::size_t N>
-struct extract_array
-{
-  extract_array (Array<T, N> k) {}
-  //template <template <typename, size_t> 
-
-  using type = Array;
-};*/
-//template <typename, size_t> class Array = std::array, 
-template <typename T,
-          T... A, T... B, T... Is>
+template <typename T, T... A, T... B, T... Is>
 constexpr auto ext_gcd(std::integer_sequence<T, A...>,
                        std::integer_sequence<T, B...>) {
   constexpr size_t N = std::max(sizeof...(A), sizeof...(B));
   return detail::ext_gcd_impl(std::integer_sequence<T, A...>{},
-                                     std::integer_sequence<T, B...>{},
-                                     std::make_integer_sequence<T, N>{});
+                              std::integer_sequence<T, B...>{},
+                              std::make_integer_sequence<T, N>{});
 }
 
-//template <typename, size_t> class Array = std::array, 
-template <typename T,
-          T... X, T... Modulus>
+template <typename T, T... X, T... Modulus>
 constexpr auto mod_inv(std::integer_sequence<T, X...>,
                        std::integer_sequence<T, Modulus...>) {
 
-  constexpr auto triple = ext_gcd(
-      std::integer_sequence<T, X...>{}, std::integer_sequence<T, Modulus...>{});
+  constexpr auto triple = ext_gcd(std::integer_sequence<T, X...>{},
+                                  std::integer_sequence<T, Modulus...>{});
   constexpr auto N = std::max(sizeof...(X), sizeof...(Modulus));
 
   if (triple[0] != 1) {

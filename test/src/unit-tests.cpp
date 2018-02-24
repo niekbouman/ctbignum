@@ -258,7 +258,7 @@ TEST_CASE("Division") {
 
 
 
-  constexpr auto ans = divtight(u,v);
+  constexpr auto ans = div(u,v);
 
   static_assert(detail::first<3>(ans.first) == quot, "fail");
   static_assert(ans.second == rem, "fail");

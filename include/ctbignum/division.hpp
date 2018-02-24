@@ -23,12 +23,11 @@ constexpr auto short_div(Array<uint64_t, M> u, uint64_t v) {
   return std::make_pair(q, Array<uint64_t, 1>{static_cast<uint64_t>(r)});
 }
 
-//
-
+namespace detail {
 
 // this uses GCC and Clang's __uint128_t data type
 template <template <typename, size_t> class Array, size_t NN, size_t NplusM>
-constexpr auto divtight(Array<uint64_t, NplusM> u, Array<uint64_t, NN> v) {
+constexpr auto knuth_div(Array<uint64_t, NplusM> u, Array<uint64_t, NN> v) {
   // Knuth's "Algorithm D" for multiprecision division as described in TAOCP
   // Volume 2: Seminumerical Algorithms
   //
@@ -37,8 +36,8 @@ constexpr auto divtight(Array<uint64_t, NplusM> u, Array<uint64_t, NN> v) {
   // v  big_int<N>
   //
   // computes:
-  // quotient = floor[ u/v ]    
-  // rem = u % v                
+  // quotient = floor[ u/v ]
+  // rem = u % v
   //
   // returns:
   // std::pair<big_int<M+1>, big_int<N>>(quotient, rem)
@@ -47,65 +46,80 @@ constexpr auto divtight(Array<uint64_t, NplusM> u, Array<uint64_t, NN> v) {
   while (N > 0 && v[N - 1] == 0)
     --N;
 
+  // static_assert(N>1,  "divisor too short: use short division");
+  size_t M = NplusM - N;
 
-  
-  //static_assert(N>1,  "divisor too short: use short division");
-    size_t M = NplusM - N;
+  uint8_t k = 0;
+  while (v[N - 1] < (static_cast<uint64_t>(1) << 63)) {
+    ++k;
+    v = detail::first<NN>(shift_left(v, 1));
+    // v = detail::first<N>(shift_left(v, 1));
+  }
 
-    uint8_t k = 0;
-    while (v[N - 1] < (static_cast<uint64_t>(1) << 63)) {
-      ++k;
-      v = detail::first<NN>(shift_left(v, 1));
-      //v = detail::first<N>(shift_left(v, 1));
+  auto us = shift_left(u, k);
+  Array<uint64_t, NplusM> q{};
+
+  for (int j = M; j >= 0; --j) {
+
+    __uint128_t tmp = us[j + N - 1];
+    __uint128_t tmp2 = us[j + N];
+    tmp += (tmp2 << 64);
+
+    __uint128_t qhat = tmp / v[N - 1];
+    __uint128_t rhat = tmp % v[N - 1];
+
+    auto b = static_cast<__uint128_t>(1) << 64;
+    while (qhat == b || (qhat * v[N - 2] > (rhat << 64) + us[j + N - 2])) {
+      qhat -= 1;
+      rhat += v[N - 1];
+      if (rhat >= b)
+        break;
     }
 
-    auto us = shift_left(u, k);
-    Array<uint64_t, NplusM> q{};
+    auto true_value = mp_sub_carry_out(
+        detail::take<NN + 1>(us, j, j + N + 1),
+        mul(v, Array<uint64_t, 1>{static_cast<uint64_t>(qhat)}));
 
-    for (int j = M; j >= 0; --j) {
-
-      __uint128_t tmp = us[j + N - 1];
-      __uint128_t tmp2 = us[j + N];
-      tmp += (tmp2 << 64);
-
-      __uint128_t qhat = tmp / v[N - 1];
-      __uint128_t rhat = tmp % v[N - 1];
-
-      auto b = static_cast<__uint128_t>(1) << 64;
-      while (qhat == b || (qhat * v[N - 2] > (rhat << 64) + us[j + N - 2])) {
-        qhat -= 1;
-        rhat += v[N - 1];
-        if (rhat >= b)
-          break;
-      }
-
-      auto true_value = mp_sub_carry_out(
-          detail::take<NN + 1>(us, j, j + N + 1),
-          mul(v, Array<uint64_t, 1>{static_cast<uint64_t>(qhat)}));
-
-      if (true_value[N]) {
-        auto corrected = mp_add_ignore_last_carry(
-            true_value, detail::unary_encoding<NN + 2>(N+1));
-            //true_value, detail::unary_encoding<N + 1, NN + 2>());
-        auto new_us_part =
-            mp_add_ignore_last_carry(corrected, detail::pad<2>(v));
-        for (auto i = 0; i <= N; ++i)
-          us[j + i] = new_us_part[i];
-        --qhat;
-      } else {
-        for (auto i = 0; i <= N; ++i)
-          us[j + i] = true_value[i];
-      }
-      q[j] = qhat;
+    if (true_value[N]) {
+      auto corrected = mp_add_ignore_last_carry(
+          true_value, detail::unary_encoding<NN + 2>(N + 1));
+      // true_value, detail::unary_encoding<N + 1, NN + 2>());
+      auto new_us_part = mp_add_ignore_last_carry(corrected, detail::pad<2>(v));
+      for (auto i = 0; i <= N; ++i)
+        us[j + i] = new_us_part[i];
+      --qhat;
+    } else {
+      for (auto i = 0; i <= N; ++i)
+        us[j + i] = true_value[i];
     }
+    q[j] = qhat;
+  }
 
-    return std::make_pair(q, shift_right(detail::first<NN>(us), k));
+  return std::make_pair(q, shift_right(detail::first<NN>(us), k));
+}
 }
 
+template <size_t L = 0, template <typename, size_t> class Array, size_t N,
+          size_t NplusM>
+constexpr auto div(Array<uint64_t, NplusM> u, Array<uint64_t, N> v) {
+
+  if
+    constexpr(L == 0) // L is left unspecified, hence we assume that v is
+                      // tightly represented (no zero limbs at msb side)
+    {
+      return div<N>(u, v);
+    }
+  else if
+    constexpr(L == 1) { return short_div(u, v[0]); }
+  else {
+    return detail::knuth_div(u, v);
+  }
+}
+}
+#endif
 
 
-
-
+/*
 
 
 // this uses GCC and Clang's __uint128_t data type
@@ -191,8 +205,5 @@ constexpr auto meta_div(Array<uint64_t, NplusM> u, Array<uint64_t, N> v) {
   }
 }
 
-
-}
-#endif
-
+*/
 
