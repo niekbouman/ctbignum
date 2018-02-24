@@ -32,8 +32,9 @@ constexpr auto montgomery_reduction(Array<T, N1> A,
   using std::integer_sequence;
 
   constexpr auto m = Array<T, N2>{Modulus...};
-  constexpr auto inv = mod_inv(integer_sequence<T, Modulus...>{},
-                               integer_sequence<T, 0, 1>{}); // m^{-1} mod 2^64
+  constexpr auto inv =
+      mod_inv(integer_sequence<T, Modulus...>{},
+                     integer_sequence<T, 0, 1>{}); // m^{-1} mod 2^64
   constexpr T mprime = -inv[0];
 
   auto accum = pad<1>(A);
@@ -65,9 +66,10 @@ constexpr auto montgomery_mul(Array<T, N> x, Array<T, N> y,
   using std::integer_sequence;
 
   constexpr auto m = Array<T, N>{Modulus...};
-  auto inv = mod_inv(integer_sequence<T, Modulus...>{},
+  constexpr auto inv =
+      mod_inv(integer_sequence<T, Modulus...>{},
                      integer_sequence<T, 0, 1>{}); // m^{-1} mod 2^64
-  T mprime = -inv[0];
+  constexpr T mprime = -inv[0];
 
   Array<T, N + 1> A{};
   for (auto i = 0; i < N; ++i) {

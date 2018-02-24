@@ -1,23 +1,29 @@
 #ifndef CT_STRINGINIT_HPP
 #define CT_STRINGINIT_HPP
 
+#include <array>
 #include <boost/hana.hpp>
 #include <cstddef>
 #include <ctbignum/mult.hpp>
 #include <ctbignum/utility.hpp>
+#include <ctbignum/bigint.hpp>
 
 namespace cbn {
 
-template <int N, template <typename, size_t> class Array, typename T>
+namespace detail {
+//template <typename, size_t> class Array, 
+template <int N, typename T>
 constexpr auto limb_int(unsigned long v) {
-  Array<T, N> r{};
+  //Array<T, N> r{};
+  big_int<N, T> r{};
   r[0] = v;
   return r;
 }
+} // end of detail namespace
 
 // modified from Louis Dionne's string-to-num example
 template <size_t ExplicitLength = 0 /* optional */,
-          template <typename, size_t> class Array = sprout::array,
+          //template <typename, size_t> class Array = std::array,
           typename T = uint64_t, typename String>
 constexpr auto string_to_big_int(String str) {
   // Convert a BOOST_HANA_STRING to a big num with automatic deduction of the
@@ -26,6 +32,7 @@ constexpr auto string_to_big_int(String str) {
   // Automatic length deduction can be overridden by specifying the number of
   // limbs explicitly by passing it as (the only) template parameter
 
+  using detail::limb_int;
   constexpr int len = decltype(boost::hana::length(str))::value;
   constexpr size_t N =
       (ExplicitLength != 0) ? ExplicitLength : 1 + (10 * len) / 192;
@@ -33,15 +40,15 @@ constexpr auto string_to_big_int(String str) {
   // log(10)/log(2^64) < 10/192
 
   constexpr auto num = boost::hana::first(boost::hana::fold_right(
-      str, boost::hana::make_pair(limb_int<N, Array, T>(0),
-                                  limb_int<N, Array, T>(1)),
+      str, boost::hana::make_pair(limb_int<N, T>(0),
+                                  limb_int<N, T>(1)),
       [](auto c, auto state) {
         constexpr int i =
             boost::hana::value(c) - 48; // convert character to decimal
         return boost::hana::make_pair(
             mp_add_ignore_last_carry(
-                boost::hana::first(state), partial_mul<N>( limb_int<1, Array, T>(i) , boost::hana::second(state) )),
-            partial_mul<N>(limb_int<1, Array, T>(10),boost::hana::second(state)));
+                boost::hana::first(state), partial_mul<N>( limb_int<1, T>(i) , boost::hana::second(state) )),
+            partial_mul<N>(limb_int<1, T>(10),boost::hana::second(state)));
 
            //     mul<-static_cast<int>(N)>(limb_int<N, Array, T>(i),
            //                               boost::hana::second(state))),
@@ -65,7 +72,7 @@ constexpr auto string_to_index_seq_impl(String s, std::index_sequence<Is...>) {
 }
 } // end of detail namespace
 
-template <typename T=uint64_t, typename String>
+template <typename T = uint64_t, typename String>
 constexpr auto string_to_index_seq(String s) {
   const size_t N = cbn::string_to_big_int(s).size();
   return detail::string_to_index_seq_impl<T>(s, std::make_index_sequence<N>{});

@@ -5,6 +5,6 @@
 
 namespace cbn {
 
-template <size_t N> using big_int = sprout::array<uint64_t, N>;
+template <size_t N, typename T = uint64_t> using big_int = sprout::array<T, N>;
 }
 #endif

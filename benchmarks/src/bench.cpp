@@ -5,11 +5,12 @@
 #include <sprout/array.hpp>
 
 #include <ctbignum/all.hpp>
-//#include <ctbignum/bigint.hpp>
+#include <ctbignum/bigint.hpp>
 
-template <size_t N> using big_int = sprout::array<uint64_t, N>;
+//template <size_t N> using big_int = sprout::array<uint64_t, N>;
 
 static void modadd(benchmark::State &state) {
+  using namespace cbn;
   constexpr auto prime = cbn::string_to_big_int<4>(BOOST_HANA_STRING(
       "1606938044258990275541962092341162602522202993782792835301611"));
 
@@ -49,6 +50,7 @@ static void modadd_ntl(benchmark::State &state) {
 
 
 static void modmul(benchmark::State &state) {
+  using namespace cbn;
   constexpr auto prime = cbn::string_to_index_seq(BOOST_HANA_STRING(
       "1606938044258990275541962092341162602522202993782792835301611"));
   //constexpr auto mu = cbn::string_to_big_int<5>(
@@ -119,6 +121,7 @@ BENCHMARK_F(MyFixture, fixture_mul)(benchmark::State &st) {
 */
 
 static void modmul2(benchmark::State &state) {
+  using namespace cbn;
   constexpr auto prime = cbn::string_to_big_int<4>(BOOST_HANA_STRING(
       "1606938044258990275541962092341162602522202993782792835301611"));
   constexpr auto mu = cbn::string_to_big_int<5>(
@@ -430,6 +433,7 @@ static void mul_immediate_ntl(benchmark::State &state) {
 
 static void mul_(benchmark::State &state) {
 
+  using namespace cbn;
   std::default_random_engine generator;
   std::uniform_int_distribution<uint64_t> distribution(0);
 
@@ -443,6 +447,55 @@ static void mul_(benchmark::State &state) {
   for (auto _ : state) {
     auto k = cbn::mul(x, y);
     benchmark::DoNotOptimize(k);
+  }
+}
+
+static void mul_nc(benchmark::State &state) {
+
+  using namespace cbn;
+  std::default_random_engine generator;
+  std::uniform_int_distribution<uint64_t> distribution(0);
+
+  big_int<4> x;
+  big_int<4> y;
+  for (int i = 0; i < 4; ++i) {
+    x[i] = distribution(generator);
+    y[i] = distribution(generator);
+  }
+
+  for (auto _ : state) {
+    auto k = cbn::mulnc(x, y);
+    benchmark::DoNotOptimize(k);
+  }
+}
+
+
+static void mul_baseline(benchmark::State &state) {
+
+  using namespace cbn;
+  std::default_random_engine generator;
+  std::uniform_int_distribution<uint64_t> distribution(0);
+
+  big_int<4> x;
+  big_int<4> y;
+  for (int i = 0; i < 4; ++i) {
+    x[i] = distribution(generator);
+    y[i] = distribution(generator);
+  }
+
+  big_int<8> z;
+
+  auto zptr = z.data();
+  auto xptr = x.data();
+  auto yptr = y.data();
+
+  auto xsz = x.size();
+  auto ysz = y.size();
+
+  for (auto _ : state) {
+    //auto k = 
+    cbn::mul(zptr, xptr, xsz, yptr, ysz);
+    benchmark::DoNotOptimize(z);
   }
 }
 
@@ -469,6 +522,7 @@ static void knuthmul_(benchmark::State &state) {
 
 static void mul2_(benchmark::State &state) {
 
+  using namespace cbn;
   std::default_random_engine generator;
   std::uniform_int_distribution<uint64_t> distribution(0);
 
@@ -505,6 +559,7 @@ static void mul_ntl(benchmark::State &state) {
 
 static void montmul(benchmark::State &state) {
 
+  using namespace cbn;
   auto prime = cbn::string_to_big_int(
           BOOST_HANA_STRING("14474011154664524427946373126085988481658748083205"
                             "070504932198000989141205031"));
@@ -530,6 +585,7 @@ static void montmul(benchmark::State &state) {
 
 static void montmul_auto(benchmark::State &state) {
 
+  using namespace cbn;
   auto prime = cbn::string_to_index_seq(
           BOOST_HANA_STRING("14474011154664524427946373126085988481658748083205"
                             "070504932198000989141205031"));
@@ -625,6 +681,7 @@ static void montmul_libff(benchmark::State &state) {
 
 static void mont_reduction(benchmark::State &state) {
 
+  using namespace cbn;
 
   auto prime = cbn::string_to_big_int(
           BOOST_HANA_STRING("14474011154664524427946373126085988481658748083205"
@@ -675,6 +732,7 @@ static void mont_reduction2(benchmark::State &state) {
 
 static void mont_reduction_auto(benchmark::State &state) {
 
+  using namespace cbn;
 
   auto prime = cbn::string_to_index_seq(
           BOOST_HANA_STRING("14474011154664524427946373126085988481658748083205"
@@ -775,7 +833,10 @@ BENCHMARK(mont_reduction_auto);
 */
 
 //BENCHMARK(reduce);
-BENCHMARK(reduce_intseq);
-BENCHMARK(reduce_ntl);
+//BENCHMARK(reduce_intseq);
+//BENCHMARK(reduce_ntl);
+BENCHMARK(mul_);
+BENCHMARK(mul_nc);
+BENCHMARK(mul_baseline);
 
 BENCHMARK_MAIN();

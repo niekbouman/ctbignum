@@ -1,17 +1,11 @@
-#ifndef CT_DIV_HPP
-#define CT_DIV_HPP
+#ifndef CT_DIVISION_HPP
+#define CT_DIVISION_HPP
 
 #include <cstddef>
 #include <ctbignum/addition.hpp>
 #include <ctbignum/bitshift.hpp>
 #include <ctbignum/slicing.hpp>
 #include <ctbignum/utility.hpp>
-#include <ctbignum/barrett.hpp>
-#include <ctbignum/print.hpp>
-#include <tuple>
-
-//#include <experimental/array>
-//#include <sprout/array.hpp>
 
 namespace cbn {
 
@@ -91,7 +85,7 @@ constexpr auto divtight(Array<uint64_t, NplusM> u, Array<uint64_t, NN> v) {
 
       if (true_value[N]) {
         auto corrected = mp_add_ignore_last_carry(
-            true_value, detail::unary_encoding<NN + 2,Array>(N+1));
+            true_value, detail::unary_encoding<NN + 2>(N+1));
             //true_value, detail::unary_encoding<N + 1, NN + 2>());
         auto new_us_part =
             mp_add_ignore_last_carry(corrected, detail::pad<2>(v));
@@ -187,10 +181,14 @@ template <size_t L, template <typename, size_t> class Array, size_t N,
 constexpr auto meta_div(Array<uint64_t, NplusM> u, Array<uint64_t, N> v) {
 
   if constexpr (L == 1) 
+  {
     return short_div(u, v[0]);
+  }
   else
+  {
     //return div(u, v);
     return divtight(u, v);
+  }
 }
 
 

@@ -1,6 +1,10 @@
 #include "catch.hpp"
 
 #include <boost/hana.hpp>
+
+#include <boost/hana/ext/std/array.hpp>
+#include <array>
+
 #include <boost/hana/string.hpp>
 
 #include <sprout/array.hpp>
@@ -16,12 +20,15 @@
 #include <ctbignum/division.hpp>
 #include <ctbignum/gcd.hpp>
 #include <ctbignum/print.hpp>
+#include <ctbignum/bigint.hpp>
+#include <ctbignum/relational_ops.hpp>
 
 #include<NTL/ZZ.h>
 #include<NTL/ZZ_p.h>
 
 
-template <size_t N> using big_int = sprout::array<uint64_t, N>;
+//template <size_t N> using big_int = sprout::array<uint64_t, N>;
+//template <size_t N> using big_int = std::array<uint64_t, N>;
 using namespace std;
 
 
@@ -36,15 +43,17 @@ TEST_CASE("Addition") {
   constexpr big_int<2> correct_answer = {
       {18446744073709551435UL, 4611686018427387903UL}};
 
-  constexpr auto result_ugly_syntax =
-      mod_add_<sprout::array, uint64_t, 2UL, 181UL, 13835058055282163712UL>(a,b);
+  //constexpr auto result_ugly_syntax =
+  //    mod_add_<sprout::array, uint64_t, 2UL, 181UL, 13835058055282163712UL>(a,b);
 
   constexpr auto result_friendly_syntax = mod_add(a, b, p);
 
-  REQUIRE(result_ugly_syntax == correct_answer);
+  //REQUIRE(result_ugly_syntax == correct_answer);
   REQUIRE(result_friendly_syntax == correct_answer);
-  static_assert(result_ugly_syntax == correct_answer, "fail");
+  //static_assert(result_ugly_syntax == correct_answer, "fail");
+
   static_assert(result_friendly_syntax == correct_answer, "fail");
+  //static_assert(result_friendly_syntax == correct_answer, "fail");
 
   Zq<181UL, 13835058055282163712UL> F{};
   constexpr auto result = F.add(a, b);
@@ -167,10 +176,11 @@ TEST_CASE("Barrett reduction") {
   constexpr auto ans = string_to_big_int<4>(
       BOOST_HANA_STRING("1606938044258990275541962092341162602522202993782540505973038"));
 
-  //static_assert(barrett_reduction(x,prime,mu) == ans, "fail");
-  //REQUIRE(barrett_reduction(x,prime,mu) == ans);
+  static_assert(barrett_reduction(x,prime,mu) == ans, "fail");
+  REQUIRE(barrett_reduction(x,prime,mu) == ans);
   
   auto mod = string_to_index_seq(BOOST_HANA_STRING("1606938044258990275541962092341162602522202993782792835301611"));
+
   static_assert(barrett_reduction(x, mod) == ans, "fail");
   REQUIRE(barrett_reduction(x, mod) == ans);
 
@@ -203,7 +213,7 @@ TEST_CASE("Montgomery mult") {
   constexpr auto ans = montgomery_reduction(mul(x,y),modulus,mprime);
 
 
-  //static_assert(montgomery_mul(x, y, modulus, mprime) == ans, "fail");
+  static_assert(montgomery_mul(x, y, modulus, mprime) == ans, "fail");
   REQUIRE(montgomery_mul(x,y,modulus,mprime) == ans);
   
 
@@ -222,7 +232,7 @@ TEST_CASE("Montgomery reduction - automatic precomputation") {
   constexpr auto T = string_to_big_int<4>(BOOST_HANA_STRING("1532495540865888858358347027150309183618739122183602175"));
   constexpr auto ans = string_to_big_int<2>(BOOST_HANA_STRING("730531796855002292035529737298"));
 
-  static_assert(montgomery_reduction(T,modulus) == ans, "fail");
+     static_assert(montgomery_reduction(T,modulus) == ans, "fail");
   //REQUIRE(montgomery_reduction(T,modulus,mprime) == ans);
 }
 
@@ -358,7 +368,7 @@ TEST_CASE("arrayconv") {
   
   auto modulus = string_to_index_seq(BOOST_HANA_STRING("1606938044258990275541962092341162602522202993782792835301611"));
 
-  static_assert(barrett_reduction(x,modulus) == ans, "fail");
+ // static_assert(barrett_reduction(x,modulus) == ans, "fail");
   REQUIRE(barrett_reduction(x,modulus) == ans);
 
   //static_assert(barrett_reduction<235, 0, 0, 256>(x) == ans, "fail");
