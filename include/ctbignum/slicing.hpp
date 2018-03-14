@@ -77,39 +77,28 @@ constexpr auto limbwise_shift_left(big_int< N1, T> t, const size_t k) {
   return take<ResultLength>(t, 0, N1, k);
 }
 
-
-template <size_t K, size_t N,
-          //template <typename, size_t> class Array = std::array,
-          typename T = uint64_t>
+template <size_t K, size_t N, typename T = uint64_t>
 constexpr auto unary_encoding() {
   // N limbs, Kth limb set to one
-  //big_int<N, T> res{};
   big_int<N, T> res{};
   res[K] = 1;
   return res;
 }
 
-template <size_t N,
-          //template <typename, size_t> class Array = std::array,
-          typename T = uint64_t>
+template <size_t N, typename T = uint64_t>
 constexpr auto unary_encoding(size_t K) {
-  //big_int<N, T> res{};
   big_int<N, T> res{};
   res[K] = 1;
   return res;
 }
 
-template <size_t N,
-          //template <typename, size_t> class Array = std::array,
-          typename T = uint64_t>
+template <size_t N, typename T = uint64_t>
 constexpr auto place_at(uint64_t value, size_t K) {
   // N limbs, Kth limb set to value
-  //big_int<N, T> res{};
   big_int<N, T> res{};
   res[K] = value;
   return res;
 }
-
 }
 }
 #endif

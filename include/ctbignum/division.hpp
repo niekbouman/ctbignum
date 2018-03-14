@@ -6,29 +6,31 @@
 #include <ctbignum/bigint.hpp>
 #include <ctbignum/bitshift.hpp>
 #include <ctbignum/slicing.hpp>
+#include <ctbignum/type_traits.hpp>
 #include <ctbignum/utility.hpp>
+#include <limits>
 
 namespace cbn {
 
-template <size_t M>
-constexpr auto short_div(big_int<M, uint64_t> u, uint64_t v) {
+template <size_t M, typename T> constexpr auto short_div(big_int<M, T> u, T v) {
 
-  __uint128_t r = 0;
-  big_int<M, uint64_t> q{};
+  using TT = typename dbl_bitlen<T>::type;
+  TT r{0};
+  big_int<M, T> q{};
 
   for (int i = M - 1; i >= 0; --i) {
-    __uint128_t w = (r << 64) + u[i];
+    TT w = (r << std::numeric_limits<T>::digits) + u[i];
     q[i] = w / v;
     r = w % v;
   }
-  return std::make_pair(q, big_int<1, uint64_t>{{static_cast<uint64_t>(r)}});
+  return std::make_pair(q, big_int<1, T>{{static_cast<T>(r)}});
 }
 
 namespace detail {
 
 // this uses GCC and Clang's __uint128_t data type
-template <size_t NN, size_t NplusM>
-constexpr auto knuth_div(big_int<NplusM, uint64_t> u, big_int<NN, uint64_t> v) {
+template <size_t NN, size_t NplusM, typename T>
+constexpr auto knuth_div(big_int<NplusM, T> u, big_int<NN, T> v) {
   // Knuth's "Algorithm D" for multiprecision division as described in TAOCP
   // Volume 2: Seminumerical Algorithms
   //
@@ -43,6 +45,7 @@ constexpr auto knuth_div(big_int<NplusM, uint64_t> u, big_int<NN, uint64_t> v) {
   // returns:
   // std::pair<big_int<M+1>, big_int<N>>(quotient, rem)
 
+  using TT = typename dbl_bitlen<T>::type;
   size_t N = NN;
   while (N > 0 && v[N - 1] == 0)
     --N;
@@ -51,26 +54,26 @@ constexpr auto knuth_div(big_int<NplusM, uint64_t> u, big_int<NN, uint64_t> v) {
   size_t M = NplusM - N;
 
   uint8_t k = 0;
-  while (v[N - 1] < (static_cast<uint64_t>(1) << 63)) {
+  while (v[N - 1] < (static_cast<T>(1) << (std::numeric_limits<T>::digits - 1))) {
     ++k;
     v = detail::first<NN>(shift_left(v, 1));
     // v = detail::first<N>(shift_left(v, 1));
   }
 
   auto us = shift_left(u, k);
-  big_int<NplusM, uint64_t> q{};
+  big_int<NplusM, T> q{};
 
   for (int j = M; j >= 0; --j) {
 
-    __uint128_t tmp = us[j + N - 1];
-    __uint128_t tmp2 = us[j + N];
+    TT tmp = us[j + N - 1];
+    TT tmp2 = us[j + N];
     tmp += (tmp2 << 64);
 
-    __uint128_t qhat = tmp / v[N - 1];
-    __uint128_t rhat = tmp % v[N - 1];
+    TT qhat = tmp / v[N - 1];
+    TT rhat = tmp % v[N - 1];
 
-    auto b = static_cast<__uint128_t>(1) << 64;
-    while (qhat == b || (qhat * v[N - 2] > (rhat << 64) + us[j + N - 2])) {
+    auto b = static_cast<TT>(1) << std::numeric_limits<T>::digits;
+    while (qhat == b || (qhat * v[N - 2] > (rhat << std::numeric_limits<T>::digits) + us[j + N - 2])) {
       qhat -= 1;
       rhat += v[N - 1];
       if (rhat >= b)
@@ -79,7 +82,7 @@ constexpr auto knuth_div(big_int<NplusM, uint64_t> u, big_int<NN, uint64_t> v) {
 
     auto true_value = mp_sub_carry_out(
         detail::take<NN + 1>(us, j, j + N + 1),
-        mul(v, big_int<1, uint64_t>{{static_cast<uint64_t>(qhat)}}));
+        mul(v, big_int<1, T>{{static_cast<T>(qhat)}}));
 
     if (true_value[N]) {
       auto corrected = mp_add_ignore_last_carry(
@@ -100,8 +103,8 @@ constexpr auto knuth_div(big_int<NplusM, uint64_t> u, big_int<NN, uint64_t> v) {
 }
 }
 
-template <size_t L = 0, size_t N, size_t NplusM>
-constexpr auto div(big_int<NplusM, uint64_t> u, big_int<N, uint64_t> v) {
+template <size_t L = 0, size_t N, size_t NplusM, typename T>
+constexpr auto div(big_int<NplusM, T> u, big_int<N, T> v) {
 
   if
     constexpr(L == 0) // L is left unspecified, hence we assume that v is

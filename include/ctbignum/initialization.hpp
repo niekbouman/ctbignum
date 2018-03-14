@@ -1,7 +1,6 @@
 #ifndef CT_STRINGINIT_HPP
 #define CT_STRINGINIT_HPP
 
-#include <array>
 #include <boost/hana.hpp>
 #include <cstddef>
 #include <ctbignum/mult.hpp>
@@ -21,7 +20,6 @@ constexpr auto limb_int(unsigned long v) {
 
 // modified from Louis Dionne's string-to-num example
 template <size_t ExplicitLength = 0 /* optional */,
-          //template <typename, size_t> class Array = std::array,
           typename T = uint64_t, typename String>
 constexpr auto string_to_big_int(String str) {
   // Convert a BOOST_HANA_STRING to a big num with automatic deduction of the
@@ -38,20 +36,16 @@ constexpr auto string_to_big_int(String str) {
   // log(10)/log(2^64) < 10/192
 
   constexpr auto num = boost::hana::first(boost::hana::fold_right(
-      str, boost::hana::make_pair(limb_int<N, T>(0),
-                                  limb_int<N, T>(1)),
+      str, boost::hana::make_pair(limb_int<N, T>(0), limb_int<N, T>(1)),
       [](auto c, auto state) {
-        constexpr int i =
-            boost::hana::value(c) - 48; // convert character to decimal
+        constexpr int i = boost::hana::value(c) - 48;
+        // convert character to decimal
+
         return boost::hana::make_pair(
             mp_add_ignore_last_carry(
-                boost::hana::first(state), partial_mul<N>( limb_int<1, T>(i) , boost::hana::second(state) )),
-            partial_mul<N>(limb_int<1, T>(10),boost::hana::second(state)));
-
-           //     mul<-static_cast<int>(N)>(limb_int<N, Array, T>(i),
-           //                               boost::hana::second(state))),
-           // mul<-static_cast<int>(N)>(limb_int<N, Array, T>(10),
-            //                          boost::hana::second(state)));
+                boost::hana::first(state),
+                partial_mul<N>(limb_int<1, T>(i), boost::hana::second(state))),
+            partial_mul<N>(limb_int<1, T>(10), boost::hana::second(state)));
       }));
 
   constexpr auto L = (ExplicitLength != 0) ? ExplicitLength : detail::tight_length(num);
@@ -71,7 +65,7 @@ constexpr auto string_to_index_seq_impl(String s, std::index_sequence<Is...>) {
 } // end of detail namespace
 
 template <typename T = uint64_t, typename String>
-constexpr auto string_to_index_seq(String s) {
+constexpr auto string_to_integer_seq(String s) {
   const size_t N = cbn::string_to_big_int(s).size();
   return detail::string_to_index_seq_impl<T>(s, std::make_index_sequence<N>{});
 }

@@ -7,12 +7,14 @@
 #include <ctbignum/mult.hpp>
 #include <ctbignum/relational_ops.hpp>
 #include <ctbignum/slicing.hpp>
+#include <ctbignum/type_traits.hpp>
+#include <limits>
 
 namespace cbn {
 
-template <typename T,
-          std::size_t N1, T... Modulus, std::size_t N2 = sizeof...(Modulus)>
-constexpr auto montgomery_reduction(big_int< N1, T> A,
+template <typename T, std::size_t N1, T... Modulus,
+          std::size_t N2 = sizeof...(Modulus)>
+constexpr auto montgomery_reduction(big_int<N1, T> A,
                                     std::integer_sequence<T, Modulus...>) {
   // Montgomery reduction with compile-time modulus
   //
@@ -31,10 +33,9 @@ constexpr auto montgomery_reduction(big_int< N1, T> A,
   using detail::limbwise_shift_left;
   using std::integer_sequence;
 
-  constexpr auto m = big_int< N2, T>{Modulus...};
-  constexpr auto inv =
-      mod_inv(integer_sequence<T, Modulus...>{},
-                     integer_sequence<T, 0, 1>{}); // m^{-1} mod 2^64
+  constexpr auto m = big_int<N2, T>{Modulus...};
+  constexpr auto inv = mod_inv(integer_sequence<T, Modulus...>{},
+                               integer_sequence<T, 0, 1>{}); // m^{-1} mod 2^64
   constexpr T mprime = -inv[0];
 
   auto accum = pad<1>(A);
@@ -53,9 +54,7 @@ constexpr auto montgomery_reduction(big_int< N1, T> A,
   return first<N2>(result);
 }
 
-template <typename DT = __uint128_t,
-          typename T,
-          std::size_t N, T... Modulus>
+template <typename T, std::size_t N, T... Modulus>
 constexpr auto montgomery_mul(big_int<N, T> x, big_int<N, T> y,
                               std::integer_sequence<T, Modulus...>) {
   // Montgomery multiplication with compile-time modulus
@@ -65,13 +64,14 @@ constexpr auto montgomery_mul(big_int<N, T> x, big_int<N, T> y,
   using detail::pad;
   using std::integer_sequence;
 
+  using TT = typename dbl_bitlen<T>::type;
+
   constexpr auto m = big_int<N, T>{Modulus...};
-  constexpr auto inv =
-      mod_inv(integer_sequence<T, Modulus...>{},
-                     integer_sequence<T, 0, 1>{}); // m^{-1} mod 2^64
+  constexpr auto inv = mod_inv(integer_sequence<T, Modulus...>{},
+                               integer_sequence<T, 0, 1>{}); // m^{-1} mod 2^64
   constexpr T mprime = -inv[0];
 
-  big_int< N + 1, T> A{};
+  big_int<N + 1, T> A{};
   for (auto i = 0; i < N; ++i) {
     T u_i = (A[0] + x[i] * y[0]) * mprime;
 
@@ -80,9 +80,9 @@ constexpr auto montgomery_mul(big_int<N, T> x, big_int<N, T> y,
     T k2 = 0;
 
     for (auto j = 0; j < N; ++j) {
-      DT t = static_cast<DT>(y[j]) * static_cast<DT>(x[i]) + A[j] + k;
-      DT t2 =
-          static_cast<DT>(m[j]) * static_cast<DT>(u_i) + static_cast<T>(t) + k2;
+      TT t = static_cast<TT>(y[j]) * static_cast<TT>(x[i]) + A[j] + k;
+      TT t2 =
+          static_cast<TT>(m[j]) * static_cast<TT>(u_i) + static_cast<T>(t) + k2;
 
       A[j] = t2;
       k = t >> std::numeric_limits<T>::digits;
@@ -102,9 +102,9 @@ constexpr auto montgomery_mul(big_int<N, T> x, big_int<N, T> y,
 
 // Runtime-parameter variants
 
-template <typename T,
-          std::size_t N1, std::size_t N2>
-constexpr auto montgomery_reduction(big_int< N1, T> A, big_int< N2, T> m, T mprime) {
+template <typename T, std::size_t N1, std::size_t N2>
+constexpr auto montgomery_reduction(big_int<N1, T> A, big_int<N2, T> m,
+                                    T mprime) {
   // Montgomery reduction with runtime parameters
   //
   // inputs:
@@ -139,9 +139,7 @@ constexpr auto montgomery_reduction(big_int< N1, T> A, big_int< N2, T> m, T mpri
   return first<N2>(result);
 }
 
-template <typename DT = __uint128_t,
-          typename T,
-          std::size_t N>
+template <typename T, std::size_t N>
 constexpr auto montgomery_mul(big_int<N, T> x, big_int<N, T> y, big_int<N, T> m,
                               T mprime) {
   // Montgomery multiplication with runtime parameters
@@ -150,7 +148,8 @@ constexpr auto montgomery_mul(big_int<N, T> x, big_int<N, T> y, big_int<N, T> m,
   using detail::first;
   using detail::pad;
 
-  big_int< N + 1, T> A{};
+  using TT = typename dbl_bitlen<T>::type;
+  big_int<N + 1, T> A{};
 
   for (auto i = 0; i < N; ++i) {
     T u_i = (A[0] + x[i] * y[0]) * mprime;
@@ -160,9 +159,9 @@ constexpr auto montgomery_mul(big_int<N, T> x, big_int<N, T> y, big_int<N, T> m,
     T k2 = 0;
 
     for (auto j = 0; j < N; ++j) {
-      DT t = static_cast<DT>(y[j]) * static_cast<DT>(x[i]) + A[j] + k;
-      DT t2 =
-          static_cast<DT>(m[j]) * static_cast<DT>(u_i) + static_cast<T>(t) + k2;
+      TT t = static_cast<TT>(y[j]) * static_cast<TT>(x[i]) + A[j] + k;
+      TT t2 =
+          static_cast<TT>(m[j]) * static_cast<TT>(u_i) + static_cast<T>(t) + k2;
 
       A[j] = t2;
       k = t >> std::numeric_limits<T>::digits;

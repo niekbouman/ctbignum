@@ -52,7 +52,7 @@ static void modadd_ntl(benchmark::State &state) {
 
 static void modmul(benchmark::State &state) {
   using namespace cbn;
-  constexpr auto prime = cbn::string_to_index_seq(BOOST_HANA_STRING(
+  constexpr auto prime = cbn::string_to_integer_seq(BOOST_HANA_STRING(
       "1606938044258990275541962092341162602522202993782792835301611"));
   //constexpr auto mu = cbn::string_to_big_int<5>(
   //    BOOST_HANA_STRING("834369935906605500935555353972481294766681454045567488"
@@ -99,7 +99,7 @@ public:
 /*
 BENCHMARK_F(MyFixture, fixture_mul)(benchmark::State &st) {
 
-  constexpr auto prime = cbn::string_to_index_seq(BOOST_HANA_STRING(
+  constexpr auto prime = cbn::string_to_integer_seq(BOOST_HANA_STRING(
       "1606938044258990275541962092341162602522202993782792835301611"));
 
   size_t i = 0;
@@ -218,7 +218,7 @@ static void reduce_intseq(benchmark::State &state) {
   }
 
   for (auto _ : state) {
-    auto modulus = string_to_index_seq(BOOST_HANA_STRING("1606938044258990275541962092341162602522202993782792835301611"));
+    auto modulus = string_to_integer_seq(BOOST_HANA_STRING("1606938044258990275541962092341162602522202993782792835301611"));
     benchmark::DoNotOptimize(barrett_reduction(x,modulus));
   }
 }
@@ -588,7 +588,7 @@ static void montmul(benchmark::State &state) {
 static void montmul_auto(benchmark::State &state) {
 
   using namespace cbn;
-  auto prime = cbn::string_to_index_seq(
+  auto prime = cbn::string_to_integer_seq(
           BOOST_HANA_STRING("14474011154664524427946373126085988481658748083205"
                             "070504932198000989141205031"));
 
@@ -612,7 +612,7 @@ static void montmul_auto(benchmark::State &state) {
 /*
 static void montmul_auto2(benchmark::State &state) {
 
-  auto prime = cbn::string_to_index_seq(
+  auto prime = cbn::string_to_integer_seq(
           BOOST_HANA_STRING("14474011154664524427946373126085988481658748083205"
                             "070504932198000989141205031"));
 
@@ -710,7 +710,7 @@ static void mont_reduction(benchmark::State &state) {
 static void mont_reduction2(benchmark::State &state) {
 
 
-  auto prime = cbn::string_to_index_seq(
+  auto prime = cbn::string_to_integer_seq(
           BOOST_HANA_STRING("14474011154664524427946373126085988481658748083205"
                             "070504932198000989141205031"));
 
@@ -736,7 +736,7 @@ static void mont_reduction_auto(benchmark::State &state) {
 
   using namespace cbn;
 
-  auto prime = cbn::string_to_index_seq(
+  auto prime = cbn::string_to_integer_seq(
           BOOST_HANA_STRING("14474011154664524427946373126085988481658748083205"
                             "070504932198000989141205031"));
 
@@ -759,7 +759,7 @@ static void mont_reduction_auto(benchmark::State &state) {
 static void mont_reduction_auto2(benchmark::State &state) {
 
 
-  auto prime = cbn::string_to_index_seq(
+  auto prime = cbn::string_to_integer_seq(
           BOOST_HANA_STRING("14474011154664524427946373126085988481658748083205"
                             "070504932198000989141205031"));
 

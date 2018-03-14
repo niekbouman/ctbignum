@@ -3,42 +3,44 @@
 
 #include <cstddef>
 #include <ctbignum/addition.hpp>
+#include <ctbignum/bigint.hpp>
 #include <ctbignum/relational_ops.hpp>
 #include <ctbignum/slicing.hpp>
-#include <ctbignum/bigint.hpp>
+#include <ctbignum/type_traits.hpp>
+#include <limits>
 
 namespace cbn {
 
 template <typename T, std::size_t N>
 constexpr auto short_mul(big_int<N, T> a, T b) {
 
+  using TT = typename dbl_bitlen<T>::type;
   big_int<N + 1, T> p{};
-  uint64_t k = 0;
+  T k = 0;
   for (auto j = 0; j < N; ++j) {
-    __uint128_t t =
-        static_cast<__uint128_t>(a[j]) * static_cast<__uint128_t>(b) + k;
+    TT t = static_cast<TT>(a[j]) * static_cast<TT>(b) + k;
     p[j] = t;
-    k = t >> 64;
+    k = t >> std::numeric_limits<T>::digits;
   }
   p[N] = k;
   return p;
 }
 
-template <size_t padding_limbs = 0, size_t M, size_t N>
-constexpr auto mul(big_int<M, uint64_t> u, big_int<N, uint64_t> v) {
-  big_int<M + N + padding_limbs, uint64_t> w{};
+template <size_t padding_limbs = 0, size_t M, size_t N, typename T>
+constexpr auto mul(big_int<M, T> u, big_int<N, T> v) {
 
+  using TT = typename dbl_bitlen<T>::type;
+  big_int<M + N + padding_limbs, T> w{};
   for (auto j = 0; j < N; ++j) {
     // if (v[j] == 0)
     //  w[j + M] = static_cast<uint64_t>(0);
     // else {
-    uint64_t k = 0;
+    T k = 0;
     for (auto i = 0; i < M; ++i) {
       __uint128_t t =
-          static_cast<__uint128_t>(u[i]) * static_cast<__uint128_t>(v[j]) +
-          w[i + j] + k;
-      w[i + j] = static_cast<uint64_t>(t);
-      k = t >> 64;
+          static_cast<TT>(u[i]) * static_cast<TT>(v[j]) + w[i + j] + k;
+      w[i + j] = static_cast<T>(t);
+      k = t >> std::numeric_limits<T>::digits;
     }
     w[j + M] = k;
     //}
@@ -46,27 +48,26 @@ constexpr auto mul(big_int<M, uint64_t> u, big_int<N, uint64_t> v) {
   return w;
 }
 
-template <size_t ResultLength, size_t M, size_t N>
-constexpr auto partial_mul(big_int<M, uint64_t> u, big_int<N, uint64_t> v) {
-  big_int<ResultLength, uint64_t> w{};
+template <size_t ResultLength, size_t M, size_t N, typename T>
+constexpr auto partial_mul(big_int<M, T> u, big_int<N, T> v) {
 
+  using TT = typename dbl_bitlen<T>::type;
+  big_int<ResultLength, T> w{};
   for (auto j = 0; j < N; ++j) {
-    if (v[j] == 0) {
-      if (j + M < ResultLength)
-        w[j + M] = static_cast<uint64_t>(0);
-    } else {
-      uint64_t k = 0;
-      const auto m = std::min(M, ResultLength - j);
-      for (auto i = 0; i < m; ++i) {
-        __uint128_t t =
-            static_cast<__uint128_t>(u[i]) * static_cast<__uint128_t>(v[j]) +
-            w[i + j] + k;
-        w[i + j] = static_cast<uint64_t>(t);
-        k = t >> 64;
-      }
-      if (j + M < ResultLength)
-        w[j + M] = k;
+    // if (v[j] == 0) {
+    //  if (j + M < ResultLength)
+    //    w[j + M] = static_cast<T>(0);
+    //} else {
+    T k = 0;
+    const auto m = std::min(M, ResultLength - j);
+    for (auto i = 0; i < m; ++i) {
+      TT t = static_cast<TT>(u[i]) * static_cast<TT>(v[j]) + w[i + j] + k;
+      w[i + j] = static_cast<T>(t);
+      k = t >> std::numeric_limits<T>::digits;
     }
+    if (j + M < ResultLength)
+      w[j + M] = k;
+    //}
   }
   return w;
 }
