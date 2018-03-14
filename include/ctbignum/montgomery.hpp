@@ -10,9 +10,9 @@
 
 namespace cbn {
 
-template <template <typename, std::size_t> class Array, typename T,
+template <typename T,
           std::size_t N1, T... Modulus, std::size_t N2 = sizeof...(Modulus)>
-constexpr auto montgomery_reduction(Array<T, N1> A,
+constexpr auto montgomery_reduction(big_int< N1, T> A,
                                     std::integer_sequence<T, Modulus...>) {
   // Montgomery reduction with compile-time modulus
   //
@@ -31,7 +31,7 @@ constexpr auto montgomery_reduction(Array<T, N1> A,
   using detail::limbwise_shift_left;
   using std::integer_sequence;
 
-  constexpr auto m = Array<T, N2>{Modulus...};
+  constexpr auto m = big_int< N2, T>{Modulus...};
   constexpr auto inv =
       mod_inv(integer_sequence<T, Modulus...>{},
                      integer_sequence<T, 0, 1>{}); // m^{-1} mod 2^64
@@ -54,9 +54,9 @@ constexpr auto montgomery_reduction(Array<T, N1> A,
 }
 
 template <typename DT = __uint128_t,
-          template <typename, std::size_t> class Array, typename T,
+          typename T,
           std::size_t N, T... Modulus>
-constexpr auto montgomery_mul(Array<T, N> x, Array<T, N> y,
+constexpr auto montgomery_mul(big_int<N, T> x, big_int<N, T> y,
                               std::integer_sequence<T, Modulus...>) {
   // Montgomery multiplication with compile-time modulus
 
@@ -65,13 +65,13 @@ constexpr auto montgomery_mul(Array<T, N> x, Array<T, N> y,
   using detail::pad;
   using std::integer_sequence;
 
-  constexpr auto m = Array<T, N>{Modulus...};
+  constexpr auto m = big_int<N, T>{Modulus...};
   constexpr auto inv =
       mod_inv(integer_sequence<T, Modulus...>{},
                      integer_sequence<T, 0, 1>{}); // m^{-1} mod 2^64
   constexpr T mprime = -inv[0];
 
-  Array<T, N + 1> A{};
+  big_int< N + 1, T> A{};
   for (auto i = 0; i < N; ++i) {
     T u_i = (A[0] + x[i] * y[0]) * mprime;
 
@@ -102,9 +102,9 @@ constexpr auto montgomery_mul(Array<T, N> x, Array<T, N> y,
 
 // Runtime-parameter variants
 
-template <template <typename, std::size_t> class Array, typename T,
+template <typename T,
           std::size_t N1, std::size_t N2>
-constexpr auto montgomery_reduction(Array<T, N1> A, Array<T, N2> m, T mprime) {
+constexpr auto montgomery_reduction(big_int< N1, T> A, big_int< N2, T> m, T mprime) {
   // Montgomery reduction with runtime parameters
   //
   // inputs:
@@ -140,9 +140,9 @@ constexpr auto montgomery_reduction(Array<T, N1> A, Array<T, N2> m, T mprime) {
 }
 
 template <typename DT = __uint128_t,
-          template <typename, std::size_t> class Array, typename T,
+          typename T,
           std::size_t N>
-constexpr auto montgomery_mul(Array<T, N> x, Array<T, N> y, Array<T, N> m,
+constexpr auto montgomery_mul(big_int<N, T> x, big_int<N, T> y, big_int<N, T> m,
                               T mprime) {
   // Montgomery multiplication with runtime parameters
 
@@ -150,7 +150,7 @@ constexpr auto montgomery_mul(Array<T, N> x, Array<T, N> y, Array<T, N> m,
   using detail::first;
   using detail::pad;
 
-  Array<T, N + 1> A{};
+  big_int< N + 1, T> A{};
 
   for (auto i = 0; i < N; ++i) {
     T u_i = (A[0] + x[i] * y[0]) * mprime;

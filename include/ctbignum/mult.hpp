@@ -1,18 +1,18 @@
 #ifndef CT_MULT_HPP
 #define CT_MULT_HPP
 
-#include <ctbignum/relational_ops.hpp>
-#include <ctbignum/addition.hpp>
-#include <ctbignum/slicing.hpp>
 #include <cstddef>
+#include <ctbignum/addition.hpp>
+#include <ctbignum/relational_ops.hpp>
+#include <ctbignum/slicing.hpp>
+#include <ctbignum/bigint.hpp>
 
 namespace cbn {
 
-template <template <typename, std::size_t> class Array, typename T,
-          std::size_t N>
-constexpr auto short_mul(Array<T, N> a, T b) {
+template <typename T, std::size_t N>
+constexpr auto short_mul(big_int<N, T> a, T b) {
 
-  Array<T, N + 1> p{};
+  big_int<N + 1, T> p{};
   uint64_t k = 0;
   for (auto j = 0; j < N; ++j) {
     __uint128_t t =
@@ -24,33 +24,31 @@ constexpr auto short_mul(Array<T, N> a, T b) {
   return p;
 }
 
-template <size_t padding_limbs = 0, template <typename, size_t> class Array,
-          size_t M, size_t N>
-constexpr auto mul(Array<uint64_t, M> u, Array<uint64_t, N> v) {
-  Array<uint64_t, M + N + padding_limbs> w{};
+template <size_t padding_limbs = 0, size_t M, size_t N>
+constexpr auto mul(big_int<M, uint64_t> u, big_int<N, uint64_t> v) {
+  big_int<M + N + padding_limbs, uint64_t> w{};
 
   for (auto j = 0; j < N; ++j) {
-    //if (v[j] == 0)
+    // if (v[j] == 0)
     //  w[j + M] = static_cast<uint64_t>(0);
-    //else {
-      uint64_t k = 0;
-      for (auto i = 0; i < M; ++i) {
-        __uint128_t t =
-            static_cast<__uint128_t>(u[i]) * static_cast<__uint128_t>(v[j]) +
-            w[i + j] + k;
-        w[i + j] = static_cast<uint64_t>(t);
-        k = t >> 64;
-      }
-      w[j + M] = k;
+    // else {
+    uint64_t k = 0;
+    for (auto i = 0; i < M; ++i) {
+      __uint128_t t =
+          static_cast<__uint128_t>(u[i]) * static_cast<__uint128_t>(v[j]) +
+          w[i + j] + k;
+      w[i + j] = static_cast<uint64_t>(t);
+      k = t >> 64;
+    }
+    w[j + M] = k;
     //}
   }
   return w;
 }
 
-template <size_t ResultLength, template <typename, size_t> class Array,
-          size_t M, size_t N>
-constexpr auto partial_mul(Array<uint64_t, M> u, Array<uint64_t, N> v) {
-  Array<uint64_t, ResultLength> w{};
+template <size_t ResultLength, size_t M, size_t N>
+constexpr auto partial_mul(big_int<M, uint64_t> u, big_int<N, uint64_t> v) {
+  big_int<ResultLength, uint64_t> w{};
 
   for (auto j = 0; j < N; ++j) {
     if (v[j] == 0) {
@@ -100,24 +98,24 @@ constexpr auto mul128(uint64_t a, uint64_t b) {
 }
 
 // multiplication function on different input lengths that uses mul128 function
-// this function is approximately two times slower than the mul function that uses __uint128
-template <int padding_limbs = 0, template <typename, size_t> class Array, size_t N1, size_t N2>
-constexpr auto mul2(Array<uint64_t, N1> a, Array<uint64_t, N2> b) {
-  Array<uint64_t, N1 + N2 + padding_limbs> accum{};
+// this function is approximately two times slower than the mul function that
+// uses __uint128
+template <int padding_limbs = 0, size_t N1, size_t N2>
+constexpr auto mul2(big_int<N1, uint64_t> a, big_int<N2, uint64_t> b) {
+  big_int<N1 + N2 + padding_limbs, uint64_t> accum{};
   for (auto j = 0; j < N2; ++j) {
-    Array<uint64_t, N1 + N2> tmp{};
+    big_int<N1 + N2, uint64_t> tmp{};
     uint64_t high = 0;
     for (auto i = 0; i < N1; ++i) {
-      Array<uint64_t, 2> prod{{a[i] * b[j], mul128(a[i], b[j])}};
-      auto sum = accumulate(prod, Array<uint64_t, 2>{{high, 0}});
+      big_int<2, uint64_t> prod{{a[i] * b[j], mul128(a[i], b[j])}};
+      auto sum = accumulate(prod, big_int<2, uint64_t>{{high, 0}});
       tmp[j + i] = sum[0];
       high = sum[1];
     }
-    // should we here also write the remaining high word to the proper location? 
+    // should we here also write the remaining high word to the proper location?
     accum = accumulate(accum, tmp);
   }
   return accum;
 }
-
 }
 #endif

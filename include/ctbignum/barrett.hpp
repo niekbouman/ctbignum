@@ -4,6 +4,7 @@
 #include <cstddef> // std::size_t
 
 #include <ctbignum/addition.hpp>
+#include <ctbignum/bigint.hpp>
 #include <ctbignum/division.hpp>
 #include <ctbignum/mult.hpp>
 #include <ctbignum/relational_ops.hpp>
@@ -12,19 +13,16 @@
 namespace cbn {
 
 namespace detail {
-template <template <typename, std::size_t> class Array, typename T,
-          T... Modulus>
-constexpr auto precompute_mu() {
-  Array<T, sizeof...(Modulus)> modulus = {Modulus...};
+template <typename T, T... Modulus> constexpr auto precompute_mu() {
+  big_int<sizeof...(Modulus), T> modulus = {Modulus...};
   const std::size_t twoN = 2 * sizeof...(Modulus);
   auto quot_rem = div(detail::unary_encoding<twoN, twoN + 1>(), modulus);
   return quot_rem.first;
 }
 } // end namespace detail
 
-template <template <typename, std::size_t> class Array, typename T,
-          std::size_t N1, T... Modulus>
-constexpr auto barrett_reduction(Array<T, N1> x,
+template <typename T, std::size_t N1, T... Modulus>
+constexpr auto barrett_reduction(big_int<N1, T> x,
                                  std::integer_sequence<T, Modulus...>) {
 
   // Barrett reduction, modulus as a template parameter.
@@ -34,9 +32,9 @@ constexpr auto barrett_reduction(Array<T, N1> x,
   using detail::unary_encoding;
   using detail::pad;
 
-  auto mu = detail::precompute_mu<Array, T, Modulus...>();
+  auto mu = detail::precompute_mu<T, Modulus...>();
   const std::size_t N2 = sizeof...(Modulus);
-  Array<T, N2> modulus = {Modulus...};
+  big_int<N2, T> modulus = {Modulus...};
 
   auto q2approx = mul(skip<N2 - 1>(x), skip<N2 - 1>(mu));
   auto q3 = skip<2>(q2approx);
@@ -58,10 +56,9 @@ constexpr auto barrett_reduction(Array<T, N1> x,
   return first<N2>(r);
 }
 
-template <template <typename, std::size_t> class Array, typename T,
-          std::size_t N1, std::size_t N2, std::size_t N3>
-constexpr auto barrett_reduction(Array<T, N1> x, Array<T, N2> modulus,
-                                 Array<T, N3> mu) {
+template <typename T, std::size_t N1, std::size_t N2, std::size_t N3>
+constexpr auto barrett_reduction(big_int<N1, T> x, big_int<N2, T> modulus,
+                                 big_int<N3, T> mu) {
 
   // Barrett reduction, when given modulus and precomputed value mu that depends
   // on modulus as ordinary parameters.

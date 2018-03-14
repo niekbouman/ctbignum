@@ -3,13 +3,14 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <ctbignum/bigint.hpp>
 
 namespace cbn {
 
-template <template <typename, size_t> class Array, size_t N>
-constexpr auto shift_right(Array<uint64_t, N> a, size_t k) {
+template <size_t N>
+constexpr auto shift_right(big_int<N, uint64_t> a, size_t k) {
   // shift-right the big integer a by k bits
-  Array<uint64_t, N> res{};
+  big_int<N, uint64_t> res{};
 
   for (auto i = 0; i < N - 1; ++i) {
     res[i] = (a[i] >> k) | (a[i + 1] << (64 - k));
@@ -18,11 +19,11 @@ constexpr auto shift_right(Array<uint64_t, N> a, size_t k) {
   return res;
 }
 
-template <template <typename, size_t> class Array, size_t N>
-constexpr auto shift_left(Array<uint64_t, N> a, size_t k) {
+template <size_t N>
+constexpr auto shift_left(big_int<N, uint64_t> a, size_t k) {
   // shift-left the big integer a by k bits
   // answer has 1 limb more
-  Array<uint64_t, N + 1> res{};
+  big_int<N + 1, uint64_t> res{};
 
   res[0] = (a[0] << k);
 

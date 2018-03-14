@@ -1,18 +1,17 @@
 #ifndef CT_FIELD_HPP
 #define CT_FIELD_HPP
 
-#include <ctbignum/addition.hpp>
 #include <cstddef>
+#include <ctbignum/addition.hpp>
 
 namespace cbn {
 
 template <size_t... Modulus> struct Zq {
-  template <template <typename, size_t> class Array, typename T, size_t N>
-  constexpr auto add(Array<T, N> a, Array<T, N> b) {
-    Array<T, sizeof...(Modulus)> modulus{{Modulus...}};
+  template <typename T, size_t N>
+  constexpr auto add(big_int<N, T> a, big_int<N, T> b) {
+    big_int<sizeof...(Modulus), T> modulus{{Modulus...}};
     return mod_add(a, b, modulus);
   }
 };
-
 }
 #endif

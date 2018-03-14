@@ -3,31 +3,32 @@
 
 #include <cstddef>
 #include <ctbignum/addition.hpp>
+#include <ctbignum/bigint.hpp>
 #include <ctbignum/bitshift.hpp>
 #include <ctbignum/slicing.hpp>
 #include <ctbignum/utility.hpp>
 
 namespace cbn {
 
-template <template <typename, size_t> class Array, size_t M>
-constexpr auto short_div(Array<uint64_t, M> u, uint64_t v) {
+template <size_t M>
+constexpr auto short_div(big_int<M, uint64_t> u, uint64_t v) {
 
   __uint128_t r = 0;
-  Array<uint64_t, M> q{};
+  big_int<M, uint64_t> q{};
 
   for (int i = M - 1; i >= 0; --i) {
     __uint128_t w = (r << 64) + u[i];
     q[i] = w / v;
     r = w % v;
   }
-  return std::make_pair(q, Array<uint64_t, 1>{static_cast<uint64_t>(r)});
+  return std::make_pair(q, big_int<1, uint64_t>{{static_cast<uint64_t>(r)}});
 }
 
 namespace detail {
 
 // this uses GCC and Clang's __uint128_t data type
-template <template <typename, size_t> class Array, size_t NN, size_t NplusM>
-constexpr auto knuth_div(Array<uint64_t, NplusM> u, Array<uint64_t, NN> v) {
+template <size_t NN, size_t NplusM>
+constexpr auto knuth_div(big_int<NplusM, uint64_t> u, big_int<NN, uint64_t> v) {
   // Knuth's "Algorithm D" for multiprecision division as described in TAOCP
   // Volume 2: Seminumerical Algorithms
   //
@@ -57,7 +58,7 @@ constexpr auto knuth_div(Array<uint64_t, NplusM> u, Array<uint64_t, NN> v) {
   }
 
   auto us = shift_left(u, k);
-  Array<uint64_t, NplusM> q{};
+  big_int<NplusM, uint64_t> q{};
 
   for (int j = M; j >= 0; --j) {
 
@@ -78,7 +79,7 @@ constexpr auto knuth_div(Array<uint64_t, NplusM> u, Array<uint64_t, NN> v) {
 
     auto true_value = mp_sub_carry_out(
         detail::take<NN + 1>(us, j, j + N + 1),
-        mul(v, Array<uint64_t, 1>{static_cast<uint64_t>(qhat)}));
+        mul(v, big_int<1, uint64_t>{{static_cast<uint64_t>(qhat)}}));
 
     if (true_value[N]) {
       auto corrected = mp_add_ignore_last_carry(
@@ -99,9 +100,8 @@ constexpr auto knuth_div(Array<uint64_t, NplusM> u, Array<uint64_t, NN> v) {
 }
 }
 
-template <size_t L = 0, template <typename, size_t> class Array, size_t N,
-          size_t NplusM>
-constexpr auto div(Array<uint64_t, NplusM> u, Array<uint64_t, N> v) {
+template <size_t L = 0, size_t N, size_t NplusM>
+constexpr auto div(big_int<NplusM, uint64_t> u, big_int<N, uint64_t> v) {
 
   if
     constexpr(L == 0) // L is left unspecified, hence we assume that v is
@@ -118,13 +118,12 @@ constexpr auto div(Array<uint64_t, NplusM> u, Array<uint64_t, N> v) {
 }
 #endif
 
-
 /*
 
 
 // this uses GCC and Clang's __uint128_t data type
-template <template <typename, size_t> class Array, size_t N, size_t NplusM>
-constexpr auto div(Array<uint64_t, NplusM> u, Array<uint64_t, N> v) {
+template <size_t N, size_t NplusM>
+constexpr auto div(big_int< NplusM, uint64_t> u, big_int< N, uint64_t> v) {
   // Knuth's "Algorithm D" for multiprecision division as described in TAOCP
   // Volume 2: Seminumerical Algorithms
   //
@@ -133,8 +132,8 @@ constexpr auto div(Array<uint64_t, NplusM> u, Array<uint64_t, N> v) {
   // v  big_int<N>
   //
   // computes:
-  // quotient = floor[ u/v ]    
-  // rem = u % v                
+  // quotient = floor[ u/v ]
+  // rem = u % v
   //
   // returns:
   // std::pair<big_int<M+1>, big_int<N>>(quotient, rem)
@@ -149,7 +148,7 @@ constexpr auto div(Array<uint64_t, NplusM> u, Array<uint64_t, N> v) {
     }
 
     auto us = shift_left(u, k);
-    Array<uint64_t, M + 1> q{};
+    big_int< M + 1, uint64_t> q{};
 
     for (int j = M; j >= 0; --j) {
 
@@ -170,7 +169,7 @@ constexpr auto div(Array<uint64_t, NplusM> u, Array<uint64_t, N> v) {
 
       auto true_value = mp_sub_carry_out(
           detail::take<N + 1>(us, j, j + N + 1),
-          mul(v, Array<uint64_t, 1>{static_cast<uint64_t>(qhat)}));
+          mul(v, big_int< 1, uint64_t>{static_cast<uint64_t>(qhat)}));
 
       if (true_value[N]) {
         auto corrected = mp_add_ignore_last_carry(
@@ -190,11 +189,11 @@ constexpr auto div(Array<uint64_t, NplusM> u, Array<uint64_t, N> v) {
     return std::make_pair(q, shift_right(detail::first<N>(us), k));
 }
 
-template <size_t L, template <typename, size_t> class Array, size_t N,
+template <size_t L, size_t N,
           size_t NplusM>
-constexpr auto meta_div(Array<uint64_t, NplusM> u, Array<uint64_t, N> v) {
+constexpr auto meta_div(big_int< NplusM, uint64_t> u, big_int< N, uint64_t> v) {
 
-  if constexpr (L == 1) 
+  if constexpr (L == 1)
   {
     return short_div(u, v[0]);
   }

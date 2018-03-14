@@ -6,6 +6,7 @@
 
 #include <ctbignum/all.hpp>
 #include <ctbignum/bigint.hpp>
+#include <ctbignum/mult.hpp>
 
 //template <size_t N> using big_int = sprout::array<uint64_t, N>;
 
@@ -450,6 +451,7 @@ static void mul_(benchmark::State &state) {
   }
 }
 
+/*
 static void mul_nc(benchmark::State &state) {
 
   using namespace cbn;
@@ -468,7 +470,6 @@ static void mul_nc(benchmark::State &state) {
     benchmark::DoNotOptimize(k);
   }
 }
-
 
 static void mul_baseline(benchmark::State &state) {
 
@@ -499,6 +500,7 @@ static void mul_baseline(benchmark::State &state) {
   }
 }
 
+*/
 /*
 static void knuthmul_(benchmark::State &state) {
 
@@ -836,7 +838,7 @@ BENCHMARK(mont_reduction_auto);
 //BENCHMARK(reduce_intseq);
 //BENCHMARK(reduce_ntl);
 BENCHMARK(mul_);
-BENCHMARK(mul_nc);
-BENCHMARK(mul_baseline);
+//BENCHMARK(mul_nc);
+//BENCHMARK(mul_baseline);
 
 BENCHMARK_MAIN();

@@ -4,12 +4,13 @@
 #include <array>
 #include <cstddef>
 #include <utility>
+#include <ctbignum/bigint.hpp>
 
 namespace cbn {
 namespace detail {
 
-template <size_t N, template <typename, std::size_t> class Array, typename T>
-constexpr auto tight_length(Array<T, N> num) {
+template <size_t N, typename T>
+constexpr auto tight_length(big_int<N, T> num) {
   // count the effective number of limbs
   // (ignoring zero-limbs at the most-significant-limb side)
   size_t L = N;

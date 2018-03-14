@@ -11,10 +11,8 @@
 namespace cbn {
 
 namespace detail {
-//template <typename, size_t> class Array, 
 template <int N, typename T>
 constexpr auto limb_int(unsigned long v) {
-  //Array<T, N> r{};
   big_int<N, T> r{};
   r[0] = v;
   return r;

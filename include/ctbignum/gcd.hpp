@@ -94,20 +94,20 @@ constexpr auto ext_gcd_(std::integer_sequence<T, A...>,
   //                            std::integer_sequence<T, B...>{},
   //                            std::make_integer_sequence<T, N>{});
 
-//template <size_t L, template <typename, size_t> class Array, typename T, size_t N>
-//constexpr auto ext_gcd_(Array<T, N> a, Array<T, N> b) {
+//template <size_t L, typename T, size_t N>
+//constexpr auto ext_gcd_(big_int<N, T> a, big_int<N, T> b) {
 
   using cbn::detail::join;
   const size_t N = sizeof...(A);
 
-  auto a = Array<T, N>{A...};
-  auto b = Array<T, N>{B...};
+  auto a = big_int<N, T>{A...};
+  auto b = big_int<N, T>{B...};
 
-  Array<T, N> x0{1};
-  Array<T, N> x1{};
-  Array<T, N> y0{};
-  Array<T, N> y1{1};
-  Array<T, N> zero{};
+  big_int<N, T> x0{1};
+  big_int<N, T> x1{};
+  big_int<N, T> y0{};
+  big_int<N, T> y1{1};
+  big_int<N, T> zero{};
 
   while (b != zero)
   {
@@ -132,8 +132,8 @@ constexpr auto ext_gcd_(std::integer_sequence<T, A...>,
 
 
 /*
-template <template <typename, size_t> class Array, typename T, size_t N>
-constexpr auto ext_gcd(Array<T, N> a, Array<T, N> b) {
+template <typename T, size_t N>
+constexpr auto ext_gcd(big_int<N, T> a, big_int<N, T> b) {
 
   using detail::pad;
   using detail::first;
@@ -142,8 +142,8 @@ constexpr auto ext_gcd(Array<T, N> a, Array<T, N> b) {
   using detail::join;
 
   // todo make padding so that outputs have same length in both branches
-  if (a == Array<T, N>{}) {
-    return join(b, join(Array<T, N>{0}, Array<T, N>{1}));
+  if (a == big_int<N, T>{}) {
+    return join(b, join(big_int<N, T>{0}, big_int<N, T>{1}));
   } else {
     constexpr auto qr = div(b, a);
     constexpr auto rem = qr.second;
@@ -158,9 +158,9 @@ constexpr auto ext_gcd(Array<T, N> a, Array<T, N> b) {
   }
 }
 
-template <template <typename, size_t> class Array, typename T, size_t N,
+template <typename T, size_t N,
           T... Modulus>
-constexpr auto mod_inv(Array<T, N> a, std::integer_sequence<T, Modulus...>) {
+constexpr auto mod_inv(big_int<N, T> a, std::integer_sequence<T, Modulus...>) {
 
   auto modulus = sprout::make_array(Modulus...);
   auto triple = ext_gcd(a, modulus);

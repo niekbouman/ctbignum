@@ -1,15 +1,16 @@
 #ifndef CT_ADDITION_HPP
 #define CT_ADDITION_HPP
 
-#include <ctbignum/relational_ops.hpp>
 #include <cstddef>
+#include <ctbignum/bigint.hpp>
+#include <ctbignum/relational_ops.hpp>
 
 namespace cbn {
 
-template <template <typename, size_t> class Array, typename T, size_t N>
-constexpr auto mp_sub(Array<T, N> a, Array<T, N> b) {
+template <typename T, size_t N>
+constexpr auto mp_sub(big_int<N, T> a, big_int<N, T> b) {
   T carry = static_cast<T>(0);
-  Array<T, N> r{};
+  big_int<N, T> r{};
 
   for (auto i = 0; i < N; ++i) {
     auto aa = a[i];
@@ -22,10 +23,10 @@ constexpr auto mp_sub(Array<T, N> a, Array<T, N> b) {
   return r;
 }
 
-template <template <typename, size_t> class Array, typename T, size_t N>
-constexpr auto mp_sub_carry_out(Array<T, N> a, Array<T, N> b) {
+template <typename T, size_t N>
+constexpr auto mp_sub_carry_out(big_int<N, T> a, big_int<N, T> b) {
   T carry = static_cast<T>(0);
-  Array<T, N+1> r{};
+  big_int<N + 1, T> r{};
 
   for (auto i = 0; i < N; ++i) {
     auto aa = a[i];
@@ -39,11 +40,10 @@ constexpr auto mp_sub_carry_out(Array<T, N> a, Array<T, N> b) {
   return r;
 }
 
-
-template <template <typename, size_t> class Array, typename T, size_t N>
-constexpr auto mp_add_ignore_last_carry(Array<T, N> a, Array<T, N> b) {
+template <typename T, size_t N>
+constexpr auto mp_add_ignore_last_carry(big_int<N, T> a, big_int<N, T> b) {
   T carry = 0;
-  Array<T, N> r{};
+  big_int<N, T> r{};
 
   for (auto i = 0; i < N; ++i) {
     T aa = a[i];
@@ -56,10 +56,11 @@ constexpr auto mp_add_ignore_last_carry(Array<T, N> a, Array<T, N> b) {
   return r;
 }
 
-template <template <typename, size_t> class Array, typename T, size_t N>
-constexpr auto mod_add(Array<T, N> a, Array<T, N> b, Array<T, N> modulus) {
+template <typename T, size_t N>
+constexpr auto mod_add(big_int<N, T> a, big_int<N, T> b,
+                       big_int<N, T> modulus) {
   T carry = static_cast<T>(0);
-  Array<T, N> r{};
+  big_int<N, T> r{};
 
   for (auto i = 0; i < N; ++i) {
     auto aa = a[i];
@@ -69,25 +70,24 @@ constexpr auto mod_add(Array<T, N> a, Array<T, N> b, Array<T, N> modulus) {
     r[i] = res;
   }
 
-  if (carry || !greater_than(modulus, r)) 
+  if (carry || !greater_than(modulus, r))
     r = mp_sub(r, modulus);
 
   return r;
 }
 
-template <template <typename, size_t> class Array, typename T, size_t N,
-          T... Modulus>
-constexpr auto mod_add_(Array<T, N> a, Array<T, N> b) {
-  Array<T, sizeof...(Modulus)> modulus{{Modulus...}};
+template <typename T, size_t N, T... Modulus>
+constexpr auto mod_add_(big_int<N, T> a, big_int<N, T> b) {
+  big_int<sizeof...(Modulus), T> modulus{{Modulus...}};
   return mod_add(a, b, modulus);
 }
 
-template <template <typename, size_t> class Array, typename T, size_t N1, size_t N2>
-constexpr auto accumulate(Array<T, N1> accum, Array<T, N2> b) {
+template <typename T, size_t N1, size_t N2>
+constexpr auto accumulate(big_int<N1, T> accum, big_int<N2, T> b) {
   T carry = 0;
-  Array<T, N1> r{};
+  big_int<N1, T> r{};
 
-  auto m = std::min(N1,N2);
+  auto m = std::min(N1, N2);
   for (auto i = 0; i < m; ++i) {
     auto aa = accum[i];
     auto sum = aa + b[i];
@@ -95,11 +95,10 @@ constexpr auto accumulate(Array<T, N1> accum, Array<T, N2> b) {
     carry = (sum < aa) | (res < sum);
     r[i] = res;
   }
-  if (N1>N2)
+  if (N1 > N2)
     r[N2] = carry;
   return r;
 }
-
 
 } // end namespace cbn
 
