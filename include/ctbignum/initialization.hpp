@@ -31,9 +31,9 @@ constexpr auto string_to_big_int(String str) {
   using detail::limb_int;
   constexpr int len = decltype(boost::hana::length(str))::value;
   constexpr size_t N =
-      (ExplicitLength != 0) ? ExplicitLength : 1 + (10 * len) / 192;
+      (ExplicitLength != 0) ? ExplicitLength : 1 + (10 * len) / (3 * std::numeric_limits<T>::digits);
   // upper bound on how many limbs we need based on string len
-  // log(10)/log(2^64) < 10/192
+  // log(10)/log(2^w) < 10/(3*w)
 
   constexpr auto num = boost::hana::first(boost::hana::fold_right(
       str, boost::hana::make_pair(limb_int<N, T>(0), limb_int<N, T>(1)),

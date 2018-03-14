@@ -15,8 +15,6 @@ Currently, the library supports the following operations
 - Barrett reduction, 
 - initialization from a compile-time string (using BOOST_HANA_STRING)
 
-Most parts of the codebase assume 64-bit limb width. 
-
 ### Requirements
 - C++17 compiler (e.g., recent GCC or Clang) 
 - compiler support for \_\_uint128\_t type (used for multiplication and division) 

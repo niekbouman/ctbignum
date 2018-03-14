@@ -159,6 +159,18 @@ TEST_CASE("String Initialization -- auto length deduction") {
   static_assert(num == res, "fail");
 }
 
+TEST_CASE("String Initialization other base type -- auto length deduction") {
+
+  using namespace cbn;
+  auto s = BOOST_HANA_STRING("85070591730234618820156358408775751693");
+  constexpr auto num = string_to_big_int<0, uint32_t>(s);
+  // zero length means deduce automatically
+
+  constexpr big_int<4, uint32_t> res = {{155801613, 659761661, 160, 1073741824}};
+
+  REQUIRE(num == res);
+  static_assert(num == res, "fail");
+}
 
 TEST_CASE("Barrett reduction") {
 
