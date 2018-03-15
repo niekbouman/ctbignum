@@ -173,6 +173,7 @@ static void modexp_ntl(benchmark::State &state) {
   }
 }
 
+/*
 static void modexp(benchmark::State &state) {
 
   using namespace cbn;
@@ -192,7 +193,7 @@ static void modexp(benchmark::State &state) {
     auto z = mod_exp(a,exp,modulus);
     benchmark::DoNotOptimize(z);
   }
-}
+}*/
 
 static void modexp_mont(benchmark::State &state) {
 
@@ -210,7 +211,7 @@ static void modexp_mont(benchmark::State &state) {
   //exp = NTL::RandomBits_ZZ(100);
 
   for (auto _ : state) {
-    auto z = mod_exp_montgomery(a,exp,modulus);
+    auto z = mod_exp(a,exp,modulus);
     benchmark::DoNotOptimize(z);
   }
 }
