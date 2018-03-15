@@ -22,6 +22,7 @@
 #include <ctbignum/print.hpp>
 #include <ctbignum/bigint.hpp>
 #include <ctbignum/relational_ops.hpp>
+#include <ctbignum/mod_exp.hpp>
 
 #include<NTL/ZZ.h>
 #include<NTL/ZZ_p.h>
@@ -135,6 +136,7 @@ TEST_CASE("Multiplication") {
   */
 
 }
+
 
 TEST_CASE("String Initialization") {
 
@@ -385,6 +387,41 @@ TEST_CASE("arrayconv") {
 
   //static_assert(barrett_reduction<235, 0, 0, 256>(x) == ans, "fail");
   //REQUIRE(barrett_reduction<235, 0, 0, 256>(x) == ans);
+
+}
+
+TEST_CASE("Modular Exponentiation") {
+
+  using namespace cbn;
+
+  //constexpr auto x = string_to_big_int(BOOST_HANA_STRING("8720319859187456713659817365803476381756813759"));
+  constexpr auto x = string_to_big_int(BOOST_HANA_STRING("123512321638732781541098374832654"));
+  constexpr auto e = string_to_big_int(BOOST_HANA_STRING("1180591620739245727853"));
+  constexpr auto m = string_to_integer_seq(BOOST_HANA_STRING("85070591730234618820156358408775751693"));
+  //constexpr auto ans = string_to_big_int(BOOST_HANA_STRING("74509724535899236211803247263430915052"));
+  constexpr auto ans = string_to_big_int(BOOST_HANA_STRING("65447949695390573931730737899088862792"));
+
+  //constexpr auto x = string_to_big_int(BOOST_HANA_STRING("2"));
+  //constexpr auto e = string_to_big_int(BOOST_HANA_STRING("21"));
+  //constexpr auto m = string_to_integer_seq(BOOST_HANA_STRING("1048583"));
+  //constexpr auto ans = string_to_big_int(BOOST_HANA_STRING("1048569"));
+  //
+  //
+  //
+  
+  //constexpr auto ans = string_to_big_int(BOOST_HANA_STRING("57840141081826923106833721816893554682"));
+
+  print(x);
+  print("modexp result: ", cbn::mod_exp(x,e,m));
+  print("ans:", ans);
+
+
+  static_assert(cbn::mod_exp(x,e,m) == ans, "fail");
+  REQUIRE(cbn::mod_exp(x,e,m) == ans);
+
+
+  static_assert(cbn::mod_exp_montgomery(x,e,m) == ans, "fail");
+  REQUIRE(cbn::mod_exp_montgomery(x,e,m) == ans);
 
 }
 

@@ -37,8 +37,7 @@ constexpr auto mul(big_int<M, T> u, big_int<N, T> v) {
     // else {
     T k = 0;
     for (auto i = 0; i < M; ++i) {
-      __uint128_t t =
-          static_cast<TT>(u[i]) * static_cast<TT>(v[j]) + w[i + j] + k;
+      TT t = static_cast<TT>(u[i]) * static_cast<TT>(v[j]) + w[i + j] + k;
       w[i + j] = static_cast<T>(t);
       k = t >> std::numeric_limits<T>::digits;
     }

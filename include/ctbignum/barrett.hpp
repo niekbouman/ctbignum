@@ -36,8 +36,13 @@ constexpr auto barrett_reduction(big_int<N1, T> x,
   const std::size_t N2 = sizeof...(Modulus);
   big_int<N2, T> modulus = {Modulus...};
 
-  auto q2approx = mul(skip<N2 - 1>(x), skip<N2 - 1>(mu));
-  auto q3 = skip<2>(q2approx);
+  auto q2approx = mul(skip<N2 - 1>(x),   //
+                      skip<N2 - 2>(mu)); // approximation as suggested in Ch.14
+                                         // of "Handbook of Applied Cryptography",
+                                         // by Menezes and van Oorschot
+  auto q3 = skip<3>(q2approx);           //
+
+  //auto q3 = skip<N2+1>(mul(skip<N2 - 1>(x),mu)); // this would be the exact version
 
   auto r1 = first<N2 + 1>(x);
   auto r2 = partial_mul<N2 + 1>(q3, modulus);
@@ -68,8 +73,8 @@ constexpr auto barrett_reduction(big_int<N1, T> x, big_int<N2, T> modulus,
   using detail::unary_encoding;
   using detail::pad;
 
-  auto q2approx = mul(skip<N2 - 1>(x), skip<N2 - 1>(mu));
-  auto q3 = skip<2>(q2approx);
+  auto q2approx = mul(skip<N2 - 1>(x), skip<N2 - 2>(mu));
+  auto q3 = skip<3>(q2approx);
 
   auto r1 = first<N2 + 1>(x);
   auto r2 = partial_mul<N2 + 1>(q3, modulus);

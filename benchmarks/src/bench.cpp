@@ -7,6 +7,7 @@
 #include <ctbignum/all.hpp>
 #include <ctbignum/bigint.hpp>
 #include <ctbignum/mult.hpp>
+#include <ctbignum/mod_exp.hpp>
 
 //template <size_t N> using big_int = sprout::array<uint64_t, N>;
 
@@ -144,6 +145,79 @@ static void modmul2(benchmark::State &state) {
     benchmark::DoNotOptimize(cbn::barrett_reduction(cbn::mul2(x, y), prime, mu));
   }
 }
+
+
+static void modexp_ntl(benchmark::State &state) {
+  using NTL::ZZ;
+  using NTL::ZZ_p;
+  using NTL::conv;
+
+  auto modulus =
+      conv<ZZ>("1606938044258990275541962092341162602522202993782792835301611");
+  ZZ_p::init(modulus);
+
+  std::default_random_engine generator;
+  std::uniform_int_distribution<uint64_t> distribution(0);
+
+  ZZ_p z; 
+  ZZ exp = conv<ZZ>("5208756711089370345167341923545687104");
+
+  ZZ_p a = conv<ZZ_p>( conv<ZZ>("43234613467152613512549871563467271263417258763487658172645"));
+
+  //a = NTL::random_ZZ_p();
+  //exp = NTL::RandomBits_ZZ(100);
+
+  for (auto _ : state) {
+    NTL::power(z,a,exp);
+    benchmark::DoNotOptimize(z);
+  }
+}
+
+static void modexp(benchmark::State &state) {
+
+  using namespace cbn;
+
+  auto modulus =
+      string_to_integer_seq(BOOST_HANA_STRING("1606938044258990275541962092341162602522202993782792835301611"));
+
+ 
+  auto exp = string_to_big_int(BOOST_HANA_STRING("5208756711089370345167341923545687104"));
+
+
+  auto a = string_to_big_int(BOOST_HANA_STRING("43234613467152613512549871563467271263417258763487658172645"));
+  //a = NTL::random_ZZ_p();
+  //exp = NTL::RandomBits_ZZ(100);
+
+  for (auto _ : state) {
+    auto z = mod_exp(a,exp,modulus);
+    benchmark::DoNotOptimize(z);
+  }
+}
+
+static void modexp_mont(benchmark::State &state) {
+
+  using namespace cbn;
+
+  auto modulus =
+      string_to_integer_seq(BOOST_HANA_STRING("1606938044258990275541962092341162602522202993782792835301611"));
+
+  auto a = string_to_big_int(BOOST_HANA_STRING("43234613467152613512549871563467271263417258763487658172645"));
+ 
+  auto exp = string_to_big_int(BOOST_HANA_STRING("5208756711089370345167341923545687104"));
+
+
+  //a = NTL::random_ZZ_p();
+  //exp = NTL::RandomBits_ZZ(100);
+
+  for (auto _ : state) {
+    auto z = mod_exp_montgomery(a,exp,modulus);
+    benchmark::DoNotOptimize(z);
+  }
+}
+
+
+
+
 
 static void modmul_ntl(benchmark::State &state) {
   using NTL::ZZ;
@@ -837,7 +911,10 @@ BENCHMARK(mont_reduction_auto);
 //BENCHMARK(reduce);
 //BENCHMARK(reduce_intseq);
 //BENCHMARK(reduce_ntl);
-BENCHMARK(mul_);
+//BENCHMARK(mul_);
+//BENCHMARK(modexp);
+BENCHMARK(modexp_mont);
+BENCHMARK(modexp_ntl);
 //BENCHMARK(mul_nc);
 //BENCHMARK(mul_baseline);
 

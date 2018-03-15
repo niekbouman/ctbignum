@@ -1,12 +1,17 @@
 #ifndef CT_RELATIONAL_HPP
 #define CT_RELATIONAL_HPP
 
-#include <cstddef>
-#include <sprout/array.hpp>
+#include <algorithm>
+#include <array>
+#include <boost/hana/equal.hpp>
 #include <boost/hana/ext/std/array.hpp>
 #include <boost/hana/less.hpp>
-#include <boost/hana/equal.hpp>
-#include <array>
+#include <cstddef>
+#include <ctbignum/bigint.hpp>
+#include <ctbignum/slicing.hpp>
+#include <functional>
+#include <numeric>
+#include <sprout/array.hpp>
 
 namespace cbn {
 
@@ -21,7 +26,7 @@ constexpr bool greater_than(std::array<T, N> a, std::array<T, N> b) {
 
 
 template <typename T, size_t N>
-constexpr bool greater_than(sprout::array<T, N> a, sprout::array<T, N> b) {
+constexpr bool greater_than_(sprout::array<T, N> a, sprout::array<T, N> b) {
   using sprout::begin;
   using sprout::end;
   using sprout::lexicographical_compare;
@@ -41,6 +46,31 @@ template <size_t N>
 constexpr bool operator==(std::array<uint64_t, N> a, std::array<uint64_t, N> b) {
   return boost::hana::equal(a, b);
 }
+
+template <typename T, size_t N1, size_t N2>
+constexpr bool greater_than(big_int<N1, T> a, big_int<N2, T> b) {
+  constexpr auto L = std::max(static_cast<int>(N1), static_cast<int>(N2));
+
+  return greater_than_(detail::pad<L - N1>(a), detail::pad<L - N2>(b));
+}
+
+// should take product of bools ( x1==0 )(x2==1)...
+/*
+// constant time zero test
+template <typename T, std::size_t N>
+constexpr bool is_zero(big_int<N, T> x) {
+  return 0 == std::accumulate(x.begin(), x.end(), static_cast<T>(1),
+                              std::multiplies<T>());
+}
+
+// constant time zero test
+template <typename T, T... Seq>
+constexpr bool is_zero(std::integer_sequence<T, Seq...>) {
+  big_int<sizeof...(Seq), T> x{Seq...};
+  return 0 == std::accumulate(x.begin(), x.end(), static_cast<T>(1),
+                              std::multiplies<T>());
+}
+*/
 
 /*
 template <typename T, size_t N>
