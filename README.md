@@ -11,8 +11,10 @@ Currently, the library supports the following operations
 - comparison (lexicographical compare from the Sprout C++ Libraries),
 - modular addition,
 - extended GCD and modular inverse,
-- Montgomery reduction,
 - Barrett reduction, 
+- Montgomery reduction,
+- Montgomery multiplication,
+- Modular exponentiation (based on Montgomery multiplication)
 - initialization from a compile-time string (using BOOST_HANA_STRING)
 
 ### Requirements

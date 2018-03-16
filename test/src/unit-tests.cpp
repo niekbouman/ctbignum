@@ -24,6 +24,7 @@
 #include <ctbignum/relational_ops.hpp>
 #include <ctbignum/mod_exp.hpp>
 
+#include <random>
 #include<NTL/ZZ.h>
 #include<NTL/ZZ_p.h>
 
@@ -137,6 +138,28 @@ TEST_CASE("Multiplication") {
 
 }
 
+TEST_CASE("Squaring") {
+
+  using namespace cbn;
+
+  std::default_random_engine generator;
+  std::uniform_int_distribution<uint64_t> distribution(0);
+
+  auto trials = 100;
+
+  //for (auto i = 0; i < trials; ++i) {
+
+    big_int<4> x;
+    // randomize
+    auto sz = x.size();
+    for (auto j = 0; j < sz; ++j)
+      x[j] = distribution(generator);
+
+    //print("mul: ",mul(x,x)); 
+    //print("sq: ",square(x)); 
+    REQUIRE(square(x) == mul(x, x));
+  //}
+}
 
 TEST_CASE("String Initialization") {
 

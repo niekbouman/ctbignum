@@ -9,7 +9,7 @@ namespace cbn {
 
 template <typename T, size_t N>
 constexpr auto mp_sub(big_int<N, T> a, big_int<N, T> b) {
-  T carry = static_cast<T>(0);
+  T carry{};
   big_int<N, T> r{};
 
   for (auto i = 0; i < N; ++i) {
@@ -25,7 +25,7 @@ constexpr auto mp_sub(big_int<N, T> a, big_int<N, T> b) {
 
 template <typename T, size_t N>
 constexpr auto mp_sub_carry_out(big_int<N, T> a, big_int<N, T> b) {
-  T carry = static_cast<T>(0);
+  T carry{};
   big_int<N + 1, T> r{};
 
   for (auto i = 0; i < N; ++i) {
@@ -41,8 +41,25 @@ constexpr auto mp_sub_carry_out(big_int<N, T> a, big_int<N, T> b) {
 }
 
 template <typename T, size_t N>
+constexpr auto add(big_int<N, T> a, big_int<N, T> b) {
+  T carry{};
+  big_int<N + 1, T> r{};
+
+  for (auto i = 0; i < N; ++i) {
+    auto aa = a[i];
+    auto sum = aa + b[i];
+    auto res = sum + carry;
+    carry = (sum < aa) | (res < sum);
+    r[i] = res;
+  }
+
+  r[N] = carry;
+  return r;
+}
+
+template <typename T, size_t N>
 constexpr auto mp_add_ignore_last_carry(big_int<N, T> a, big_int<N, T> b) {
-  T carry = 0;
+  T carry{};
   big_int<N, T> r{};
 
   for (auto i = 0; i < N; ++i) {
@@ -59,7 +76,7 @@ constexpr auto mp_add_ignore_last_carry(big_int<N, T> a, big_int<N, T> b) {
 template <typename T, size_t N>
 constexpr auto mod_add(big_int<N, T> a, big_int<N, T> b,
                        big_int<N, T> modulus) {
-  T carry = static_cast<T>(0);
+  T carry{};
   big_int<N, T> r{};
 
   for (auto i = 0; i < N; ++i) {
@@ -84,7 +101,7 @@ constexpr auto mod_add_(big_int<N, T> a, big_int<N, T> b) {
 
 template <typename T, size_t N1, size_t N2>
 constexpr auto accumulate(big_int<N1, T> accum, big_int<N2, T> b) {
-  T carry = 0;
+  T carry{};
   big_int<N1, T> r{};
 
   auto m = std::min(N1, N2);

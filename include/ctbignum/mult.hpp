@@ -71,6 +71,33 @@ constexpr auto partial_mul(big_int<M, T> u, big_int<N, T> v) {
   return w;
 }
 
+template <size_t padding_limbs = 0, size_t N, typename T>
+constexpr auto square(big_int<N, T> x) {
+  // from benchmarks, it seems that square(x) is usually slower than mul(x,x) 
+
+  big_int<2 * N + padding_limbs, T> w{};
+  using TT = typename dbl_bitlen<T>::type;
+
+  for (auto i = 0; i < N; ++i) {
+
+    TT t = static_cast<TT>(x[i]) * static_cast<TT>(x[i]) + w[2 * i];
+    w[2 * i] = t;
+    T k = t >> std::numeric_limits<T>::digits;
+    T k2 = 0;
+
+    for (auto j = i + 1; j < N; ++j) {
+      TT p = static_cast<TT>(x[i]) * static_cast<TT>(x[j]);
+      TT t1 = p + w[i + j] + k;
+      TT t2 = p + static_cast<T>(t1) + k2;
+      w[i + j] = t2;
+      k = t1 >> std::numeric_limits<T>::digits;
+      k2 = t2 >> std::numeric_limits<T>::digits;
+    }
+    w[i + N] = k + k2;
+  }
+  return w;
+}
+
 // for use with mul2 function (see below)
 constexpr auto mul128(uint64_t a, uint64_t b) {
   // code for this function is based on:

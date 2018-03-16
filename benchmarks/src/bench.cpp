@@ -97,8 +97,9 @@ public:
   std::vector<uint64_t> data;
 };
 
-/*
 BENCHMARK_F(MyFixture, fixture_mul)(benchmark::State &st) {
+
+  using namespace cbn;
 
   constexpr auto prime = cbn::string_to_integer_seq(BOOST_HANA_STRING(
       "1606938044258990275541962092341162602522202993782792835301611"));
@@ -112,15 +113,14 @@ BENCHMARK_F(MyFixture, fixture_mul)(benchmark::State &st) {
     auto y = reinterpret_cast<big_int<4>*>(base_ptr + i + 4);
 
     auto j = cbn::mul(*x, *y);
-    auto k = cbn::barrett_reduction(j, prime);
-    benchmark::DoNotOptimize(k);
+    //auto k = cbn::barrett_reduction(j, prime);
+    benchmark::DoNotOptimize(j);
 
     i += 8;
     if (i == 8000)
       i = 0;
   }
 }
-*/
 
 static void modmul2(benchmark::State &state) {
   using namespace cbn;
@@ -507,7 +507,7 @@ static void mul_immediate_ntl(benchmark::State &state) {
 }
 
 
-static void mul_(benchmark::State &state) {
+static void mymul_routine(benchmark::State &state) {
 
   using namespace cbn;
   std::default_random_engine generator;
@@ -615,6 +615,44 @@ static void mul2_(benchmark::State &state) {
     benchmark::DoNotOptimize(k);
   }
 }
+
+
+static void mulmul(benchmark::State &state) {
+
+  using namespace cbn;
+  std::default_random_engine generator;
+
+  std::random_device rd;
+  std::uniform_int_distribution<uint64_t> distribution(rd());
+
+  big_int<4> x;
+  for (int i = 0; i < 4; ++i) {
+    x[i] = distribution(generator);
+  }
+
+  for (auto _ : state) {
+    auto k = cbn::mul(x, x);
+    benchmark::DoNotOptimize(k);
+  }
+}
+
+static void square(benchmark::State &state) {
+
+  using namespace cbn;
+  std::default_random_engine generator;
+  std::uniform_int_distribution<uint64_t> distribution(0);
+
+  big_int<4> x;
+  for (int i = 0; i < 4; ++i) {
+    x[i] = distribution(generator);
+  }
+
+  for (auto _ : state) {
+    auto k = cbn::square(x);
+    benchmark::DoNotOptimize(k);
+  }
+}
+
 
 
 static void mul_ntl(benchmark::State &state) {
@@ -870,10 +908,8 @@ BENCHMARK(mul_immediate);
 BENCHMARK(mul2_immediate);
 BENCHMARK(mul_immediate_ntl);
 
-BENCHMARK(mul_);
 //BENCHMARK(knuthmul_);
 BENCHMARK(mul2_);
-BENCHMARK(mul_ntl);
 
 
 
@@ -914,6 +950,12 @@ BENCHMARK(mont_reduction_auto);
 //BENCHMARK(reduce_ntl);
 //BENCHMARK(mul_);
 //BENCHMARK(modexp);
+
+BENCHMARK(mymul_routine);
+BENCHMARK(mul_ntl);
+
+BENCHMARK(mulmul);
+BENCHMARK(square);
 BENCHMARK(modexp_mont);
 BENCHMARK(modexp_ntl);
 //BENCHMARK(mul_nc);
