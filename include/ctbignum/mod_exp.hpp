@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <ctbignum/barrett.hpp>
 #include <ctbignum/bigint.hpp>
+#include <ctbignum/montgomery.hpp>
 #include <ctbignum/mult.hpp>
 #include <ctbignum/relational_ops.hpp>
 #include <ctbignum/slicing.hpp>
@@ -43,5 +44,6 @@ constexpr auto mod_exp(big_int<N1, T> a, big_int<N2, T> exp,
 
   return montgomery_mul(result, big_int<N, T>{1}, modulus);
 }
+
 }
 #endif

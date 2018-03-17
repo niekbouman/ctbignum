@@ -49,7 +49,8 @@ constexpr bool operator==(std::array<uint64_t, N> a, std::array<uint64_t, N> b) 
 
 template <typename T, size_t N1, size_t N2>
 constexpr bool greater_than(big_int<N1, T> a, big_int<N2, T> b) {
-  constexpr auto L = std::max(static_cast<int>(N1), static_cast<int>(N2));
+  //constexpr auto L = std::max(static_cast<int>(N1), static_cast<int>(N2));
+  constexpr auto L = std::max(N1, N2);
 
   return greater_than_(detail::pad<L - N1>(a), detail::pad<L - N2>(b));
 }

@@ -636,6 +636,7 @@ static void mulmul(benchmark::State &state) {
   }
 }
 
+/*
 static void square(benchmark::State &state) {
 
   using namespace cbn;
@@ -652,7 +653,7 @@ static void square(benchmark::State &state) {
     benchmark::DoNotOptimize(k);
   }
 }
-
+*/
 
 
 static void mul_ntl(benchmark::State &state) {
@@ -955,7 +956,7 @@ BENCHMARK(mymul_routine);
 BENCHMARK(mul_ntl);
 
 BENCHMARK(mulmul);
-BENCHMARK(square);
+//BENCHMARK(square);
 BENCHMARK(modexp_mont);
 BENCHMARK(modexp_ntl);
 //BENCHMARK(mul_nc);

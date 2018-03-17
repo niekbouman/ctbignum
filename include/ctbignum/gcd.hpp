@@ -50,7 +50,7 @@ constexpr auto ext_gcd_impl(std::integer_sequence<T, A...>,
     constexpr auto z = skip<2 * N>(triple);
     constexpr auto qy = partial_mul<N>(qr.first, y);
 
-    return join(join(x, mp_sub(z, qy)), y);
+    return join(join(x, subtract_ignore_carry(z, qy)), y);
   }
 }
 }
@@ -118,11 +118,11 @@ constexpr auto ext_gcd_(std::integer_sequence<T, A...>,
     a = b;
     b = qr.second;
     constexpr auto tmp = x1;
-    x1 = cbn::mp_sub(x0, cbn::partial_mul<N>(qr.first, x1));
+    x1 = cbn::subtract_ignore_carry(x0, cbn::partial_mul<N>(qr.first, x1));
     x0 = tmp;
 
     constexpr auto tmp2 = y1;
-    y1 = cbn::mp_sub(y0, cbn::partial_mul<N>(qr.first, y1));
+    y1 = cbn::subtract_ignore_carry(y0, cbn::partial_mul<N>(qr.first, y1));
     y0 = tmp2;
   }
 
@@ -154,7 +154,7 @@ constexpr auto ext_gcd(big_int<N, T> a, big_int<N, T> b) {
     constexpr auto z = skip<2 * N>(triple);
 
     constexpr auto qy = mul(qr.first, y);
-    return join(join(x, mp_sub(z, pad<N - qy.size()>(qy))), y);
+    return join(join(x, subtract_ignore_carry(z, pad<N - qy.size()>(qy))), y);
   }
 }
 

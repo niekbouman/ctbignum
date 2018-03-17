@@ -1,6 +1,7 @@
 #ifndef CT_BARRETT_HPP
 #define CT_BARRETT_HPP
 
+#include <algorithm>
 #include <cstddef> // std::size_t
 
 #include <ctbignum/addition.hpp>
@@ -34,9 +35,13 @@ constexpr auto barrett_reduction(big_int<N1, T> x,
 
   auto mu = detail::precompute_mu<T, Modulus...>();
   const std::size_t N2 = sizeof...(Modulus);
+
+  constexpr auto L = std::max(static_cast<int>(0), static_cast<int>(N2)+1-static_cast<int>(N1)); 
+  auto y = pad<L>(x);
+
   big_int<N2, T> modulus = {Modulus...};
 
-  auto q2approx = mul(skip<N2 - 1>(x),   //
+  auto q2approx = mul(skip<N2 - 1>(y),   //
                       skip<N2 - 2>(mu)); // approximation as suggested in Ch.14
                                          // of "Handbook of Applied Cryptography",
                                          // by Menezes and van Oorschot
@@ -44,23 +49,31 @@ constexpr auto barrett_reduction(big_int<N1, T> x,
 
   //auto q3 = skip<N2+1>(mul(skip<N2 - 1>(x),mu)); // this would be the exact version
 
-  auto r1 = first<N2 + 1>(x);
+  auto r1 = first<N2 + 1>(y);
   auto r2 = partial_mul<N2 + 1>(q3, modulus);
-  auto r_with_carry = mp_sub_carry_out(r1, r2);
+  auto r_with_carry = subtract(r1, r2);
   auto r = first<N2 + 1>(r_with_carry);
 
   if (r_with_carry[N2 + 1])
-    r = mp_add_ignore_last_carry(r, unary_encoding<N2, N2 + 1>());
+    r = add_ignore_carry(r, unary_encoding<N2, N2 + 1>());
 
   auto padded_mod = pad<1>(modulus);
   if (!greater_than(padded_mod, r))
-    r = mp_sub(r, padded_mod);
+    r = subtract_ignore_carry(r, padded_mod);
   if (!greater_than(padded_mod, r))
-    r = mp_sub(r, padded_mod);
+    r = subtract_ignore_carry(r, padded_mod);
 
   return first<N2>(r);
 }
 
+// specialization for length one
+template <typename T, T Modulus>
+constexpr auto barrett_reduction(big_int<1, T> x, std::integer_sequence<T, Modulus>) 
+{
+  return big_int<1,T>{ x[0] % Modulus }; 
+}  
+
+  
 template <typename T, std::size_t N1, std::size_t N2, std::size_t N3>
 constexpr auto barrett_reduction(big_int<N1, T> x, big_int<N2, T> modulus,
                                  big_int<N3, T> mu) {
@@ -78,17 +91,17 @@ constexpr auto barrett_reduction(big_int<N1, T> x, big_int<N2, T> modulus,
 
   auto r1 = first<N2 + 1>(x);
   auto r2 = partial_mul<N2 + 1>(q3, modulus);
-  auto r_with_carry = mp_sub_carry_out(r1, r2);
+  auto r_with_carry = subtract(r1, r2);
   auto r = first<N2 + 1>(r_with_carry);
 
   if (r_with_carry[N2 + 1])
-    r = mp_add_ignore_last_carry(r, unary_encoding<N2, N2 + 1>());
+    r = add_ignore_carry(r, unary_encoding<N2, N2 + 1>());
 
   auto padded_mod = pad<1>(modulus);
   if (!greater_than(padded_mod, r))
-    r = mp_sub(r, padded_mod);
+    r = subtract_ignore_carry(r, padded_mod);
   if (!greater_than(padded_mod, r))
-    r = mp_sub(r, padded_mod);
+    r = subtract_ignore_carry(r, padded_mod);
 
   return first<N2>(r);
 }

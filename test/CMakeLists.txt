@@ -44,7 +44,7 @@ foreach(file ${files})
         COMPILE_OPTIONS "$<$<CXX_COMPILER_ID:MSVC>:/EHsc;$<$<CONFIG:Release>:/Od>>"
     )
 
-    target_compile_definitions(${testcase} PRIVATE CATCH_CONFIG_FAST_COMPILE)
+    target_compile_definitions(${testcase} PRIVATE CATCH_CONFIG_FAST_COMPILE BOOST_HANA_CONFIG_ENABLE_STRING_UDL)
     target_include_directories(${testcase} PRIVATE "thirdparty/catch")
     #target_include_directories(${testcase} PRIVATE ${NJBOUMAN_CTBIGNUM_INCLUDE_BUILD_DIR})
     target_include_directories(${testcase} PRIVATE "../include")

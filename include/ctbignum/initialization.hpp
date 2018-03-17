@@ -42,7 +42,7 @@ constexpr auto string_to_big_int(String str) {
         // convert character to decimal
 
         return boost::hana::make_pair(
-            mp_add_ignore_last_carry(
+            add_ignore_carry(
                 boost::hana::first(state),
                 partial_mul<N>(limb_int<1, T>(i), boost::hana::second(state))),
             partial_mul<N>(limb_int<1, T>(10), boost::hana::second(state)));

@@ -43,13 +43,13 @@ constexpr auto montgomery_reduction(big_int<N1, T> A,
   for (auto i = 0; i < N2; ++i) {
     auto prod = short_mul(m, accum[i] * mprime);
     auto prod2 = limbwise_shift_left<N1 + 1>(prod, i);
-    accum = mp_add_ignore_last_carry(accum, prod2);
+    accum = add_ignore_carry(accum, prod2);
   }
 
   auto result = skip<N2>(accum);
   auto padded_mod = pad<1>(m);
   if (!greater_than(padded_mod, result))
-    result = mp_sub(result, padded_mod);
+    result = subtract_ignore_carry(result, padded_mod);
 
   return first<N2>(result);
 }
@@ -96,7 +96,7 @@ constexpr auto montgomery_mul(big_int<N, T> x, big_int<N, T> y,
 
   auto padded_mod = pad<1>(m);
   if (!greater_than(padded_mod, A))
-    A = mp_sub(A, padded_mod);
+    A = subtract_ignore_carry(A, padded_mod);
   return first<N>(A);
 }
 
@@ -127,14 +127,14 @@ constexpr auto montgomery_reduction(big_int<N1, T> A, big_int<N2, T> m,
   for (auto i = 0; i < N2; ++i) {
     auto prod = short_mul(m, accum[i] * mprime);
     auto prod2 = limbwise_shift_left<N1 + 1>(prod, i);
-    accum = mp_add_ignore_last_carry(accum, prod2);
+    accum = add_ignore_carry(accum, prod2);
   }
 
   auto result = skip<N2>(accum);
 
   auto padded_mod = pad<1>(m);
   if (!greater_than(padded_mod, result))
-    result = mp_sub(result, padded_mod);
+    result = subtract_ignore_carry(result, padded_mod);
 
   return first<N2>(result);
 }
@@ -175,7 +175,7 @@ constexpr auto montgomery_mul(big_int<N, T> x, big_int<N, T> y, big_int<N, T> m,
 
   auto padded_mod = pad<1>(m);
   if (!greater_than(padded_mod, A))
-    A = mp_sub(A, padded_mod);
+    A = subtract_ignore_carry(A, padded_mod);
   return first<N>(A);
 }
 }

@@ -5,6 +5,7 @@
 #include <ctbignum/addition.hpp>
 #include <ctbignum/bigint.hpp>
 #include <ctbignum/bitshift.hpp>
+#include <ctbignum/mult.hpp>
 #include <ctbignum/slicing.hpp>
 #include <ctbignum/type_traits.hpp>
 #include <ctbignum/utility.hpp>
@@ -80,15 +81,15 @@ constexpr auto knuth_div(big_int<NplusM, T> u, big_int<NN, T> v) {
         break;
     }
 
-    auto true_value = mp_sub_carry_out(
+    auto true_value = subtract(
         detail::take<NN + 1>(us, j, j + N + 1),
         mul(v, big_int<1, T>{{static_cast<T>(qhat)}}));
 
     if (true_value[N]) {
-      auto corrected = mp_add_ignore_last_carry(
+      auto corrected = add_ignore_carry(
           true_value, detail::unary_encoding<NN + 2>(N + 1));
       // true_value, detail::unary_encoding<N + 1, NN + 2>());
-      auto new_us_part = mp_add_ignore_last_carry(corrected, detail::pad<2>(v));
+      auto new_us_part = add_ignore_carry(corrected, detail::pad<2>(v));
       for (auto i = 0; i <= N; ++i)
         us[j + i] = new_us_part[i];
       --qhat;
@@ -115,6 +116,19 @@ constexpr auto div(big_int<NplusM, T> u, big_int<N, T> v) {
   else if
     constexpr(L == 1) { return short_div(u, v[0]); }
   else {
+    return detail::knuth_div(u, v);
+  }
+}
+
+template <size_t N, size_t NplusM, typename T>
+constexpr auto div_v(big_int<NplusM, T> u, big_int<N, T> v) {
+  // division where the msb of v varies at runtime  
+
+  auto L = detail::tight_length(v);
+  if (L == 1) {
+    auto qr = short_div(u, v[0]);
+    return std::make_pair(qr.first, detail::pad<N-1>(qr.second)); // make same return type as in the 'else'-branch
+  } else {
     return detail::knuth_div(u, v);
   }
 }
@@ -170,15 +184,15 @@ constexpr auto div(big_int< NplusM, uint64_t> u, big_int< N, uint64_t> v) {
           break;
       }
 
-      auto true_value = mp_sub_carry_out(
+      auto true_value = subtract(
           detail::take<N + 1>(us, j, j + N + 1),
           mul(v, big_int< 1, uint64_t>{static_cast<uint64_t>(qhat)}));
 
       if (true_value[N]) {
-        auto corrected = mp_add_ignore_last_carry(
+        auto corrected = add_ignore_carry(
             true_value, detail::unary_encoding<N + 1, N + 2>());
         auto new_us_part =
-            mp_add_ignore_last_carry(corrected, detail::pad<2>(v));
+            add_ignore_carry(corrected, detail::pad<2>(v));
         for (auto i = 0; i <= N; ++i)
           us[j + i] = new_us_part[i];
         --qhat;
