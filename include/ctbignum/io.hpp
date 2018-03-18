@@ -17,7 +17,8 @@ std::ostream &operator<<(std::ostream &strm, cbn::big_int<N, T> obj) {
   auto zero = big_int<N, T>{};
   bool skip_zeros = true;
   while (power_of_ten != zero) {
-    auto qr = div_v(obj, power_of_ten);
+    //auto qr = div_v(obj, power_of_ten);
+    auto qr = div(obj, power_of_ten);
     detail::assign(obj, qr.second);
     if (qr.first[0] > 9)
       throw std::runtime_error("division output");

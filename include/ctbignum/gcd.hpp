@@ -35,8 +35,7 @@ constexpr auto ext_gcd_impl(std::integer_sequence<T, A...>,
         b, join(big_int<N, T>{0}, big_int<N, T>{1}));
 
   else {
-    constexpr auto L = detail::tight_length(std::integer_sequence<T, A...>{});
-    constexpr auto qr = div<L>(b, a);
+    constexpr auto qr = div(b, a);
     constexpr auto rem = qr.second;
     constexpr auto arg1 = pad<N - rem.size()>(rem);
 
