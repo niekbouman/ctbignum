@@ -5,6 +5,7 @@
 
 namespace cbn {
 
+  //TODO enable if op integral type
 template <size_t N, typename T = uint64_t> using big_int = sprout::array<T, N>;
 }
 #endif

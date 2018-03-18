@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <cstddef> // std::size_t
+#include <cmath>
 
 #include <ctbignum/addition.hpp>
 #include <ctbignum/bigint.hpp>

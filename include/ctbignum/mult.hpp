@@ -1,6 +1,7 @@
 #ifndef CT_MULT_HPP
 #define CT_MULT_HPP
 
+#include <cmath>
 #include <cstddef>
 #include <ctbignum/addition.hpp>
 #include <ctbignum/bigint.hpp>

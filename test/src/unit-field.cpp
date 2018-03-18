@@ -42,7 +42,19 @@ TEST_CASE("Finite Field class") {
 
   }
 
+  SECTION("Multiplication") {
 
+    using namespace boost::hana::literals;
 
+    using GF101 = decltype(Zq("1267650600228229401496703205653"_s));
+
+    constexpr GF101 x("543195761203162351763512095426"_s);
+    constexpr GF101 y("213461909783715623473362549"_s);
+
+    constexpr GF101 result("432496613435633654896620861341"_s);
+
+    static_assert((x*y).data == result.data);
+    REQUIRE((x*y).data == result.data);
+  }
 }
 

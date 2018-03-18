@@ -1,7 +1,9 @@
 # Constexpr C++17 Big-Integer / Finite-Field library
 
 ### Description
-This is a header-only template library for compile-time fixed-width big-integer computations.
+This is a header-only template library for compile-time fixed-width "small big-integer" computations.
+By "small big integers", we mean numbers with a few limbs (in other words, a few hundred bits), typically
+occurring in cryptographic applications.
 
 Currently, the library supports the following operations
 - addition, 

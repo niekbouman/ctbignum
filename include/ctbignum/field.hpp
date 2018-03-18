@@ -11,6 +11,10 @@
 namespace cbn {
 
 template <typename T, T... Modulus> struct ZqElement {
+
+
+  //TODO: add cast operator  big_int
+  
   big_int<sizeof...(Modulus), T> data;
 
   constexpr ZqElement() {}
@@ -49,29 +53,24 @@ auto Zq(String s)
 
 template <typename T, T... M>
 constexpr auto operator+(ZqElement<T, M...> a, ZqElement<T, M...> b) {
-  ZqElement<T, M...> result{};
-  result.data = mod_add(a.data, b.data, big_int<sizeof...(M), T>{M...});
-  return result;
+  //ZqElement<T, M...> result{};
+  //result.data = ;
+  return ZqElement<T, M...> { mod_add(a.data, b.data, big_int<sizeof...(M), T>{M...}) };
 }
 
 template <typename T, T... M>
 constexpr auto operator*(ZqElement<T, M...> a, ZqElement<T, M...> b) {
-  ZqElement<T, M...> result{};
-  result.data = barrett_reduction(mul(a.data, b.data), std::integer_sequence<T, M...>());
-  return result;
+  //ZqElement<T, M...> result{};
+  //result.data = barrett_reduction(mul(a.data, b.data), std::integer_sequence<T, M...>());
+  //return result;
+
+  return ZqElement<T, M...> { barrett_reduction(mul(a.data, b.data), std::integer_sequence<T, M...>()) };
 }
 
 template <typename T, T... M>
 std::ostream &operator<<(std::ostream& strm, const ZqElement<T, M...>& obj)
 {
   strm << obj.data;
-}
-
-template <typename T, T... M>
-void operator*(ZqElement<T, M...> a, ZqElement<T, M...> b) {
-  ZqElement<T, M...> result{};
-  result.data = barrett_reduction(mul(a.data, b.data), std::integer_sequence<T, M...>());
-  return result;
 }
 
 
