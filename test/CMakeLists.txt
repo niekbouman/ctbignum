@@ -1,3 +1,7 @@
+# Check dependencies
+find_package(NTL REQUIRED)
+find_package(GMP REQUIRED)
+
 #############################################################################
 # Catch library with the main function to speed up build
 #############################################################################
@@ -48,7 +52,8 @@ foreach(file ${files})
     target_include_directories(${testcase} PRIVATE "thirdparty/catch")
     #target_include_directories(${testcase} PRIVATE ${NJBOUMAN_CTBIGNUM_INCLUDE_BUILD_DIR})
     target_include_directories(${testcase} PRIVATE "../include")
-    target_link_libraries(${testcase} ntl)
+    target_include_directories(${testcase} PRIVATE ${NTL_INCLUDES})
+    target_link_libraries(${testcase} ${NTL_LIBRARIES} ${GMP_LIBRARIES})
 
     if(NOT MSVC)
         set_target_properties(${testcase} PROPERTIES COMPILE_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated -Wno-float-equal -fconstexpr-steps=2000000")
