@@ -17,17 +17,20 @@ Currently, the library supports the following operations
 - Modular exponentiation (based on Montgomery multiplication)
 - initialization from a compile-time string (using BOOST_HANA_STRING)
 
-### Requirements
+### Installation
+Because this is a header-only library, installation is as easy as downloading and copying the contents of the `include` directory into your system's `include` directory (e.g. `/usr/local/include` or `/opt/local/include`).
+
+### Dependencies
 - C++17 compiler (e.g., recent GCC or Clang) 
 - compiler support for \_\_uint128\_t type (used for multiplication and division) 
-- Boost.Hana (Louis Dionne)
-- Sprout C++ Libraries (Bolero Murakami)
+- [Boost.Hana (Louis Dionne)](http://boostorg.github.io/hana/)
+- [Sprout C++ Libraries (Bolero Murakami)](https://github.com/bolero-MURAKAMI/Sprout)
 
-### Requirements (for the benchmarks)
-- NTL (Victor Shoup's number theory library)
-- SCIPR lab's libff
-- GMP (libff dependency)
-- Google Benchmark
+### Dependencies for compiling and running the benchmarks
+- [NTL (Victor Shoup's number theory library)](http://www.shoup.net/ntl/), version 10.5.0 or newer.
+- [SCIPR lab's libff](https://github.com/scipr-lab/libff)
+- [GMP](https://gmplib.org/) (libff dependency)
+- [Google Benchmark](https://github.com/google/benchmark)
 
 ### Example
 ```cpp
