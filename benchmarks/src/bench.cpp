@@ -4,7 +4,7 @@
 #include <random>
 #include <sprout/array.hpp>
 
-#include <ctbignum/all.hpp>
+#include <ctbignum/ctbignum.hpp>
 #include <ctbignum/bigint.hpp>
 #include <ctbignum/mult.hpp>
 #include <ctbignum/mod_exp.hpp>
