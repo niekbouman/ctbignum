@@ -1,7 +1,6 @@
 #ifndef CT_GCD_HPP
 #define CT_GCD_HPP
 
-#include <cstddef>
 #include <ctbignum/addition.hpp>
 #include <ctbignum/bigint.hpp>
 #include <ctbignum/division.hpp>
@@ -9,10 +8,12 @@
 #include <ctbignum/slicing.hpp>
 #include <ctbignum/utility.hpp>
 
+#include <cstddef>
+
 namespace cbn {
 namespace detail {
 
-template <typename T, T... A, T... B, T... Is, size_t N = sizeof...(Is)>
+template <typename T, T... A, T... B, T... Is, std::size_t N = sizeof...(Is)>
 constexpr auto ext_gcd_impl(std::integer_sequence<T, A...>,
                             std::integer_sequence<T, B...>,
                             std::integer_sequence<T, Is...>) {
@@ -57,7 +58,7 @@ constexpr auto ext_gcd_impl(std::integer_sequence<T, A...>,
 template <typename T, T... A, T... B, T... Is>
 constexpr auto ext_gcd(std::integer_sequence<T, A...>,
                        std::integer_sequence<T, B...>) {
-  constexpr size_t N = std::max(sizeof...(A), sizeof...(B));
+  constexpr std::size_t N = std::max(sizeof...(A), sizeof...(B));
   return detail::ext_gcd_impl(std::integer_sequence<T, A...>{},
                               std::integer_sequence<T, B...>{},
                               std::make_integer_sequence<T, N>{});

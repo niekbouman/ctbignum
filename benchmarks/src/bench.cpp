@@ -122,6 +122,7 @@ BENCHMARK_F(MyFixture, fixture_mul)(benchmark::State &st) {
   }
 }
 
+/*
 static void modmul2(benchmark::State &state) {
   using namespace cbn;
   constexpr auto prime = cbn::string_to_big_int<4>(BOOST_HANA_STRING(
@@ -145,7 +146,7 @@ static void modmul2(benchmark::State &state) {
     benchmark::DoNotOptimize(cbn::barrett_reduction(cbn::mul2(x, y), prime, mu));
   }
 }
-
+*/
 
 static void modexp_ntl(benchmark::State &state) {
   using NTL::ZZ;
@@ -439,6 +440,8 @@ static void mul_immediate(benchmark::State &state) {
     benchmark::DoNotOptimize(k);
   }
 }
+
+/*
 static void mul2_immediate(benchmark::State &state) {
   using namespace cbn;
 
@@ -455,7 +458,6 @@ static void mul2_immediate(benchmark::State &state) {
   }
 
   for (auto _ : state) {
-    /*
     state.PauseTiming();
 
     for (int i=0; i<4; ++i) {
@@ -463,11 +465,11 @@ static void mul2_immediate(benchmark::State &state) {
     }
 
     state.ResumeTiming();
-*/
     auto k = mul2(x, y);
     benchmark::DoNotOptimize(k);
   }
 }
+*/
 
 static void mul_immediate_ntl(benchmark::State &state) {
 
@@ -594,7 +596,6 @@ static void knuthmul_(benchmark::State &state) {
     benchmark::DoNotOptimize(k);
   }
 }
-*/
 
 
 static void mul2_(benchmark::State &state) {
@@ -616,6 +617,7 @@ static void mul2_(benchmark::State &state) {
   }
 }
 
+*/
 
 static void mulmul(benchmark::State &state) {
 

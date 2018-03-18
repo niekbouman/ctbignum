@@ -1,9 +1,10 @@
 #ifndef CT_ADDITION_HPP
 #define CT_ADDITION_HPP
 
-#include <cstddef>
 #include <ctbignum/bigint.hpp>
 #include <ctbignum/relational_ops.hpp>
+
+#include <cstddef>
 
 namespace cbn {
 

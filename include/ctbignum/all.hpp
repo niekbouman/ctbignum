@@ -9,6 +9,7 @@
 #include <ctbignum/field.hpp>
 #include <ctbignum/gcd.hpp>
 #include <ctbignum/initialization.hpp>
+#include <ctbignum/io.hpp>
 #include <ctbignum/mod_exp.hpp>
 #include <ctbignum/montgomery.hpp>
 #include <ctbignum/mult.hpp>

@@ -1,9 +1,11 @@
 #ifndef CT_POW_HPP
 #define CT_POW_HPP
 
-#include <cstddef>
 #include <ctbignum/bigint.hpp>
 #include <ctbignum/mult.hpp>
+
+#include <cstddef>
+
 namespace cbn {
 
 template <std::size_t N1, typename T>

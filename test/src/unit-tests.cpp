@@ -119,9 +119,7 @@ TEST_CASE("Multiplication") {
     constexpr big_int<4> res = {{1315566964, 326042948, 19140048, 0}};
 
     constexpr auto ans = mul(a, b);
-    constexpr auto ans2 = mul2(a, b);
     static_assert(res == ans, "fail");
-    static_assert(res == ans2, "fail");
   }
 
   /*

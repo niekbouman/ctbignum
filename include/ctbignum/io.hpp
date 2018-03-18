@@ -1,12 +1,13 @@
 #ifndef CT_INPUTOUTPUT_HPP
 #define CT_INPUTOUTPUT_HPP
 
-#include <cmath>
-#include <cstddef>
 #include <ctbignum/bigint.hpp>
 #include <ctbignum/division.hpp>
 #include <ctbignum/pow.hpp>
 #include <ctbignum/utility.hpp>
+
+#include <cmath>
+#include <cstddef>
 #include <limits>
 
 template <std::size_t N, typename T>
@@ -17,7 +18,6 @@ std::ostream &operator<<(std::ostream &strm, cbn::big_int<N, T> obj) {
   auto zero = big_int<N, T>{};
   bool skip_zeros = true;
   while (power_of_ten != zero) {
-    //auto qr = div_v(obj, power_of_ten);
     auto qr = div(obj, power_of_ten);
     detail::assign(obj, qr.second);
     if (qr.first[0] > 9)

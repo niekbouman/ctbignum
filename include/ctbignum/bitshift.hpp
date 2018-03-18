@@ -1,9 +1,9 @@
 #ifndef CT_BITSHIFTS_HPP
 #define CT_BITSHIFTS_HPP
 
-#include <cstddef>
-#include <cstdint>
 #include <ctbignum/bigint.hpp>
+
+#include <cstddef>
 #include <limits>
 
 namespace cbn {
