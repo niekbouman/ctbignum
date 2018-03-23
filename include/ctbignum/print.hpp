@@ -11,9 +11,9 @@ template <typename T, size_t N>
 std::ostream &operator<<(std::ostream &os, std::array<T, N> big_int) {
   os << '{';
   for (std::size_t i = 0; i < big_int.size(); ++i) {
+    os << big_int[i];
     if (i != 0)
       os << ", ";
-    os << big_int[i];
   }
   os << "}";
   return os;
