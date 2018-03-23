@@ -1,20 +1,18 @@
 #ifndef MYPRINT_HPP
 #define MYPRINT_HPP
 
-#include <cppitertools/itertools.hpp>
 #include <iostream>
 #include <sprout/array.hpp>
 #include <ctbignum/bigint.hpp>
 #include <ctbignum/io.hpp>
 
 
-
 template <typename T, size_t N>
 std::ostream &operator<<(std::ostream &os, std::array<T, N> big_int) {
   os << '{';
-  for (auto &&e : iter::enumerate(big_int)) {
-    os << e.element;
-    if (e.index != big_int.size() - 1)
+  for (std::size_t i = 0; i < big_int.size(); ++i) {
+    os << big_int[i];
+    if (i != 0)
       os << ", ";
   }
   os << "}";
