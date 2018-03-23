@@ -14,6 +14,12 @@ project(njbouman_ctbignum VERSION 0.1 LANGUAGES CXX)
 ##
 include(ExternalProject)
 
+## External dependencies
+find_package(Boost 1.61 REQUIRED)
+if(Boost_FOUND)
+  include_directories(${Boost_INCLUDE_DIRS})
+endif()
+
 ##
 ## OPTIONS
 ##
@@ -34,6 +40,13 @@ set(NJBOUMAN_CTBIGNUM_CMAKE_PROJECT_CONFIG_FILE "${NJBOUMAN_CTBIGNUM_CMAKE_CONFI
 set(NJBOUMAN_CTBIGNUM_INCLUDE_BUILD_DIR "${PROJECT_SOURCE_DIR}/include/")
 
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
+
+
+## Append compiler flag to silence compiler warning for GNU extension
+if (CMAKE_COMPILER_IS_GNUCXX OR (${CMAKE_CXX_COMPILER_ID} MATCHES "Clang"))
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-gnu-string-literal-operator-template")
+endif()
+
 
 ##
 ## TARGET

@@ -15,7 +15,10 @@ MinSizeRel."
    
 endif()
 
-find_package(GMP)
+find_package(GMP REQUIRED)
+find_package(NTL REQUIRED)
+find_package(Benchmark REQUIRED)
+
 
 # optimizations for libff
 add_definitions(-DUSE_ASM)
@@ -30,5 +33,5 @@ set(
 )
 
 
-target_include_directories(bench PRIVATE ${NJBOUMAN_CTBIGNUM_INCLUDE_BUILD_DIR} ${GMP_INCLUDES})
-target_link_libraries(bench benchmark ntl ${GMP_LIBRARIES})
+target_include_directories(bench PRIVATE ${NJBOUMAN_CTBIGNUM_INCLUDE_BUILD_DIR} ${Benchmark_INCLUDES} ${NTL_INCLUDES} ${GMP_INCLUDES})
+target_link_libraries(bench ${Benchmark_LIBRARIES}  ${NTL_LIBRARIES} ${GMP_LIBRARIES})
