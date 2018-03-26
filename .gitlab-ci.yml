@@ -1,0 +1,49 @@
+image: gcc
+
+build:
+  stage: build
+
+  before_script:
+    - apt-get update
+
+# Install dependencies
+    - apt-get --yes install build-essential libboost-all-dev cmake
+    - mkdir dependencies && cd dependencies
+    - apt-get --yes install git libgmp3-dev libssl-dev libprocps-dev pkg-config libgtest-dev
+    # Sprout
+    - git clone https://github.com/bolero-MURAKAMI/Sprout.git
+    - mv ./Sprout/sprout /usr/local/include/sprout
+    # libff
+    - git clone https://github.com/scipr-lab/libff.git
+    - cd libff
+    - git submodule init && git submodule update
+    - mkdir build && cd build
+    - cmake ..
+    - make install
+    - cd ../..
+    # Google Benchmark
+    - git clone https://github.com/google/benchmark.git
+    - cd benchmark
+    - mkdir build && cd build
+    - cmake .. -DCMAKE_BUILD_TYPE=RELEASE
+    - make install
+    - cd ../..
+    # NTL
+    - wget -O ntl.tar.xz http://www.shoup.net/ntl/ntl-10.5.0.tar.gz
+    - mkdir ntl
+    - tar -xf ntl.tar.* --strip 1 -C ntl
+    - cd ntl/src
+    - ./configure NTL_STD_CXX14=on
+    - make
+    - make install
+    - cd ../..
+    # Done with dependencies
+    - cd ..
+
+  script:
+    - mkdir build
+    - cmake ..
+    - make
+    - make test
+    - make bench
+    - ./benchmarks/bench

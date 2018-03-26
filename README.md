@@ -47,3 +47,10 @@ static_assert(number == expected_result, "initialization failure");
 ```
 
 (See [unit tests](test/src/unit-tests.cpp) for more examples.)
+
+### Development
+
+To run the tests in a docker image using `.gitlab-ci.yml`:
+- [Get gitlab-runner](https://docs.gitlab.com/runner/install/index.html)
+- Run `gitlab-runner exec docker build` from the project root directory
+
