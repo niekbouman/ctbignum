@@ -1,15 +1,14 @@
-image: gcc
+image: gcc:latest
 
 build:
   stage: build
 
+# Install dependencies
   before_script:
     - apt-get update
-
-# Install dependencies
     - apt-get --yes install build-essential libboost-all-dev cmake
+    - apt-get --yes install git libgmp3-dev libssl-dev libprocps-dev pkg-config
     - mkdir dependencies && cd dependencies
-    - apt-get --yes install git libgmp3-dev libssl-dev libprocps-dev pkg-config libgtest-dev
     # Sprout
     - git clone https://github.com/bolero-MURAKAMI/Sprout.git
     - mv ./Sprout/sprout /usr/local/include/sprout
@@ -21,6 +20,13 @@ build:
     - cmake ..
     - make install
     - cd ../..
+    # Google Test
+    - apt-get --yes install libgtest-dev
+    - mkdir gtest && cd gtest
+    - cmake /usr/src/googletest/googletest -DCMAKE_BUILD_TYPE=RELEASE
+    - make
+    - mv libgtest* /usr/lib/
+    - cd ..
     # Google Benchmark
     - git clone https://github.com/google/benchmark.git
     - cd benchmark
@@ -41,7 +47,7 @@ build:
     - cd ..
 
   script:
-    - mkdir build
+    - mkdir build && cd build
     - cmake ..
     - make
     - make test
