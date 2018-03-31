@@ -753,15 +753,15 @@ static void montmul_auto2(benchmark::State &state) {
 
 
 
-//#include "modulus.hpp"
+#include "modulus.hpp"
 #include <libff/algebra/fields/fp.hpp>
 #include <libff/algebra/fields/bigint.hpp>
 
 static void montmul_libff(benchmark::State &state) {
 
   using namespace libff;
-  //extern bigint<4L> mymodulus;
-  static auto mymodulus = libff::bigint<static_cast<mp_size_t>(4)>("14474011154664524427946373126085988481658748083205070504932198000989141205031");
+  extern bigint<4L> mymodulus;
+  //static auto mymodulus = libff::bigint<static_cast<mp_size_t>(4)>("14474011154664524427946373126085988481658748083205070504932198000989141205031");
 
   using GF253 = Fp_model<4L, mymodulus>;
 
