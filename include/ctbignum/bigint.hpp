@@ -1,11 +1,19 @@
 #ifndef CT_BIGINT_HPP
 #define CT_BIGINT_HPP
 
-#include <sprout/array.hpp>
+#include <array>
 
 namespace cbn {
 
-  //TODO enable if op integral type
-template <size_t N, typename T = uint64_t> using big_int = sprout::array<T, N>;
+// TODO ensure using SFINAE that T is an integral type
+
+template <size_t N, typename T = uint64_t> struct big_int {
+  std::array<T, N> repr;
+
+  constexpr T &operator[](size_t i) { return repr[i]; }
+  constexpr const T &operator[](size_t i) const { return repr[i]; }
+  constexpr size_t size() const noexcept { return repr.size(); }
+};
 }
+
 #endif

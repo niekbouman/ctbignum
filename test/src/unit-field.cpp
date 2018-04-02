@@ -1,6 +1,7 @@
 #include "catch.hpp"
 
 #include <ctbignum/ctbignum.hpp>
+#include <ctbignum/relational_ops.hpp>
 #include <boost/hana.hpp>
 
 TEST_CASE("Finite Field class") {

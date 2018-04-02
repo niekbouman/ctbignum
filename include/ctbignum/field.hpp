@@ -26,7 +26,7 @@ template <typename T, T... Modulus> struct ZqElement {
   template <std::size_t N>
   constexpr ZqElement(big_int<N, T> init)
   // reduce init mod q if necessary, where q = Modulus
-      : data(greater_than(big_int<sizeof...(Modulus), T>{Modulus...}, init)
+      : data(init < big_int<sizeof...(Modulus), T>{Modulus...}
                  ? detail::first<sizeof...(Modulus)>(init)
                  : barrett_reduction(init,
                                      std::integer_sequence<T, Modulus...>())) {}

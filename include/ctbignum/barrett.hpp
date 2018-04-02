@@ -59,9 +59,9 @@ constexpr auto barrett_reduction(big_int<N1, T> x,
     r = add_ignore_carry(r, unary_encoding<N2, N2 + 1>());
 
   auto padded_mod = pad<1>(modulus);
-  if (!greater_than(padded_mod, r))
+  if (r >= padded_mod)
     r = subtract_ignore_carry(r, padded_mod);
-  if (!greater_than(padded_mod, r))
+  if (r >= padded_mod)
     r = subtract_ignore_carry(r, padded_mod);
 
   return first<N2>(r);
@@ -99,9 +99,9 @@ constexpr auto barrett_reduction(big_int<N1, T> x, big_int<N2, T> modulus,
     r = add_ignore_carry(r, unary_encoding<N2, N2 + 1>());
 
   auto padded_mod = pad<1>(modulus);
-  if (!greater_than(padded_mod, r))
+  if (r >= padded_mod)
     r = subtract_ignore_carry(r, padded_mod);
-  if (!greater_than(padded_mod, r))
+  if (r >= padded_mod)
     r = subtract_ignore_carry(r, padded_mod);
 
   return first<N2>(r);
