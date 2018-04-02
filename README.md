@@ -10,7 +10,7 @@ Currently, the library supports the following operations
 - subtraction, 
 - multiplication (naive O(n^2) "schoolbook" multiplication)
 - division: short division (single-limb divisor) and Donald Knuth's "algorithm D"
-- comparison (lexicographical compare from the Sprout C++ Libraries),
+- comparison
 - modular addition,
 - extended GCD and modular inverse,
 - Barrett reduction, 
@@ -26,7 +26,6 @@ Because this is a header-only library, installation is as easy as downloading an
 - C++17 compiler (e.g., recent GCC or Clang) 
 - compiler support for \_\_uint128\_t type (used for multiplication and division) 
 - [Boost.Hana (Louis Dionne)](http://boostorg.github.io/hana/)
-- [Sprout C++ Libraries (Bolero Murakami)](https://github.com/bolero-MURAKAMI/Sprout)
 
 ### Dependencies for compiling and running the benchmarks
 - [NTL (Victor Shoup's number theory library)](http://www.shoup.net/ntl/), version 10.5.0 or newer.
