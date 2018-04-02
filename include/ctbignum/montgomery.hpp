@@ -48,7 +48,7 @@ constexpr auto montgomery_reduction(big_int<N1, T> A,
 
   auto result = skip<N2>(accum);
   auto padded_mod = pad<1>(m);
-  if (!greater_than(padded_mod, result))
+  if (result >= padded_mod)
     result = subtract_ignore_carry(result, padded_mod);
 
   return first<N2>(result);
@@ -95,7 +95,7 @@ constexpr auto montgomery_mul(big_int<N, T> x, big_int<N, T> y,
   }
 
   auto padded_mod = pad<1>(m);
-  if (!greater_than(padded_mod, A))
+  if (A >= padded_mod)
     A = subtract_ignore_carry(A, padded_mod);
   return first<N>(A);
 }
@@ -133,7 +133,7 @@ constexpr auto montgomery_reduction(big_int<N1, T> A, big_int<N2, T> m,
   auto result = skip<N2>(accum);
 
   auto padded_mod = pad<1>(m);
-  if (!greater_than(padded_mod, result))
+  if (result >= padded_mod)
     result = subtract_ignore_carry(result, padded_mod);
 
   return first<N2>(result);
@@ -174,7 +174,7 @@ constexpr auto montgomery_mul(big_int<N, T> x, big_int<N, T> y, big_int<N, T> m,
   }
 
   auto padded_mod = pad<1>(m);
-  if (!greater_than(padded_mod, A))
+  if (A >= padded_mod)
     A = subtract_ignore_carry(A, padded_mod);
   return first<N>(A);
 }

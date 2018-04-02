@@ -56,7 +56,7 @@ foreach(file ${files})
     target_link_libraries(${testcase} ${NTL_LIBRARIES} ${GMP_LIBRARIES})
 
     if (${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
-        set_target_properties(${testcase} PROPERTIES COMPILE_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated -Wno-float-equal -fconstexpr-steps=2000000")
+        set_target_properties(${testcase} PROPERTIES COMPILE_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated -Wno-float-equal -fconstexpr-steps=2300000")
     elseif(CMAKE_COMPILER_IS_GNUCXX)
         set_target_properties(${testcase} PROPERTIES COMPILE_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated -Wno-float-equal -fconstexpr-depth=30")
     endif()
