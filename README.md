@@ -49,11 +49,10 @@ static_assert(number == expected_result, "initialization failure");
 (See [unit tests](test/src/unit-tests.cpp) for more examples.)
 
 ### Documentation
-[Finite-field arithmetic](doc/finitefield.md)
-
+- [A Fixed-Size Big-Integer Type: `big_int`](doc/bigint.md)
+- [Arithmetic modulo *q*](doc/finitefield.md)
 
 ### Development
-
 To run the tests in a docker image using `.gitlab-ci.yml`:
 - [Get gitlab-runner](https://docs.gitlab.com/runner/install/index.html)
 - Run `gitlab-runner exec docker build` from the project root directory
