@@ -282,7 +282,14 @@ TEST_CASE("Montgomery mult") {
   //static_assert(montgomery_mul2(x,y,modulus_seq) == ans);
 }
 
-
+TEST_CASE("Montgomery mult template deduction") {
+  using namespace cbn;
+  big_int<4> x;
+  big_int<4> y;
+  big_int<4> modulus;
+  montgomery_mul(x, y, modulus, (int) 1);
+  montgomery_reduction(mul(x, y), modulus, (uint8_t) 1);
+}
 
 TEST_CASE("Montgomery reduction - automatic precomputation") {
   using namespace cbn;

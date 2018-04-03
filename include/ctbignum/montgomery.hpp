@@ -100,11 +100,19 @@ constexpr auto montgomery_mul(big_int<N, T> x, big_int<N, T> y,
   return first<N>(A);
 }
 
+namespace {
+// Define a template that can be used to prevent type deduction of a parameter.
+template <typename T> struct Identity { typedef T type; };
+template <typename T> using Identity_t = typename Identity<T>::type;
+} // anonymous namespace
+
 // Runtime-parameter variants
 
+/// Note: the type of the last parameter is not deduced from itself, but from
+/// the other parameters instead.
 template <typename T, std::size_t N1, std::size_t N2>
 constexpr auto montgomery_reduction(big_int<N1, T> A, big_int<N2, T> m,
-                                    T mprime) {
+                                    Identity_t<T> mprime) {
   // Montgomery reduction with runtime parameters
   //
   // inputs:
@@ -139,9 +147,11 @@ constexpr auto montgomery_reduction(big_int<N1, T> A, big_int<N2, T> m,
   return first<N2>(result);
 }
 
+/// Note: the type of the last parameter is not deduced from itself, but from
+/// the other parameters instead.
 template <typename T, std::size_t N>
 constexpr auto montgomery_mul(big_int<N, T> x, big_int<N, T> y, big_int<N, T> m,
-                              T mprime) {
+                              Identity_t<T> mprime) {
   // Montgomery multiplication with runtime parameters
 
   using detail::skip;
