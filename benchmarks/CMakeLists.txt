@@ -18,7 +18,7 @@ endif()
 find_package(GMP REQUIRED)
 find_package(NTL REQUIRED)
 find_package(Benchmark REQUIRED)
-
+find_package(Threads REQUIRED)
 
 # optimizations for libff
 add_definitions(-DUSE_ASM)
@@ -32,6 +32,5 @@ set(
    "${CMAKE_EXE_LINKER_FLAGS} " #-flto=thin"
 )
 
-
 target_include_directories(bench PRIVATE ${NJBOUMAN_CTBIGNUM_INCLUDE_BUILD_DIR} ${Benchmark_INCLUDES} ${NTL_INCLUDES} ${GMP_INCLUDES})
-target_link_libraries(bench ${Benchmark_LIBRARIES}  ${NTL_LIBRARIES} ${GMP_LIBRARIES})
+target_link_libraries(bench ${Benchmark_LIBRARIES}  ${NTL_LIBRARIES} ${GMP_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
