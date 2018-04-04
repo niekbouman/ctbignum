@@ -19,11 +19,12 @@ build:
     # libff
     - git clone https://github.com/scipr-lab/libff.git
     - cd libff
-    - git submodule init && git submodule update
-    - mkdir build && cd build
-    - cmake ..
-    - make install
-    - cd ../..
+    #- git submodule init && git submodule update
+    #- mkdir build && cd build
+    - mv libff /usr/local/include/
+    #- cmake ..
+    #- make install
+    - cd ..
     # Google Test
     - apt-get --yes install libgtest-dev
     - mkdir gtest && cd gtest
