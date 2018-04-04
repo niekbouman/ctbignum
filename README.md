@@ -24,8 +24,6 @@ Because this is a header-only library, installation is as easy as downloading an
 
 ### Dependencies
 - C++17 compiler (e.g., recent GCC or Clang) 
-- compiler support for \_\_uint128\_t type (used for multiplication and division) 
-- [Boost.Hana (Louis Dionne)](http://boostorg.github.io/hana/)
 
 ### Dependencies for compiling and running the benchmarks
 - [NTL (Victor Shoup's number theory library)](http://www.shoup.net/ntl/), version 10.5.0 or newer.
@@ -37,9 +35,7 @@ Because this is a header-only library, installation is as easy as downloading an
 ```cpp
 // String Initialization (with automatic deduction of number of limbs)
 
-constexpr auto number = cbn::string_to_big_int(
-    BOOST_HANA_STRING("6513020836420374401749667047018991798096360820"));
-
+constexpr auto number = cbn::to_big_int(6513020836420374401749667047018991798096360820_Z);
 constexpr big_int<3> expected_result = {{1315566964, 326042948, 19140048}};
 
 static_assert(number == expected_result, "initialization failure");
