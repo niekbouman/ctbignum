@@ -5,15 +5,13 @@ The library supports finite-field arithmetic in the field Z/pZ, i.e., the intege
 First, we declare the *type* of the finite field by calling the [`Zq`](https://github.com/niekbouman/finitefield/search?q=%22auto+Zq%22) template function, which creates a dummy instance of the [`ZqElement`](/include/ctbignum/field.hpp) class, of which we take the type using C++'s `decltype` keyword:
 
 ```cpp
-using namespace boost::hana::literals; // to enable the "<string>"_s syntax
-
-using GF101 = decltype(Zq("1267650600228229401496703205653"_s));
+using GF101 = decltype(Zq(1267650600228229401496703205653_Z));
 // define the type of a 101-bit prime field
 ```
 Now, we can create instances of our newly created type, and perform arithmetic using the overloaded operators in the finite field:
 ```cpp
-GF101 x("8732191096651392800298638976"_s);
-GF101 y("27349736"_s);
+GF101 x(8732191096651392800298638976_Z);
+GF101 y(27349736_Z);
 
 auto sum = x + y;
 auto prod = x * y;
@@ -47,11 +45,9 @@ template <typename T, T... Modulus> struct ZqElement {
   // skips modulo reduction, should only be used if it is guaranteed that:
   //   init < modulus
 
-  template <typename String,
-            typename = std::enable_if_t< // only bind to Hana strings
-                boost::hana::is_a<boost::hana::string_tag, String>>>
-  constexpr ZqElement(String s);
-  // automatically parses compile-time string
+  template <T... Limbs>
+  constexpr ZqElement(std::integer_sequence<T, Limbs...>);
+  // initialize with a compile-time (constant-expression) big-integer
   
 };
 ```
