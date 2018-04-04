@@ -5,9 +5,9 @@
 
 namespace cbn {
 
-// TODO ensure using SFINAE that T is an integral type
-
-template <size_t N, typename T = uint64_t> struct big_int {
+template <size_t N, typename T = uint64_t,
+          typename = std::enable_if_t<std::is_integral<T>::value>>
+struct big_int {
   std::array<T, N> repr;
 
   constexpr T &operator[](size_t i) { return repr[i]; }
