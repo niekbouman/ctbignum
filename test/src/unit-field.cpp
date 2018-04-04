@@ -1,8 +1,6 @@
 #include "catch.hpp"
 
 #include <ctbignum/ctbignum.hpp>
-#include <ctbignum/relational_ops.hpp>
-#include <boost/hana.hpp>
 
 TEST_CASE("Finite Field class") {
 
@@ -35,8 +33,6 @@ TEST_CASE("Finite Field class") {
   }
 
   SECTION("Multiplication") {
-
-    using namespace boost::hana::literals;
 
     using GF101 = decltype(Zq(1267650600228229401496703205653_Z));
 
