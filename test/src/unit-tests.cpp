@@ -1,39 +1,25 @@
 #include "catch.hpp"
 
-#include <boost/hana.hpp>
-
-#include <boost/hana/ext/std/array.hpp>
-#include <array>
-
-#include <boost/hana/string.hpp>
-
-#include <sprout/array.hpp>
-#include <iostream>
-
 #include <ctbignum/addition.hpp>
-#include <ctbignum/field.hpp>
-#include <ctbignum/mult.hpp>
-#include <ctbignum/initialization.hpp>
-#include <ctbignum/slicing.hpp>
 #include <ctbignum/barrett.hpp>
-#include <ctbignum/montgomery.hpp>
-#include <ctbignum/division.hpp>
-#include <ctbignum/gcd.hpp>
-#include <ctbignum/print.hpp>
-#include <ctbignum/io.hpp>
 #include <ctbignum/bigint.hpp>
-#include <ctbignum/relational_ops.hpp>
+#include <ctbignum/division.hpp>
+#include <ctbignum/field.hpp>
+#include <ctbignum/gcd.hpp>
+#include <ctbignum/initialization.hpp>
+#include <ctbignum/io.hpp>
 #include <ctbignum/mod_exp.hpp>
+#include <ctbignum/montgomery.hpp>
+#include <ctbignum/mult.hpp>
+#include <ctbignum/print.hpp>
+#include <ctbignum/relational_ops.hpp>
+#include <ctbignum/slicing.hpp>
 
+#include <boost/hana.hpp>
+#include <iostream>
 #include <random>
-#include<NTL/ZZ.h>
-#include<NTL/ZZ_p.h>
 
-
-//template <size_t N> using big_int = sprout::array<uint64_t, N>;
-//template <size_t N> using big_int = std::array<uint64_t, N>;
 using namespace std;
-
 
 TEST_CASE("Addition") {
 
@@ -46,23 +32,10 @@ TEST_CASE("Addition") {
   constexpr big_int<2> correct_answer = {
       {18446744073709551435UL, 4611686018427387903UL}};
 
-  //constexpr auto result_ugly_syntax =
-  //    mod_add_<sprout::array, uint64_t, 2UL, 181UL, 13835058055282163712UL>(a,b);
-
   constexpr auto result_friendly_syntax = mod_add(a, b, p);
 
-  //REQUIRE(result_ugly_syntax == correct_answer);
   REQUIRE(result_friendly_syntax == correct_answer);
-  //static_assert(result_ugly_syntax == correct_answer, "fail");
-
   static_assert(result_friendly_syntax == correct_answer, "fail");
-  //static_assert(result_friendly_syntax == correct_answer, "fail");
-
-  //Zq<181UL, 13835058055282163712UL> F{};
-  //constexpr auto result = F.add(a, b);
-
-  //REQUIRE(result == correct_answer);
-  //static_assert(result == correct_answer, "fail");
 }
 
 TEST_CASE("subtraction") {
@@ -472,24 +445,6 @@ TEST_CASE("Modular Exponentiation") {
   //REQUIRE(cbn::mod_exp_montgomery(x,e,m) == ans);
 
 }
-
-
-TEST_CASE("") {
-
-  using NTL::ZZ;
-  using NTL::ZZ_p;
-  using NTL::conv;
-
-  auto modulus = conv<ZZ>("1606938044258990275541962092341162602522202993782792835301611");
-  ZZ_p::init(modulus);
-
-
-  ZZ_p x = conv<ZZ_p>(modulus-1);
-  //print(x._ZZ_p__rep.size());
-
-
-}
-
 
 TEST_CASE("summation") {
 
