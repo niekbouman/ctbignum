@@ -1,8 +1,8 @@
-# Finite field arithmetic
+# Arithmetic in the ring Z/qZ
 
-The library supports finite-field arithmetic in the field Z/pZ, i.e., the integers modulo a prime, where this prime is fixed at compile time.
+The library supports arithmetic in the ring Z/qZ, i.e., the integers modulo some integer q, where q is fixed at compile time.
 
-First, we declare the *type* of the finite field by calling the [`Zq`](https://github.com/niekbouman/finitefield/search?q=%22auto+Zq%22) template function, which creates a dummy instance of the [`ZqElement`](/include/ctbignum/field.hpp) class, of which we take the type using C++'s `decltype` keyword:
+First, we declare the *type* of the ring by calling the [`Zq`](https://github.com/niekbouman/finitefield/search?q=%22auto+Zq%22) template function, which creates a dummy instance of the [`ZqElement`](/include/ctbignum/field.hpp) class, of which we take the type using C++'s `decltype` keyword:
 
 ```cpp
 using namespace boost::hana::literals; // to enable the "<string>"_s syntax
@@ -10,7 +10,7 @@ using namespace boost::hana::literals; // to enable the "<string>"_s syntax
 using GF101 = decltype(Zq("1267650600228229401496703205653"_s));
 // define the type of a 101-bit prime field
 ```
-Now, we can create instances of our newly created type, and perform arithmetic using the overloaded operators in the finite field:
+Now, we can create instances of our newly created type, and perform arithmetic using the overloaded operators in the ring:
 ```cpp
 GF101 x("8732191096651392800298638976"_s);
 GF101 y("27349736"_s);
