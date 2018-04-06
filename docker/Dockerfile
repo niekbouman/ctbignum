@@ -1,3 +1,5 @@
+# Pushed to hub.docker.com, image jengelen/finitefield
+
 FROM gcc:latest
 
 RUN apt-get update && apt-get install -y \
