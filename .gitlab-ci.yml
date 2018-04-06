@@ -1,55 +1,8 @@
-image: gcc:latest
+# All dependencies are installed in this image
+image: jengelen/finitefield
 
 build:
   stage: build
-
-# Install dependencies
-  before_script:
-    - apt-get update
-    - apt-get --yes install build-essential libboost-all-dev
-    - apt-get --yes install git libgmp3-dev libssl-dev libprocps-dev pkg-config
-    - mkdir dependencies && cd dependencies
-    # CMake >= 3.9
-    - wget -O cmake-Linux-x86_64.sh https://cmake.org/files/v3.10/cmake-3.10.3-Linux-x86_64.sh
-    - sh ./cmake-Linux-x86_64.sh --prefix=/usr/local --skip-license
-    - cmake --version
-    # Sprout
-    - git clone https://github.com/bolero-MURAKAMI/Sprout.git
-    - mv ./Sprout/sprout /usr/local/include/sprout
-    # libff
-    - git clone https://github.com/scipr-lab/libff.git
-    - cd libff
-    #- git submodule init && git submodule update
-    #- mkdir build && cd build
-    - mv libff /usr/local/include/
-    #- cmake ..
-    #- make install
-    - cd ..
-    # Google Test
-    - apt-get --yes install libgtest-dev
-    - mkdir gtest && cd gtest
-    - cmake /usr/src/googletest/googletest -DCMAKE_BUILD_TYPE=RELEASE
-    - make
-    - mv libgtest* /usr/lib/
-    - cd ..
-    # Google Benchmark
-    - git clone https://github.com/google/benchmark.git
-    - cd benchmark
-    - mkdir build && cd build
-    - cmake .. -DCMAKE_BUILD_TYPE=RELEASE
-    - make install
-    - cd ../..
-    # NTL
-    - wget -O ntl.tar.xz http://www.shoup.net/ntl/ntl-10.5.0.tar.gz
-    - mkdir ntl
-    - tar -xf ntl.tar.* --strip 1 -C ntl
-    - cd ntl/src
-    - ./configure NTL_STD_CXX14=on
-    - make
-    - make install
-    - cd ../..
-    # Done with dependencies
-    - cd ..
 
   script:
     - mkdir build && cd build
