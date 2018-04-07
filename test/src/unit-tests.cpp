@@ -15,7 +15,6 @@
 #include <ctbignum/relational_ops.hpp>
 #include <ctbignum/slicing.hpp>
 
-#include <boost/hana.hpp>
 #include <iostream>
 #include <random>
 
@@ -142,27 +141,17 @@ TEST_CASE("Squaring") {
 TEST_CASE("String Initialization") {
 
   using namespace cbn;
-  auto s = BOOST_HANA_STRING("6513020836420374401749667047018991798096360820");
-  constexpr auto num = string_to_big_int<4>(s);
-  constexpr big_int<4> res = {{1315566964, 326042948, 19140048, 0}};
+  
+  constexpr auto num = to_big_int(6513020836420374401749667047018991798096360820_Z);
+  constexpr big_int<3> res = {1315566964, 326042948, 19140048};
 
   REQUIRE(res == num);
   static_assert(res == num, "fail");
 }
 
-TEST_CASE("String Initialization -- auto length deduction") {
 
-  using namespace cbn;
-  auto s = BOOST_HANA_STRING("6513020836420374401749667047018991798096360820");
-  constexpr auto num = string_to_big_int(s);
-
-  constexpr big_int<3> res = {{1315566964, 326042948, 19140048}};
-
-  REQUIRE(num == res);
-  static_assert(num == res, "fail");
-}
-
-TEST_CASE("String Initialization other base type -- auto length deduction") {
+/*
+TEST_CASE("String Initialization other base type") {
 
   using namespace cbn;
   auto s = BOOST_HANA_STRING("85070591730234618820156358408775751693");
@@ -174,44 +163,32 @@ TEST_CASE("String Initialization other base type -- auto length deduction") {
   REQUIRE(num == res);
   static_assert(num == res, "fail");
 }
+*/
 
 TEST_CASE("String output") {
 
   using namespace cbn;
-  auto s = BOOST_HANA_STRING("85070591730234618820156358408775751693");
-  constexpr auto num = string_to_big_int(s);
-  // zero length means deduce automatically
+  constexpr auto num = to_big_int(85070591730234618820156358408775751693_Z);
 
-  //std::stringstream ss;
-
-  std::cout << "test: " <<  num << '\n';
-
-  //ss.
-
-  //REQUIRE(num == res);
-  //static_assert(num == res, "fail");
+  std::stringstream ss;
+  ss << num;
+   
+  REQUIRE(ss.str() == "85070591730234618820156358408775751693");
 }
 
 TEST_CASE("Barrett reduction") {
 
   using namespace cbn;
 
-  constexpr auto prime = string_to_big_int<4>(BOOST_HANA_STRING("1606938044258990275541962092341162602522202993782792835301611"));
-  constexpr auto mu = string_to_big_int<5>(
-      BOOST_HANA_STRING("834369935906605500935555353972481294766681454045567488"
-                        "2604411090793790119337922481889828929536"));
-
-  constexpr auto x = string_to_big_int<5>(
-      BOOST_HANA_STRING("1725436586697640946858688965569256363112777243042596638790631055949891"
-                        ));
-
-  constexpr auto ans = string_to_big_int<4>(
-      BOOST_HANA_STRING("1606938044258990275541962092341162602522202993782540505973038"));
+  constexpr auto prime = to_big_int(1606938044258990275541962092341162602522202993782792835301611_Z);
+  constexpr auto mu = to_big_int(8343699359066055009355553539724812947666814540455674882604411090793790119337922481889828929536_Z);
+  constexpr auto x = to_big_int<5>(1725436586697640946858688965569256363112777243042596638790631055949891_Z);
+  constexpr auto ans = to_big_int(1606938044258990275541962092341162602522202993782540505973038_Z);
 
   static_assert(barrett_reduction(x,prime,mu) == ans, "fail");
   REQUIRE(barrett_reduction(x,prime,mu) == ans);
   
-  auto mod = string_to_integer_seq(BOOST_HANA_STRING("1606938044258990275541962092341162602522202993782792835301611"));
+  auto mod = 1606938044258990275541962092341162602522202993782792835301611_Z;
 
   static_assert(barrett_reduction(x, mod) == ans, "fail");
   REQUIRE(barrett_reduction(x, mod) == ans);
@@ -220,10 +197,10 @@ TEST_CASE("Barrett reduction") {
 
 TEST_CASE("Montgomery reduction") {
   using namespace cbn;
-  constexpr auto modulus = string_to_big_int<2>(BOOST_HANA_STRING("1267650600228229401496703205653"));
+  constexpr auto modulus = to_big_int(1267650600228229401496703205653_Z);
   constexpr uint64_t mprime = 1265300135019788739UL;
-  constexpr auto T = string_to_big_int<4>(BOOST_HANA_STRING("1532495540865888858358347027150309183618739122183602175"));
-  constexpr auto ans = string_to_big_int<2>(BOOST_HANA_STRING("730531796855002292035529737298"));
+  constexpr auto T = to_big_int<4>(1532495540865888858358347027150309183618739122183602175_Z);
+  constexpr auto ans = to_big_int(730531796855002292035529737298_Z);
 
   static_assert(montgomery_reduction(T,modulus,mprime) == ans, "fail");
   REQUIRE(montgomery_reduction(T,modulus,mprime) == ans);
@@ -235,12 +212,12 @@ TEST_CASE("Montgomery reduction") {
 TEST_CASE("Montgomery mult") {
   using namespace cbn;
   
-  constexpr auto modulus = string_to_big_int(BOOST_HANA_STRING("1267650600228229401496703205653"));
+  constexpr auto modulus = to_big_int(1267650600228229401496703205653_Z);
 
   constexpr uint64_t mprime = 1265300135019788739UL;
 
-  constexpr auto x = string_to_big_int(BOOST_HANA_STRING("924750812939937572408690850011"));
-  constexpr auto y = string_to_big_int(BOOST_HANA_STRING("478633290783786461322094322310"));
+  constexpr auto x = to_big_int(924750812939937572408690850011_Z);
+  constexpr auto y = to_big_int(478633290783786461322094322310_Z);
 
   constexpr auto ans = montgomery_reduction(mul(x,y),modulus,mprime);
 
@@ -249,7 +226,7 @@ TEST_CASE("Montgomery mult") {
   REQUIRE(montgomery_mul(x,y,modulus,mprime) == ans);
   
 
-  auto modulus_seq = string_to_integer_seq(BOOST_HANA_STRING("1267650600228229401496703205653"));
+  auto modulus_seq = 1267650600228229401496703205653_Z;
 
   static_assert(montgomery_mul(x,y,modulus_seq) == ans);
   //static_assert(montgomery_mul2(x,y,modulus_seq) == ans);
@@ -266,33 +243,24 @@ TEST_CASE("Montgomery mult template deduction") {
 
 TEST_CASE("Montgomery reduction - automatic precomputation") {
   using namespace cbn;
-  
-  constexpr auto modulus = string_to_integer_seq(BOOST_HANA_STRING("1267650600228229401496703205653"));
-  constexpr auto T = string_to_big_int<4>(BOOST_HANA_STRING("1532495540865888858358347027150309183618739122183602175"));
-  constexpr auto ans = string_to_big_int<2>(BOOST_HANA_STRING("730531796855002292035529737298"));
 
-     static_assert(montgomery_reduction(T,modulus) == ans, "fail");
-  //REQUIRE(montgomery_reduction(T,modulus,mprime) == ans);
+  constexpr auto modulus = 1267650600228229401496703205653_Z;
+  constexpr auto T = to_big_int<4>(1532495540865888858358347027150309183618739122183602175_Z);
+  constexpr auto ans = to_big_int(730531796855002292035529737298_Z);
+
+  static_assert(montgomery_reduction(T, modulus) == ans, "fail");
+  // REQUIRE(montgomery_reduction(T,modulus,mprime) == ans);
 }
-
-
-
 
 TEST_CASE("Division") {
   using namespace cbn;
 
-  constexpr auto u = string_to_big_int<6>(BOOST_HANA_STRING(
-      "49252507745493099015348800125179517256349674088081808334935366755307"
-      "15221437151326426783281860614455100828498788859"));
-  constexpr auto v = string_to_big_int<4>(
-      BOOST_HANA_STRING("144740111546645244279463731260859884816587480832050705"
-                        "04932198000989141205031"));
+  constexpr auto u = to_big_int(4925250774549309901534880012517951725634967408808180833493536675530715221437151326426783281860614455100828498788859_Z);
+  constexpr auto v = to_big_int(14474011154664524427946373126085988481658748083205070504932198000989141205031_Z);
 
-  constexpr auto rem = string_to_big_int<4>(
-      BOOST_HANA_STRING("14474011154664524427946373126085988468387735773288470429860588311150180958754"));
+  constexpr auto rem = to_big_int(14474011154664524427946373126085988468387735773288470429860588311150180958754_Z);
 
-  constexpr auto quot = string_to_big_int<3>(
-      BOOST_HANA_STRING("340282366920938463463374607431768211455"));
+  constexpr auto quot = to_big_int(340282366920938463463374607431768211455_Z);
   
 
 
@@ -310,10 +278,10 @@ TEST_CASE("short div") {
 
   using namespace cbn;
 
-  constexpr auto a = string_to_big_int(BOOST_HANA_STRING("12103081107736073677280037"));
-  constexpr auto b = string_to_big_int(BOOST_HANA_STRING("2893462387"));
+  constexpr auto a = to_big_int(12103081107736073677280037_Z);
+  constexpr auto b = to_big_int(2893462387_Z);
       
-  constexpr auto ans = string_to_big_int(BOOST_HANA_STRING("4182905975247458"));
+  constexpr auto ans = to_big_int(4182905975247458_Z);
                                                        //   418290597524622793977
 
   constexpr auto quotrem = cbn::short_div(a,b[0]);
@@ -331,10 +299,10 @@ TEST_CASE("gcd") {
 
   using namespace cbn;
 
-  static constexpr auto a = string_to_integer_seq(BOOST_HANA_STRING("1210308110773251360736775280037"));
-  static constexpr auto b = string_to_integer_seq(BOOST_HANA_STRING("91726531791233920914026205331"));
+  static constexpr auto a = 1210308110773251360736775280037_Z;
+  static constexpr auto b = 91726531791233920914026205331_Z;
       
-  constexpr auto ans = string_to_big_int(BOOST_HANA_STRING("1505621586711374587419632790"));
+  constexpr auto ans = to_big_int(1505621586711374587419632790_Z);
   
 
   constexpr auto gcd = cbn::ext_gcd(a,b); 
@@ -354,10 +322,10 @@ TEST_CASE("gcd easy") {
 
   using namespace cbn;
 
-  static constexpr auto a = string_to_integer_seq(BOOST_HANA_STRING("1210308110773251360736775280037"));
-  static constexpr auto b = string_to_integer_seq(BOOST_HANA_STRING("91726531791233920914026205331"));
+  static constexpr auto a = 1210308110773251360736775280037_Z;
+  static constexpr auto b = 91726531791233920914026205331_Z;
       
-  constexpr auto ans = string_to_big_int(BOOST_HANA_STRING("1505621586711374587419632790"));
+  constexpr auto ans = to_big_int(1505621586711374587419632790_Z);
   
 
   constexpr auto gcd = cbn::ext_gcd_(a,b); 
@@ -379,10 +347,10 @@ TEST_CASE("modular inverse") {
 
   using namespace cbn;
 
-  constexpr auto x = string_to_integer_seq(BOOST_HANA_STRING("1210308110773251360736775280037"));
-  auto m = string_to_integer_seq(BOOST_HANA_STRING("91726531791233920914026205331"));
+  constexpr auto x = 1210308110773251360736775280037_Z;
+  auto m = 91726531791233920914026205331_Z;
       
-  constexpr auto ans = string_to_big_int(BOOST_HANA_STRING("1505621586711374587419632790"));
+  constexpr auto ans = to_big_int(1505621586711374587419632790_Z);
 
   static_assert(cbn::mod_inv(x,m) == ans, "fail");
 
@@ -395,17 +363,14 @@ TEST_CASE("arrayconv") {
   //static constexpr std::array<size_t, 4> a {{1, 3, 5, 6}};
   //constexpr auto s = 
 
-  constexpr auto x = string_to_big_int<5>(
-      BOOST_HANA_STRING("1725436586697640946858688965569256363112777243042596638790631055949891"
-                        ));
+  constexpr auto x = to_big_int(1725436586697640946858688965569256363112777243042596638790631055949891_Z);
 
-  constexpr auto ans = string_to_big_int<4>(
-      BOOST_HANA_STRING("1606938044258990275541962092341162602522202993782540505973038"));
+  constexpr auto ans = to_big_int(1606938044258990275541962092341162602522202993782540505973038_Z);
 
   //static_assert(barrett_reduction(x,prime,mu) == ans, "fail");
   //REQUIRE(barrett_reduction(x,prime,mu) == ans);
   
-  auto modulus = string_to_integer_seq(BOOST_HANA_STRING("1606938044258990275541962092341162602522202993782792835301611"));
+  auto modulus = 1606938044258990275541962092341162602522202993782792835301611_Z;
 
  // static_assert(barrett_reduction(x,modulus) == ans, "fail");
   REQUIRE(barrett_reduction(x,modulus) == ans);
@@ -419,22 +384,22 @@ TEST_CASE("Modular Exponentiation") {
 
   using namespace cbn;
 
-  //constexpr auto x = string_to_big_int(BOOST_HANA_STRING("8720319859187456713659817365803476381756813759"));
-  constexpr auto x = string_to_big_int(BOOST_HANA_STRING("123512321638732781541098374832654"));
-  constexpr auto e = string_to_big_int(BOOST_HANA_STRING("1180591620739245727853"));
-  constexpr auto m = string_to_integer_seq(BOOST_HANA_STRING("85070591730234618820156358408775751693"));
-  //constexpr auto ans = string_to_big_int(BOOST_HANA_STRING("74509724535899236211803247263430915052"));
-  constexpr auto ans = string_to_big_int(BOOST_HANA_STRING("65447949695390573931730737899088862792"));
+  //constexpr auto x = to_big_int(8720319859187456713659817365803476381756813759_Z);
+  constexpr auto x = to_big_int(123512321638732781541098374832654_Z);
+  constexpr auto e = to_big_int(1180591620739245727853_Z);
+  constexpr auto m = 85070591730234618820156358408775751693_Z;
+  //constexpr auto ans = to_big_int(74509724535899236211803247263430915052_Z);
+  constexpr auto ans = to_big_int(65447949695390573931730737899088862792_Z);
 
-  //constexpr auto x = string_to_big_int(BOOST_HANA_STRING("2"));
-  //constexpr auto e = string_to_big_int(BOOST_HANA_STRING("21"));
-  //constexpr auto m = string_to_integer_seq(BOOST_HANA_STRING("1048583"));
-  //constexpr auto ans = string_to_big_int(BOOST_HANA_STRING("1048569"));
+  //constexpr auto x = to_big_int(2_Z);
+  //constexpr auto e = to_big_int(21_Z);
+  //constexpr auto m = 1048583_Z;
+  //constexpr auto ans = to_big_int(1048569_Z);
   //
   //
   //
   
-  //constexpr auto ans = string_to_big_int(BOOST_HANA_STRING("57840141081826923106833721816893554682"));
+  //constexpr auto ans = to_big_int(57840141081826923106833721816893554682_Z);
 
 
   static_assert(cbn::mod_exp(x,e,m) == ans, "fail");
@@ -449,11 +414,10 @@ TEST_CASE("Modular Exponentiation") {
 TEST_CASE("summation") {
 
   using namespace cbn;
-  auto modulus = string_to_integer_seq(
-      BOOST_HANA_STRING("85070591730234618820156358408775751693"));
+  auto modulus = 85070591730234618820156358408775751693_Z;
   using F = decltype(Zq(modulus));
-  F a{string_to_big_int<2>(BOOST_HANA_STRING("300"))};
-  F b{string_to_big_int<2>(BOOST_HANA_STRING("450"))};
+  F a{to_big_int(300_Z)};
+  F b{to_big_int(450_Z)};
 
   auto c = a + b;
 

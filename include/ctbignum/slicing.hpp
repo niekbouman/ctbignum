@@ -10,8 +10,8 @@ namespace detail {
 template <size_t Begin, size_t End, size_t Padding=0, 
           typename T, size_t N1>
 constexpr auto take(big_int< N1, T> t) {
-  static_assert(End >= Begin, "invalid range");
-  static_assert(End - Begin <= N1, "invalid range");
+  //static_assert(End >= Begin, "invalid range");
+  //static_assert(End - Begin <= N1, "invalid range");
 
   big_int< End - Begin + Padding, T> res{};
   for (auto i = Begin; i < End; ++i) {
@@ -35,7 +35,7 @@ constexpr auto take(big_int< N1, T> t, const size_t Begin, const size_t End, con
 
 template <size_t N, size_t Padding = 0, typename T,
           size_t N1>
-constexpr auto skip(big_int< N1, T> t) {
+constexpr auto skip(big_int<N1, T> t) {
   // skip first N limbs
   // skip<N>(x) corresponds with right-shifting x by N limbs
   return take<N, N1, Padding>(t);
@@ -43,17 +43,24 @@ constexpr auto skip(big_int< N1, T> t) {
 
 template <size_t N, typename T,
           size_t N1>
-constexpr auto first(big_int< N1, T> t) {
+constexpr auto first(big_int<N1, T> t) {
   // take first N limbs
   // first<N>(x) corresponds with x modulo (2^64)^N
   return take<0, N>(t);
 }
 
+
+
 template <size_t N, typename T,
           size_t N1>
-constexpr auto pad(big_int< N1, T> t) {
+constexpr auto pad(big_int<N1, T> t) {
   // add N extra limbs (at msb side)
   return take<0, N1, N>(t);
+}
+
+template <size_t N, typename T, size_t N1>
+constexpr auto to_length(big_int<N1, T> t) {
+  return (N1 < N) ? pad<N - N1>(t) : first<N>(t);
 }
 
 template <typename T,

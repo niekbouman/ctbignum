@@ -13,8 +13,7 @@
 
 static void modadd(benchmark::State &state) {
   using namespace cbn;
-  constexpr auto prime = cbn::string_to_big_int<4>(BOOST_HANA_STRING(
-      "1606938044258990275541962092341162602522202993782792835301611"));
+  constexpr auto prime = to_big_int(1606938044258990275541962092341162602522202993782792835301611_Z);
 
   std::default_random_engine generator;
   std::uniform_int_distribution<uint64_t> distribution(0);
@@ -53,8 +52,7 @@ static void modadd_ntl(benchmark::State &state) {
 
 static void modmul(benchmark::State &state) {
   using namespace cbn;
-  constexpr auto prime = cbn::string_to_integer_seq(BOOST_HANA_STRING(
-      "1606938044258990275541962092341162602522202993782792835301611"));
+  constexpr auto prime = 1606938044258990275541962092341162602522202993782792835301611_Z;
   //constexpr auto mu = cbn::string_to_big_int<5>(
   //    BOOST_HANA_STRING("834369935906605500935555353972481294766681454045567488"
   //                      "2604411090793790119337922481889828929536"));
@@ -101,8 +99,7 @@ BENCHMARK_F(MyFixture, fixture_mul)(benchmark::State &st) {
 
   using namespace cbn;
 
-  constexpr auto prime = cbn::string_to_integer_seq(BOOST_HANA_STRING(
-      "1606938044258990275541962092341162602522202993782792835301611"));
+  constexpr auto prime = 1606938044258990275541962092341162602522202993782792835301611_Z;
 
   size_t i = 0;
   auto base_ptr = data.data();
@@ -180,13 +177,13 @@ static void modexp(benchmark::State &state) {
   using namespace cbn;
 
   auto modulus =
-      string_to_integer_seq(BOOST_HANA_STRING("1606938044258990275541962092341162602522202993782792835301611"));
+      1606938044258990275541962092341162602522202993782792835301611_Z;
 
  
-  auto exp = string_to_big_int(BOOST_HANA_STRING("5208756711089370345167341923545687104"));
+  auto exp = to_big_int(5208756711089370345167341923545687104_Z);
 
 
-  auto a = string_to_big_int(BOOST_HANA_STRING("43234613467152613512549871563467271263417258763487658172645"));
+  auto a = to_big_int(43234613467152613512549871563467271263417258763487658172645_Z);
   //a = NTL::random_ZZ_p();
   //exp = NTL::RandomBits_ZZ(100);
 
@@ -201,11 +198,11 @@ static void modexp_mont(benchmark::State &state) {
   using namespace cbn;
 
   auto modulus =
-      string_to_integer_seq(BOOST_HANA_STRING("1606938044258990275541962092341162602522202993782792835301611"));
+      1606938044258990275541962092341162602522202993782792835301611_Z;
 
-  auto a = string_to_big_int(BOOST_HANA_STRING("43234613467152613512549871563467271263417258763487658172645"));
+  auto a = to_big_int(43234613467152613512549871563467271263417258763487658172645_Z);
  
-  auto exp = string_to_big_int(BOOST_HANA_STRING("5208756711089370345167341923545687104"));
+  auto exp = to_big_int(5208756711089370345167341923545687104_Z);
 
 
   //a = NTL::random_ZZ_p();
@@ -294,7 +291,7 @@ static void reduce_intseq(benchmark::State &state) {
   }
 
   for (auto _ : state) {
-    auto modulus = string_to_integer_seq(BOOST_HANA_STRING("1606938044258990275541962092341162602522202993782792835301611"));
+    auto modulus = 1606938044258990275541962092341162602522202993782792835301611_Z;
     benchmark::DoNotOptimize(barrett_reduction(x,modulus));
   }
 }
@@ -334,19 +331,16 @@ static void big_int_from_string(benchmark::State &state) {
   using NTL::conv;
 
   for (auto _ : state) {
-    auto x = string_to_big_int<4>(BOOST_HANA_STRING(
-        "1606938044258990275541962092341162602522202993782792835301611"));
+    auto x = to_big_int(1606938044258990275541962092341162602522202993782792835301611_Z);
     benchmark::DoNotOptimize(x);
   }
 }
 
 static void modadd_immediate(benchmark::State &state) {
   using namespace cbn;
-  constexpr auto prime = string_to_big_int<4>(BOOST_HANA_STRING(
-      "1606938044258990275541962092341162602522202993782792835301611"));
+  constexpr auto prime = to_big_int(1606938044258990275541962092341162602522202993782792835301611_Z);
 
-  auto y = string_to_big_int<4>(BOOST_HANA_STRING(
-      "1000431856504897268487649876408467273524360183457791240097764"));
+  auto y = to_big_int(1000431856504897268487649876408467273524360183457791240097764_Z);
 
   std::default_random_engine generator;
   std::uniform_int_distribution<uint64_t> distribution(0);
@@ -414,8 +408,7 @@ static void modadd_immediate_ntl(benchmark::State &state) {
 static void mul_immediate(benchmark::State &state) {
   using namespace cbn;
 
-  auto y = string_to_big_int<4>(BOOST_HANA_STRING(
-      "1000431856504897268487649876408467273524360183457791240097764"));
+  auto y = to_big_int(1000431856504897268487649876408467273524360183457791240097764_Z);
 
   std::default_random_engine generator;
   std::uniform_int_distribution<uint64_t> distribution(0);
@@ -678,9 +671,7 @@ static void mul_ntl(benchmark::State &state) {
 static void montmul(benchmark::State &state) {
 
   using namespace cbn;
-  auto prime = cbn::string_to_big_int(
-          BOOST_HANA_STRING("14474011154664524427946373126085988481658748083205"
-                            "070504932198000989141205031"));
+  auto prime = cbn::to_big_int(14474011154664524427946373126085988481658748083205070504932198000989141205031_Z);
 
   auto inv = 10405855631323336809ULL;
   std::default_random_engine generator;
@@ -704,9 +695,7 @@ static void montmul(benchmark::State &state) {
 static void montmul_auto(benchmark::State &state) {
 
   using namespace cbn;
-  auto prime = cbn::string_to_integer_seq(
-          BOOST_HANA_STRING("14474011154664524427946373126085988481658748083205"
-                            "070504932198000989141205031"));
+  auto prime = 14474011154664524427946373126085988481658748083205070504932198000989141205031_Z;
 
   std::default_random_engine generator;
   std::uniform_int_distribution<uint64_t> distribution(0);
@@ -799,9 +788,7 @@ static void mont_reduction(benchmark::State &state) {
 
   using namespace cbn;
 
-  auto prime = cbn::string_to_big_int(
-          BOOST_HANA_STRING("14474011154664524427946373126085988481658748083205"
-                            "070504932198000989141205031"));
+  auto prime = cbn::to_big_int(14474011154664524427946373126085988481658748083205070504932198000989141205031_Z);
 
 
   auto inv = 10405855631323336809ULL;
@@ -850,9 +837,7 @@ static void mont_reduction_auto(benchmark::State &state) {
 
   using namespace cbn;
 
-  auto prime = cbn::string_to_integer_seq(
-          BOOST_HANA_STRING("14474011154664524427946373126085988481658748083205"
-                            "070504932198000989141205031"));
+  auto prime = 14474011154664524427946373126085988481658748083205070504932198000989141205031_Z;
 
 
   std::default_random_engine generator;
