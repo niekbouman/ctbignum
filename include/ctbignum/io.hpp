@@ -22,7 +22,7 @@ std::ostream &operator<<(std::ostream &strm, cbn::big_int<N, T> obj) {
     auto qr = div(obj, power_of_ten);
     detail::assign(obj, qr.second);
     if (qr.first[0] > 9)
-      throw std::runtime_error("division output");
+      throw std::runtime_error("division error");
     char digit = 48 + qr.first[0];
     if (digit != '0' || (digit == '0' && !skip_zeros)) {
       strm << digit;
