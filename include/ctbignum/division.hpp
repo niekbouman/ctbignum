@@ -72,7 +72,7 @@ constexpr auto div(big_int<NplusM, T> u, big_int<NN, T> v) {
   for (int j = M; j >= 0; --j) {
     TT tmp = us[j + N - 1];
     TT tmp2 = us[j + N];
-    tmp += (tmp2 << 64);
+    tmp += (tmp2 << std::numeric_limits<T>::digits);
     TT qhat = tmp / v[N - 1];
     TT rhat = tmp % v[N - 1];
 
