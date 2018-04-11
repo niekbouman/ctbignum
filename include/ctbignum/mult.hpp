@@ -27,6 +27,7 @@ constexpr auto short_mul(big_int<N, T> a, T b) {
 }
 
 template <size_t padding_limbs = 0, size_t M, size_t N, typename T>
+[[gnu::always_inline]]
 constexpr auto mul(big_int<M, T> u, big_int<N, T> v) {
 
   using TT = typename dbl_bitlen<T>::type;
