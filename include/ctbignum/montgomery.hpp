@@ -54,7 +54,9 @@ constexpr auto montgomery_reduction(big_int<N1, T> A,
   return first<N2>(result);
 }
 
+
 template <typename T, std::size_t N, T... Modulus>
+[[gnu::always_inline]]
 constexpr auto montgomery_mul(big_int<N, T> x, big_int<N, T> y,
                               std::integer_sequence<T, Modulus...>) {
   // Montgomery multiplication with compile-time modulus
