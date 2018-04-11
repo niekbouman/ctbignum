@@ -44,7 +44,4 @@ RUN git clone https://github.com/scipr-lab/libff.git \
     && cd ../.. \
     && rm -rf benchmark
 
-# Install boost separately, because we are going to remove that dependency
-RUN apt-get install -y libboost-all-dev
-
 CMD ["/bin/bash"]
