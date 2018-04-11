@@ -11,6 +11,7 @@
 #include <iostream>
 #include <limits>
 
+namespace cbn {
 template <std::size_t N, typename T>
 std::ostream &operator<<(std::ostream &strm, cbn::big_int<N, T> obj) {
   using namespace cbn;
@@ -33,5 +34,8 @@ std::ostream &operator<<(std::ostream &strm, cbn::big_int<N, T> obj) {
   }
   return strm;
 }
+
+}
+
 
 #endif

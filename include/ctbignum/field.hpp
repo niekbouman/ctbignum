@@ -4,6 +4,7 @@
 #include <ctbignum/addition.hpp>
 #include <ctbignum/barrett.hpp>
 #include <ctbignum/initialization.hpp>
+#include <ctbignum/io.hpp>
 #include <ctbignum/mult.hpp>
 #include <ctbignum/slicing.hpp>
 
@@ -21,7 +22,9 @@ template <typename T, T... Modulus> struct ZqElement {
 
   explicit operator auto() const { return data; } // allow casting to big_int
 
-  constexpr ZqElement() {}
+  constexpr ZqElement() : data() {}
+
+  constexpr ZqElement(size_t x) : data{x} {}
 
   template <T... Limbs>
   constexpr ZqElement(std::integer_sequence<T, Limbs...>)
@@ -91,6 +94,7 @@ template <typename T, T... M>
 std::ostream &operator<<(std::ostream& strm, const ZqElement<T, M...>& obj)
 {
   strm << obj.data;
+  return strm;
 }
 
 
