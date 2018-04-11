@@ -2,6 +2,8 @@
 
 #include <ctbignum/ctbignum.hpp>
 
+#include <sstream>
+
 TEST_CASE("Finite Field class") {
 
   using namespace cbn;
@@ -44,5 +46,22 @@ TEST_CASE("Finite Field class") {
     static_assert((x*y).data == result.data);
     REQUIRE((x*y).data == result.data);
   }
+}
+
+TEST_CASE("Finite Field class - output to stream") {
+
+  using namespace cbn;
+
+  auto modulus = 83124387682521574012837928367540946873_Z;
+  // some dummy modulus
+
+  using GF = decltype(Zq(modulus));
+  constexpr GF num{4387682521574012837928367540_Z};
+  // some dummy number, smaller than the modulus
+
+  std::stringstream ss;
+  ss << num;
+
+  REQUIRE(ss.str() == "4387682521574012837928367540");
 }
 
