@@ -22,8 +22,11 @@ Currently, the library supports the following operations
 ### Installation
 Because this is a header-only library, installation is as easy as downloading and copying the contents of the `include` directory into your system's `include` directory (e.g. `/usr/local/include` or `/opt/local/include`).
 
+### Required compiler
+- Clang 5 or Apple LLVM/Clang 9.00 (C++17 compliant, older compilers may work but are untested)
+
 ### Dependencies
-- C++17 compiler (e.g., recent GCC or Clang) 
+- C++ Standard library
 
 ### Dependencies for compiling and running the benchmarks
 - [NTL (Victor Shoup's number theory library)](http://www.shoup.net/ntl/), version 10.5.0 or newer.
