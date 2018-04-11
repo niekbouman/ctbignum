@@ -14,4 +14,4 @@ D: main designer/author
 
 N: Johan Engelen
 E: jbc.engelen@gmail.com
-D: CI scripts / advice
+D: CI scripts / code reviews / bugfixes / advice
