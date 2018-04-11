@@ -52,6 +52,17 @@ static_assert(number == expected_result, "initialization failure");
 - [A Fixed-Size Big-Integer Type: `big_int`](doc/bigint.md)
 - [Arithmetic modulo *q*](doc/finitefield.md)
 
+### Citing our work
+If you would like to mention our library in your academic publication, then please cite the following work:
+*Multiprecision Arithmetic for Cryptology in C++ - Compile-Time Computations and Beating the Performance of Hand-Optimized Assembly at Run-Time*, Niek J. Bouman, 2018
+```
+  @misc{bouman18multi,
+    title={Multiprecision Arithmetic for Cryptology in C++ - Compile-Time Computations and Beating the Performance of Hand-Optimized Assembly at Run-Time},
+    author={Bouman, Niek J.},
+    note={\url{https://eprint.iacr.org/2018/}},
+  }
+```
+
 ### Development
 To run the tests in a docker image using `.gitlab-ci.yml`:
 - [Get gitlab-runner](https://docs.gitlab.com/runner/install/index.html)
