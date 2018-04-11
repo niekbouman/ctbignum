@@ -17,7 +17,8 @@ Currently, the library supports the following operations
 - Montgomery reduction,
 - Montgomery multiplication,
 - Modular exponentiation (based on Montgomery multiplication)
-- initialization from a compile-time string (using BOOST_HANA_STRING)
+- Compile-time initialization from a base-10 literal
+- Serialization to ostream as base-10 string (binary serialization is trivial, by just copying the limbs)
 
 ### Installation
 Because this is a header-only library, installation is as easy as downloading and copying the contents of the `include` directory into your system's `include` directory (e.g. `/usr/local/include` or `/opt/local/include`).
@@ -40,7 +41,7 @@ Because this is a header-only library, installation is as easy as downloading an
 // (with automatic deduction of number of limbs)
 
 constexpr auto number = cbn::to_big_int(6513020836420374401749667047018991798096360820_Z);
-constexpr big_int<3> expected_result = {{1315566964, 326042948, 19140048}};
+constexpr big_int<3> expected_result = {1315566964, 326042948, 19140048};
 
 static_assert(number == expected_result, "initialization failure");
 ```
