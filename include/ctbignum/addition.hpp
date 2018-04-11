@@ -5,11 +5,7 @@
 //
 //   C++ Library for Compile-Time and Run-Time Multi-Precision and Modular Arithmetic
 //   
-//   See the NOTICE file for the complete list of authors and contributors 
-//
-//   Copyright 2018 Niek J. Bouman
-//
-//   Licensed under the Apache License, Version 2.0 (the "License");
+//   Licensed under Authors
 //   you may not use this file except in compliance with the License.
 //   You may obtain a copy of the License at
 //
