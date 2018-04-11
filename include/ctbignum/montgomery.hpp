@@ -24,13 +24,15 @@
 #ifndef CT_MONTGOMERY_HPP
 #define CT_MONTGOMERY_HPP
 
-#include <cstddef> // std::size_t
 #include <ctbignum/addition.hpp>
+#include <ctbignum/config.hpp>
 #include <ctbignum/gcd.hpp>
 #include <ctbignum/mult.hpp>
 #include <ctbignum/relational_ops.hpp>
 #include <ctbignum/slicing.hpp>
 #include <ctbignum/type_traits.hpp>
+
+#include <cstddef> // std::size_t
 #include <limits>
 
 namespace cbn {
@@ -79,7 +81,7 @@ constexpr auto montgomery_reduction(big_int<N1, T> A,
 
 
 template <typename T, std::size_t N, T... Modulus>
-[[gnu::always_inline]]
+CBN_ALWAYS_INLINE
 constexpr auto montgomery_mul(big_int<N, T> x, big_int<N, T> y,
                               std::integer_sequence<T, Modulus...>) {
   // Montgomery multiplication with compile-time modulus

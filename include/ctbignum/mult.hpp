@@ -25,6 +25,7 @@
 #define CT_MULT_HPP
 
 #include <ctbignum/bigint.hpp>
+#include <ctbignum/config.hpp>
 #include <ctbignum/type_traits.hpp>
 
 #include <algorithm>
@@ -50,7 +51,7 @@ constexpr auto short_mul(big_int<N, T> a, T b) {
 }
 
 template <size_t padding_limbs = 0, size_t M, size_t N, typename T>
-[[gnu::always_inline]]
+CBN_ALWAYS_INLINE 
 constexpr auto mul(big_int<M, T> u, big_int<N, T> v) {
 
   using TT = typename dbl_bitlen<T>::type;
