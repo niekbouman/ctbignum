@@ -1,0 +1,17 @@
+This file is a list of people who have contributed to the ctbignum library.
+If you have contributed a patch or made some other contribution to ctbignum,
+please submit a patch to this file to add yourself, and it will be done!
+
+The list is sorted by surname and formatted to allow easy grepping and
+beautification by scripts. The fields are: name (N), email (E), web-address
+(W), description (D)
+
+(The list format is inspired by the CREDITS.TXT file from the LLVM project.)
+
+N: Niek J. Bouman
+E: n.j.bouman@tue.nl
+D: main designer/author
+
+N: Johan Engelen
+E: jbc.engelen@gmail.com
+D: CI scripts / advice
