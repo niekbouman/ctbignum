@@ -16,6 +16,7 @@ MinSizeRel."
 endif()
 
 find_package(GMP REQUIRED)
+find_package(GMPXX REQUIRED)
 find_package(NTL REQUIRED)
 find_package(Benchmark REQUIRED)
 find_package(Threads REQUIRED)
@@ -50,10 +51,10 @@ foreach(file ${files})
     )
 
     #target_compile_definitions(${benchmark} PRIVATE )
-    target_include_directories(${benchmark} PRIVATE ${CTBIGNUM_INCLUDE_BUILD_DIR} ${Benchmark_INCLUDES} ${NTL_INCLUDES} ${GMP_INCLUDES})
+    target_include_directories(${benchmark} PRIVATE ${CTBIGNUM_INCLUDE_BUILD_DIR} ${Benchmark_INCLUDES} ${NTL_INCLUDES} ${GMP_INCLUDES} ${GMPXX_INCLUDE_DIR})
     #target_include_directories(${benchmark} PRIVATE ${CTBIGNUM_INCLUDE_BUILD_DIR})
     #target_include_directories(${benchmark} PRIVATE "../include")
-    target_link_libraries(${benchmark} ${Benchmark_LIBRARIES}  ${NTL_LIBRARIES} ${GMP_LIBRARIES} /opt/local/lib/libgmpxx.dylib  ${CMAKE_THREAD_LIBS_INIT})
+    target_link_libraries(${benchmark} ${Benchmark_LIBRARIES}  ${NTL_LIBRARIES} ${GMP_LIBRARIES} ${GMPXX_LIBRARIES}  ${CMAKE_THREAD_LIBS_INIT})
       
 
     if (${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
