@@ -12,6 +12,6 @@
 #ifndef CT_CONFIG_HPP
 #define CT_CONFIG_HPP
 
-#define CBN_ALWAYS_INLINE [[gnu::always_inline]
+#define CBN_ALWAYS_INLINE [[gnu::always_inline]]
 
 #endif
