@@ -2,16 +2,20 @@
 
 The `big_int` class is a thin wrapper class around C++'s fixed-size array type ([`std::array`](http://en.cppreference.com/w/cpp/container/array)).
 
-## Creating a `big_int` from Compile-Time String
+## Creating a `big_int` from Compile-Time Literal
 Defined in header [initialization.hpp](/include/ctbigint/initialization.hpp)
 
-Based on [Boost.Hana](http://boostorg.github.io/hana/) [string type](http://boostorg.github.io/hana/structboost_1_1hana_1_1string.html)
+The user-defined literal `_Z` returns a `std::integer_sequence`, which can then be converted to a `big_int` using the `to_big_int` conversion function.
 ```cpp
-template <size_t ExplicitLength = 0 /* optional */, typename T = uint64_t,
-          typename String, typename = std::enable_if_t< // only bind to Hana strings
-              boost::hana::is_a<boost::hana::string_tag, String>>>
-constexpr auto string_to_big_int(String str);
+template <char... Chars> constexpr auto operator"" _Z() 
 ```
+
+Conversion function:
+```cpp
+template <size_t ExplicitLength = 0, typename T, T... Limbs>
+constexpr auto to_big_int(std::integer_sequence<T, Limbs...>);
+```
+
 ## Arithmetic operations
 
 ### Addition / Subtraction
