@@ -59,9 +59,9 @@ If you would like to mention our library in your academic publication, then plea
   @misc{Bouman2018,
     author       = {Bouman, Niek J.},
     title        = {Multiprecision Arithmetic for Cryptology in C++ - Compile-Time Computations and Beating the Performance of Hand-Optimized Assembly at Run-Time},
-    howpublished = {Cryptology ePrint Archive, Report 2018/...PENDING...}, 
+    howpublished = {arXiv:1804.07236}, 
     year         = {2018},
-    note         = {\url{https://eprint.iacr.org/2018/}},
+    note         = {\url{https://arxiv.org/abs/1804.07236}},
   }
 ```
 
