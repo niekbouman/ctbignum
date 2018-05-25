@@ -18,7 +18,7 @@
 
 #include <cmath>
 #include <cstddef>
-#include <iostream>
+#include <ostream>
 #include <limits>
 
 namespace cbn {
