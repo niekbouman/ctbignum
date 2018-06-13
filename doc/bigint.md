@@ -3,7 +3,7 @@
 The `big_int` class is a thin wrapper class around C++'s fixed-size array type ([`std::array`](http://en.cppreference.com/w/cpp/container/array)).
 
 ## Creating a `big_int` from Compile-Time Literal
-Defined in header [initialization.hpp](/include/ctbigint/initialization.hpp)
+Defined in header [initialization.hpp](/include/ctbignum/initialization.hpp)
 
 The user-defined literal `_Z` returns a `std::integer_sequence`, which can then be converted to a `big_int` using the `to_big_int` conversion function.
 ```cpp
@@ -19,7 +19,7 @@ constexpr auto to_big_int(std::integer_sequence<T, Limbs...>);
 ## Arithmetic operations
 
 ### Addition / Subtraction
-Defined in header [addition.hpp](/include/ctbigint/addition.hpp)
+Defined in header [addition.hpp](/include/ctbignum/addition.hpp)
 
 *The following operations act on big-ints of the same size:*
 ```cpp
@@ -48,7 +48,7 @@ template <typename T, size_t N1, size_t N2>
 constexpr big_int<N1, T> accumulate(big_int<N1, T> accum, big_int<N2, T> b);
 ```
 ### Multiplication
-Defined in header [mult.hpp](/include/ctbigint/mult.hpp)
+Defined in header [mult.hpp](/include/ctbignum/mult.hpp)
 
 Multiplication (for inputs of arbitrary lengths)
 ```cpp
@@ -66,7 +66,7 @@ template <typename T, std::size_t N>
 constexpr auto short_mul(big_int<N, T> a, T b);
 ```
 ### Division
-Defined in header [division.hpp](/include/ctbigint/division.hpp)
+Defined in header [division.hpp](/include/ctbignum/division.hpp)
 
 Division. The function returns the pair (quotient, remainder).
 ```cpp
@@ -80,7 +80,7 @@ template <size_t M, typename T>
 constexpr std::pair<big_int<M, T>, big_int<1, T>> short_div(big_int<M, T> u, T v);
 ```
 ### Exponentiation
-Defined in header [pow.hpp](/include/ctbigint/pow.hpp)
+Defined in header [pow.hpp](/include/ctbignum/pow.hpp)
 
 Raise a `big_int` to a power that fits in a single limb
 ```cpp
@@ -88,7 +88,7 @@ template <std::size_t N1, typename T>
 constexpr auto pow(big_int<N1, T> base, T exp) {
 ```
 ### Modular Exponentiation
-Defined in header [mod_exp.hpp](/include/ctbigint/mod_exp.hpp)
+Defined in header [mod_exp.hpp](/include/ctbignum/mod_exp.hpp)
 
 Raise a `big_int` to a `big_int` power modulo a compile-time modulus
 ```cpp
@@ -97,7 +97,7 @@ constexpr auto mod_exp(big_int<N1, T> a, big_int<N2, T> exp, std::integer_sequen
 ```
 
 ### Barrett Reduction
-Defined in header [barrett.hpp](/include/ctbigint/barrett.hpp)
+Defined in header [barrett.hpp](/include/ctbignum/barrett.hpp)
 
 Barrett reduction with a compile-time modulus
 ```cpp
@@ -105,7 +105,7 @@ template <typename T, std::size_t N1, T... Modulus>
 constexpr auto barrett_reduction(big_int<N1, T> x, std::integer_sequence<T, Modulus...>);
 ```
 ### Montgomery Reduction & Multiplication
-Defined in header [montgomery.hpp](/include/ctbigint/montgomery.hpp)
+Defined in header [montgomery.hpp](/include/ctbignum/montgomery.hpp)
 
 Montgomery reduction with a compile-time modulus
 ```cpp
@@ -118,7 +118,7 @@ template <typename T, std::size_t N, T... Modulus>
 constexpr auto montgomery_mul(big_int<N, T> x, big_int<N, T> y, std::integer_sequence<T, Modulus...>);
 ```
 ## Relational Operators
-Defined in header [relational_ops.hpp](/include/ctbigint/relational_ops.hpp)
+Defined in header [relational_ops.hpp](/include/ctbignum/relational_ops.hpp)
 
 *The following operation acts on big-ints of arbitrary sizes*
 ```cpp
@@ -142,7 +142,7 @@ constexpr bool operator>=(big_int<N1, T> a, big_int<N2, T> b);
 ```
 
 ## Output Stream
-Defined in header [io.hpp](/include/ctbigint/io.hpp)
+Defined in header [io.hpp](/include/ctbignum/io.hpp)
 
 Writes a base-10 (decimal-digit) representation of the `big_int` to an output stream
 ```cpp
