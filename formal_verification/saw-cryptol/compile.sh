@@ -6,7 +6,7 @@ if [ "$#" -ne 2 ]; then
 fi
 
 echo 'Compiling...'
-eval "clang++$LLVM_SUFFIX -I../include -std=c++17 -c -emit-llvm -o $1.bc $1.cpp" && \
+eval "clang++$LLVM_SUFFIX -I../../include -std=c++17 -c -emit-llvm -o $1.bc $1.cpp" && \
 echo 'done.' && \
 echo && \
 echo 'Mangled function name has become:' && \
