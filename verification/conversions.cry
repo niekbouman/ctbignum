@@ -1,0 +1,19 @@
+module conversions where
+import big_int
+
+upcast : {out,in} (fin in, fin out, out>=in) => [in] -> [out]
+upcast a = ((0:[(out-in)]) # a)
+// padd an existing variable with zeros such that it has 
+// bit length equal to <out>
+
+// conversion from a number to a big int and vice versa
+// implemented as folds
+num_to_bigint : {n,w} (fin n, fin w, n>=1,n*w >=2) => [n*w] -> Bigint n w  
+num_to_bigint num = drop`{1} [(x@1)!!(reverse [0 .. w-1]:[_][width w]) | x <-xs] 
+  where xs = [[num,0]] # [ [x@0 / (2:[n*w])^^(`w), x@0 % (2:[n*w])^^(`w) ] | x <- xs | y <- ([1 .. n]:[_][width n])]
+
+bigint_to_num : {n,w,out} (fin n, fin w, fin out, out >= width w, out >=2, out >= n*w, out >= w ) => Bigint n w -> [out]
+bigint_to_num limbs = sums ! 0
+  where sums = [ 0 ] # [ 2^^(`w) * s + (upcast`{out} x) | x <- (reverse limbs) | s <- sums ]
+
+

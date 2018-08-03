@@ -1,0 +1,24 @@
+import "mul.cry";
+
+let mangled_name = "_ZN3cbn3mulILm0ELm3ELm4EyEEDaNS_7big_intIXT0_ET2_NSt3__19enable_ifIXsr3std11is_integralIS3_EE5valueEvE4typeEEENS2_IXT1_ES3_S7_EE";
+
+let alloc_and_bind n ty ty2 = do {
+    p <- crucible_alloc ty;
+    x <- crucible_fresh_var n ty2;
+    crucible_points_to p (crucible_term x);
+    return (x, p);
+};
+
+let mul_spec n1_ n2_ w_ = do {
+
+    (xs, xp) <- alloc_and_bind "xs" (llvm_struct "struct.cbn::big_int.0") (llvm_array n1_ (llvm_int w_));
+    (ys, yp) <- alloc_and_bind "ys" (llvm_struct "struct.cbn::big_int.2") (llvm_array n2_ (llvm_int w_));
+    (rs, rp) <- alloc_and_bind "rs" (llvm_struct "struct.cbn::big_int") (llvm_array (eval_int {{ ((`n1_):[8]) + ((`n2_):[8]) }}) (llvm_int w_));
+
+    crucible_execute_func [rp, xp, yp];
+    crucible_points_to rp (crucible_term {{ mul_ref`{n1=n1_,n2=n2_,w=w_} xs ys }});
+};
+
+m <- llvm_load_module "mul.bc";
+
+mul_ov <- crucible_llvm_verify m mangled_name [] true (mul_spec 3 4 64) z3;

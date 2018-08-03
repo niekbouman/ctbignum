@@ -1,0 +1,5 @@
+module big_int where
+
+type Bigint n w = [n][w]
+// mimics our C++ big_int type
+

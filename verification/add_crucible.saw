@@ -1,5 +1,7 @@
 import "add.cry";
 
+let mangled_name = "_ZN3cbn3addIyLm4EEEDaNS_7big_intIXT0_ET_NSt3__19enable_ifIXsr3std11is_integralIS3_EE5valueEvE4typeEEES8_";
+
 let alloc_and_bind n ty ty2 = do {
     p <- crucible_alloc ty;
     x <- crucible_fresh_var n ty2;
@@ -9,9 +11,9 @@ let alloc_and_bind n ty ty2 = do {
 
 let add_spec n_ w_ = do {
 
-    (xs, xp) <- alloc_and_bind "xs" (llvm_struct "struct.big_int.0") (llvm_array n_ (llvm_int w_));
-    (ys, yp) <- alloc_and_bind "ys" (llvm_struct "struct.big_int.0") (llvm_array n_ (llvm_int w_));
-    (rs, rp) <- alloc_and_bind "rs" (llvm_struct "struct.big_int") (llvm_array (eval_int {{ ((`n_):[8]) + 1 }}) (llvm_int w_));
+    (xs, xp) <- alloc_and_bind "xs" (llvm_struct "struct.cbn::big_int.0") (llvm_array n_ (llvm_int w_));
+    (ys, yp) <- alloc_and_bind "ys" (llvm_struct "struct.cbn::big_int.0") (llvm_array n_ (llvm_int w_));
+    (rs, rp) <- alloc_and_bind "rs" (llvm_struct "struct.cbn::big_int") (llvm_array (eval_int {{ ((`n_):[8]) + 1 }}) (llvm_int w_));
 
     crucible_execute_func [rp, xp, yp];
     crucible_points_to rp (crucible_term {{ add_ref`{n=n_,w=w_} xs ys }});
@@ -19,4 +21,4 @@ let add_spec n_ w_ = do {
 
 m <- llvm_load_module "add.bc";
 
-add_ov <- crucible_llvm_verify m "_Z3addIyLm4EEDa7big_intIXT0_ET_NSt3__19enable_ifIXsr3std11is_integralIS2_EE5valueEvE4typeEES7_" [] true (add_spec 4 64) z3;
+add_ov <- crucible_llvm_verify m mangled_name [] true (add_spec 4 64) z3;
