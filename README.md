@@ -6,7 +6,7 @@ By "small big integers", we mean numbers with a few limbs (in other words, a few
 occurring in cryptographic applications.
 
 Currently, the library supports the following operations
-- addition, 
+- addition, __*formally verified using [SAW](https://saw.galois.com/)*__ ![new][newpic] 
 - subtraction, 
 - multiplication (naive O(n^2) "schoolbook" multiplication)
 - division: short division (single-limb divisor) and Donald Knuth's "algorithm D"
@@ -19,6 +19,8 @@ Currently, the library supports the following operations
 - Modular exponentiation (based on Montgomery multiplication)
 - Compile-time initialization from a base-10 literal
 - Serialization to ostream as base-10 string (binary serialization is trivial, by just copying the limbs)
+
+[newpic]: https://github.com/niekbouman/ctbignum/raw/master/doc/new.png
 
 ### Installation
 Because this is a header-only library, installation is as easy as downloading and copying the contents of the `include` directory into your system's `include` directory (e.g. `/usr/local/include` or `/opt/local/include`).
