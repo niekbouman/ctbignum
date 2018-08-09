@@ -48,7 +48,6 @@ void generic_wrapper(Return_t *r, MachineWord_t* a, MachineWord_t* b) {
   public_in(__SMACK_value(r));
   // (pointer values are public, memory where the pointers point to is secret)
 
-  //const size_t num_limbs = 4;
   big_int<num_limbs, MachineWord_t> A, B;
 
   memcpy(&(A[0]), a, num_limbs * sizeof(MachineWord_t));
@@ -80,20 +79,20 @@ auto operator()(A a, B b) { return a operator_ b; } \
 #define EXPLICIT_INST(name, rettype, limbs) \
 template void generic_wrapper<name, rettype, limbs>(rettype *r, MachineWord_t* a, MachineWord_t* b);
 
-BINFOBJ(Add, add)
-EXPLICIT_INST(Add, MachineWord_t, 4)
+BINFOBJ(Add, add);
+EXPLICIT_INST(Add, MachineWord_t, 4);
 
-BINFOBJ(Mul, mul)
-EXPLICIT_INST(Mul, MachineWord_t, 4)
+BINFOBJ(Mul, mul);
+EXPLICIT_INST(Mul, MachineWord_t, 4);
 
-OPERATORFOBJ(LessThan, <)
-EXPLICIT_INST(LessThan, bool, 4)
+OPERATORFOBJ(LessThan, <);
+EXPLICIT_INST(LessThan, bool, 4);
 
-OPERATORFOBJ(GreaterThan, >)
-EXPLICIT_INST(GreaterThan, bool, 4)
+OPERATORFOBJ(GreaterThan, >);
+EXPLICIT_INST(GreaterThan, bool, 4);
 
-OPERATORFOBJ(GreaterEqThan, >=)
-EXPLICIT_INST(GreaterEqThan, bool, 4)
+OPERATORFOBJ(GreaterEqThan, >=);
+EXPLICIT_INST(GreaterEqThan, bool, 4);
 
-OPERATORFOBJ(LessEqThan, <=)
-EXPLICIT_INST(LessEqThan, bool, 4)
+OPERATORFOBJ(LessEqThan, <=);
+EXPLICIT_INST(LessEqThan, bool, 4);
