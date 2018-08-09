@@ -5,12 +5,12 @@ This is a header-only template library for compile-time fixed-width "small big-i
 By "small big integers", we mean numbers with a few limbs (in other words, a few hundred bits), typically
 occurring in cryptographic applications.
 
-Currently, the library supports the following operations
-- addition, __*formally verified using [SAW](https://saw.galois.com/)*__ ![new][newpic] 
+Currently, the library is a __work in progress__ and supports the following operations
+- addition, __*formal verification: correctness using [SAW](https://saw.galois.com/) and constant-timeness using [ct-verif](https://www.usenix.org/system/files/conference/usenixsecurity16/sec16_paper_almeida.pdf)*__ ![new][newpic] 
 - subtraction, 
-- multiplication (naive O(n^2) "schoolbook" multiplication)
+- multiplication (naive O(n^2) "schoolbook" multiplication) __*constant-time-verified using ct-verif*__ ![new][newpic]
 - division: short division (single-limb divisor) and Donald Knuth's "algorithm D"
-- comparison
+- comparison __*constant-time-verified using ct-verif*__ ![new][newpic]
 - modular addition,
 - extended GCD and modular inverse,
 - Barrett reduction, 
