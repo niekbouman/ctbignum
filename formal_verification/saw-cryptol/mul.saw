@@ -1,0 +1,26 @@
+import "mul.cry";
+
+let mul_setup n1 n2 w : LLVMSetup() = do {
+
+  let n_result = eval_int {{ ((`n1):[8]) + ((`n2):[8]) }};
+
+  llvm_ptr "args[0]" (llvm_array n_result (llvm_int w));
+  r <- llvm_var "*args[0]" (llvm_array n_result (llvm_int w));
+
+  llvm_ptr "args[1]" (llvm_array n1 (llvm_int w));
+  a <- llvm_var "*args[1]" (llvm_array n1 (llvm_int w));
+
+  llvm_ptr "args[2]" (llvm_array n2 (llvm_int w));
+  b <- llvm_var "*args[2]" (llvm_array n2 (llvm_int w));
+
+  llvm_ensure_eq "*args[0]" {{ mul_ref a b }};
+
+  llvm_verify_tactic abc;
+};
+
+let main : TopLevel () = do {
+  m <- llvm_load_module "mul_wrapper.bc";
+  q1 <- llvm_verify m "mul_wrapper_uint8_t_1_1" [] (mul_setup 1 1 8);
+  q2 <- llvm_verify m "mul_wrapper_uint8_t_2_1" [] (mul_setup 2 1 8);
+  print "Done!";
+};
