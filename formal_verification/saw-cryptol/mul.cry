@@ -2,7 +2,7 @@ import conversions
 import big_int
 
 // reference implementation of big num multiplication
-mul_ref : {n1, n2, w} (fin n1, fin n2, fin w, (n1 + n2) * w >= 2) => Bigint n1 w -> Bigint n2 w -> Bigint (n1+n2) w
+mul_ref : {n1, n2, w} (fin n1, fin n2, fin w, n1 >= 1, n2 >= 1, w >= 1) => Bigint n1 w -> Bigint n2 w -> Bigint (n1+n2) w
 mul_ref a b = num_to_bigint`{n1+n2,w}((bigint_to_num`{out=(n1+n2)*w} a) * (bigint_to_num`{out=(n1+n2)*w} b))
 // algorithm:
 //  1 - convert a and b (bigints) to Cryptol words of sufficient length, 
