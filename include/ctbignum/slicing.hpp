@@ -17,6 +17,13 @@
 namespace cbn {
 namespace detail {
 
+template <typename T = uint64_t, T... Limbs, std::size_t... Is>
+constexpr auto take_first(std::integer_sequence<T, Limbs...>,
+                          std::index_sequence<Is...>) {
+  constexpr big_int<sizeof...(Limbs), T> num = {Limbs...};
+  return std::integer_sequence<T, num[Is]...>{};
+}
+
 template <size_t Begin, size_t End, size_t Padding=0, 
           typename T, size_t N1>
 constexpr auto take(big_int< N1, T> t) {

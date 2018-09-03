@@ -14,14 +14,31 @@
 
 #include <ctbignum/bigint.hpp>
 #include <ctbignum/relational_ops.hpp>
+#include <ctbignum/config.hpp>
+#include <ctbignum/slicing.hpp>
 
 #include <algorithm>
 #include <cstddef>
 
+
 namespace cbn {
 
+template <typename T, size_t M, size_t N>
+constexpr auto add(big_int<M, T> a, big_int<N, T> b) {
+  constexpr auto L = std::max(M, N);
+  return add_same(detail::pad<L - M>(a), detail::pad<L - N>(b));
+}
+
+template <typename T, size_t M, size_t N>
+constexpr auto subtract(big_int<M, T> a, big_int<N, T> b) {
+  constexpr auto L = std::max(M, N);
+  return subtract_same(detail::pad<L - M>(a), detail::pad<L - N>(b));
+}
+
+
 template <typename T, size_t N>
-constexpr auto add(big_int<N, T> a, big_int<N, T> b) {
+CBN_ALWAYS_INLINE
+constexpr auto add_same(big_int<N, T> a, big_int<N, T> b) {
   T carry{};
   big_int<N + 1, T> r{};
 
@@ -38,7 +55,8 @@ constexpr auto add(big_int<N, T> a, big_int<N, T> b) {
 }
 
 template <typename T, size_t N>
-constexpr auto subtract(big_int<N, T> a, big_int<N, T> b) {
+CBN_ALWAYS_INLINE
+constexpr auto subtract_same(big_int<N, T> a, big_int<N, T> b) {
   T carry{};
   big_int<N + 1, T> r{};
 
@@ -55,6 +73,7 @@ constexpr auto subtract(big_int<N, T> a, big_int<N, T> b) {
 }
 
 template <typename T, size_t N>
+CBN_ALWAYS_INLINE
 constexpr auto add_ignore_carry(big_int<N, T> a, big_int<N, T> b) {
   T carry{};
   big_int<N, T> r{};

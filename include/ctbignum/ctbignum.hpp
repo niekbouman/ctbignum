@@ -16,6 +16,7 @@
 #include <ctbignum/bigint.hpp>
 #include <ctbignum/bitshift.hpp>
 #include <ctbignum/division.hpp>
+#include <ctbignum/invariant_div.hpp>
 #include <ctbignum/field.hpp>
 #include <ctbignum/gcd.hpp>
 #include <ctbignum/initialization.hpp>
