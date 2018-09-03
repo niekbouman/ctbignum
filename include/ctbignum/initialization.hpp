@@ -48,13 +48,6 @@ constexpr auto chars_to_integer_seq(std::integer_sequence<char, Chars...>,
   return std::integer_sequence<T, num[Is]...>{};
 }
 
-template <typename T = uint64_t, T... Limbs, std::size_t... Is>
-constexpr auto take_first(std::integer_sequence<T, Limbs...>,
-                          std::index_sequence<Is...>) {
-  constexpr big_int<sizeof...(Limbs), T> num = {Limbs...};
-  return std::integer_sequence<T, num[Is]...>{};
-}
-
 } //end of detail namespace
 
 template <size_t ExplicitLength = 0, typename T, T... Limbs>
@@ -70,9 +63,8 @@ template <char... Chars> constexpr auto operator"" _Z() {
   constexpr size_t len = sizeof...(Chars);
   constexpr size_t N = 1 + (10 * len) / (3 * std::numeric_limits<T>::digits);
 
-  auto num = detail::chars_to_integer_seq(
-      std::integer_sequence<char, Chars...>{}, std::make_index_sequence<N>{});
-  constexpr auto L = detail::tight_length(to_big_int(num));
+  auto num = detail::chars_to_integer_seq(std::integer_sequence<char, Chars...>{}, std::make_index_sequence<N>{});
+  constexpr auto L = detail::tight_length(num);
   return detail::take_first(num, std::make_index_sequence<L>{});
 }
 
