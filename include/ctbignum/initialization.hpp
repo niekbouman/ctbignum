@@ -23,8 +23,9 @@
 namespace cbn {
 namespace detail {
 
-template <typename T = uint64_t, char... Chars>
-constexpr auto chars_to_big_int(std::integer_sequence<char, Chars...>) {
+template <typename T = uint64_t, char... Chars, std::size_t... Is>
+constexpr auto 
+chars_to_big_int(std::integer_sequence<char, Chars...>) {
   // might return a 'non-tight' representation, meaning that there could be
   // leading zero-limbs
   constexpr size_t len = sizeof...(Chars);
@@ -42,29 +43,37 @@ constexpr auto chars_to_big_int(std::integer_sequence<char, Chars...>) {
 
 template <typename T = uint64_t, char... Chars, std::size_t... Is>
 constexpr auto chars_to_integer_seq(std::integer_sequence<char, Chars...>,
-                 std::index_sequence<Is...>) {
+                                    std::index_sequence<Is...>) {
   constexpr auto num = detail::chars_to_big_int(std::integer_sequence<char, Chars...>{});
-  return std::integer_sequence<T,num[Is]...>{};
+  return std::integer_sequence<T, num[Is]...>{};
+}
+
+template <typename T = uint64_t, T... Limbs, std::size_t... Is>
+constexpr auto take_first(std::integer_sequence<T, Limbs...>,
+                          std::index_sequence<Is...>) {
+  constexpr big_int<sizeof...(Limbs), T> num = {Limbs...};
+  return std::integer_sequence<T, num[Is]...>{};
 }
 
 } //end of detail namespace
 
-template <char... Chars> constexpr auto operator"" _Z() {
-  //this function performs a conversion from base-10 to base-2^W twice:
-  // first, to compute the tight length L
-  // second, to compute the integer sequence
-  
-  using T = uint64_t; // TODO: how to expose this type to the user?
-
-  constexpr auto num = detail::chars_to_big_int(std::integer_sequence<char, Chars...>{});
-  constexpr auto L = detail::tight_length(num);
-
-  return detail::chars_to_integer_seq<T>(std::integer_sequence<char, Chars...>{}, std::make_index_sequence<L>{});
-}
-
 template <size_t ExplicitLength = 0, typename T, T... Limbs>
 constexpr auto to_big_int(std::integer_sequence<T, Limbs...>) {
   return big_int<ExplicitLength ? ExplicitLength : sizeof...(Limbs),T>{ Limbs... };
+}
+
+template <char... Chars> constexpr auto operator"" _Z() {
+
+  using T = uint64_t; // Question: How to elegantly expose the choice of this
+                      // type to the user?
+
+  constexpr size_t len = sizeof...(Chars);
+  constexpr size_t N = 1 + (10 * len) / (3 * std::numeric_limits<T>::digits);
+
+  auto num = detail::chars_to_integer_seq(
+      std::integer_sequence<char, Chars...>{}, std::make_index_sequence<N>{});
+  constexpr auto L = detail::tight_length(to_big_int(num));
+  return detail::take_first(num, std::make_index_sequence<L>{});
 }
 
 } // end of cbn namespace
