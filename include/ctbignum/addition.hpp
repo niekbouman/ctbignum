@@ -67,8 +67,8 @@ constexpr auto subtract_same(big_int<N, T> a, big_int<N, T> b) {
     carry = (diff > aa) | (res > diff);
     r[i] = res;
   }
-  r[N] = carry;
 
+  r[N] = carry * static_cast<T>(-1); // sign extension
   return r;
 }
 
