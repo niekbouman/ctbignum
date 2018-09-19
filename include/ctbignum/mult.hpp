@@ -83,5 +83,10 @@ constexpr auto partial_mul(big_int<M, T> u, big_int<N, T> v) {
   return w;
 }
 
+template <typename T, size_t N1, size_t N2>
+constexpr auto operator*(big_int<N1, T> a, big_int<N2, T> b) {
+  return mul(a, b);
+}
+
 }
 #endif

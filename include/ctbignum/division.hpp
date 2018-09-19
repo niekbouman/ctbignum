@@ -112,5 +112,16 @@ constexpr auto div(big_int<NplusM, T> u, big_int<NN, T> v) {
   }
   return std::make_pair(q, shift_right(detail::first<NN>(us), k));
 }
+
+template <typename T, size_t N1, size_t N2>
+constexpr auto operator/(big_int<N1, T> a, big_int<N2, T> b) {
+  return div(a, b).first;
+}
+
+template <typename T, size_t N1, size_t N2>
+constexpr auto operator%(big_int<N1, T> a, big_int<N2, T> b) {
+  return div(a, b).second;
+}
+
 }
 #endif

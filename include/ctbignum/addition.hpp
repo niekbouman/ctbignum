@@ -24,12 +24,14 @@
 namespace cbn {
 
 template <typename T, size_t M, size_t N>
+CBN_ALWAYS_INLINE
 constexpr auto add(big_int<M, T> a, big_int<N, T> b) {
   constexpr auto L = std::max(M, N);
   return add_same(detail::pad<L - M>(a), detail::pad<L - N>(b));
 }
 
 template <typename T, size_t M, size_t N>
+CBN_ALWAYS_INLINE
 constexpr auto subtract(big_int<M, T> a, big_int<N, T> b) {
   constexpr auto L = std::max(M, N);
   return subtract_same(detail::pad<L - M>(a), detail::pad<L - N>(b));
@@ -130,6 +132,15 @@ constexpr auto mod_add(big_int<N, T> a, big_int<N, T> b, std::integer_sequence<T
   return mod_add(a, b, modulus);
 }
 
+template <typename T, size_t N1, size_t N2>
+constexpr auto operator+(big_int<N1, T> a, big_int<N2, T> b) {
+  return add(a, b);
+}
+
+template <typename T, size_t N1, size_t N2>
+constexpr auto operator-(big_int<N1, T> a, big_int<N2, T> b) {
+  return subtract(a, b);
+}
 
 } // end namespace cbn
 
