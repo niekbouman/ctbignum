@@ -1,19 +1,29 @@
-### The [`big_int`](/include/ctbignum/bigint.hpp) class
+## The [`big_int`](/include/ctbignum/bigint.hpp) class
 
 The `big_int` class is a thin wrapper class around C++'s fixed-size array type ([`std::array`](http://en.cppreference.com/w/cpp/container/array)).
 
-## Creating a `big_int` from Compile-Time Literal
-Defined in header [initialization.hpp](/include/ctbignum/initialization.hpp)
+### Creating a `big_int` from Compile-Time Literal
+Defined in header [decimal_literals.hpp](/include/ctbignum/decimal_literals.hpp)
 
 The user-defined literal `_Z` returns a `std::integer_sequence`, which can then be converted to a `big_int` using the `to_big_int` conversion function.
 ```cpp
 template <char... Chars> constexpr auto operator"" _Z() 
 ```
 
-Conversion function:
+#### Example:
+```cpp
+auto i_am_an_integer_sequence = 1457094817350874187634298576109387589746_Z;
+```
+
+### Converting a `std::integer_sequence` to a `big_int`:
 ```cpp
 template <size_t ExplicitLength = 0, typename T, T... Limbs>
 constexpr auto to_big_int(std::integer_sequence<T, Limbs...>);
+```
+
+#### Example:
+```cpp
+constexpr auto i_am_a_big_int = to_big_int(7656523141023855493084520646_Z);
 ```
 
 ## Arithmetic operations
@@ -21,14 +31,17 @@ constexpr auto to_big_int(std::integer_sequence<T, Limbs...>);
 ### Addition / Subtraction
 Defined in header [addition.hpp](/include/ctbignum/addition.hpp)
 
+*The following operation acts on big-ints of arbitrary sizes*
+```cpp
+template <typename T, size_t M, size_t N>
+constexpr auto add(big_int<M, T> a, big_int<N, T> b);
+
+template <typename T, size_t M, size_t N>
+constexpr auto subtract(big_int<M, T> a, big_int<N, T> b);
+```
+
 *The following operations act on big-ints of the same size:*
 ```cpp
-template <typename T, size_t N>
-constexpr auto add(big_int<N, T> a, big_int<N, T> b);
-
-template <typename T, size_t N>
-constexpr auto subtract(big_int<N, T> a, big_int<N, T> b);
-
 template <typename T, size_t N>
 constexpr auto add_ignore_carry(big_int<N, T> a, big_int<N, T> b);
 
@@ -41,12 +54,7 @@ constexpr auto mod_add(big_int<N, T> a, big_int<N, T> b, big_int<N, T> modulus);
 template <typename T, size_t N, T... Modulus>
 constexpr auto mod_add(big_int<N, T> a, big_int<N, T> b, std::integer_sequence<T, Modulus...>);
 ```
-*The following operation acts on big-ints of arbitrary sizes*
-The `accumulate` function is used to add a `big_int` b to a accumulator `big_int` accum. Typically, N1 >= N2.
-```cpp
-template <typename T, size_t N1, size_t N2>
-constexpr big_int<N1, T> accumulate(big_int<N1, T> accum, big_int<N2, T> b);
-```
+
 ### Multiplication
 Defined in header [mult.hpp](/include/ctbignum/mult.hpp)
 
@@ -79,6 +87,21 @@ The function returns the pair (quotient, remainder).
 template <size_t M, typename T> 
 constexpr std::pair<big_int<M, T>, big_int<1, T>> short_div(big_int<M, T> u, T v);
 ```
+
+#### Division and modular reduction by an invariant (compile-time) divisor/modulus
+Defined in header [invariant_div.hpp](/include/ctbignum/invariant_div.hpp)
+
+Division via multiplication and bitshifts (see paper by Granlund and Montgomery, _"Division by Invariant Integers using Multiplication"_, 1994) 
+```cpp
+template <typename T, size_t N, T... Divisor>
+constexpr auto div(big_int<N, T> n, std::integer_sequence<T, Divisor...>);
+```
+Remainder (modulo) operation
+```cpp
+template <typename T, size_t N, T... Modulus>
+constexpr auto mod(big_int<N, T> n, std::integer_sequence<T, Modulus...>);
+```
+
 ### Exponentiation
 Defined in header [pow.hpp](/include/ctbignum/pow.hpp)
 
@@ -149,4 +172,12 @@ Writes a base-10 (decimal-digit) representation of the `big_int` to an output st
 template <std::size_t N, typename T>
 std::ostream &operator<<(std::ostream &strm, cbn::big_int<N, T> obj)
 ```
+#### Example
+```cpp
+#include <ctbignum/decimal_literals.hpp>
+#include <ctbignum/io.hpp>
+#include <iostream>
 
+using namespace cbn;
+std::cout << to_big_int(123456789012345678901234567890_Z) << '\n';
+```
