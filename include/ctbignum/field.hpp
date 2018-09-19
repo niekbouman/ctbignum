@@ -13,7 +13,7 @@
 
 #include <ctbignum/addition.hpp>
 #include <ctbignum/barrett.hpp>
-#include <ctbignum/initialization.hpp>
+#include <ctbignum/decimal_literals.hpp>
 #include <ctbignum/io.hpp>
 #include <ctbignum/mult.hpp>
 #include <ctbignum/slicing.hpp>

@@ -16,7 +16,7 @@
 #include <ctbignum/mult.hpp>
 #include <ctbignum/slicing.hpp>
 #include <ctbignum/utility.hpp>
-#include <ctbignum/initialization.hpp>
+#include <ctbignum/decimal_literals.hpp>
 
 #include <cstddef> // std::size_t
 #include <limits>

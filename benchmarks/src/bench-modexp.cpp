@@ -14,7 +14,7 @@
 #include <random>
 
 #include <ctbignum/bigint.hpp>
-#include <ctbignum/initialization.hpp>
+#include <ctbignum/decimal_literals.hpp>
 #include <ctbignum/mod_exp.hpp>
 
 #include <libff/algebra/fields/fp.hpp>

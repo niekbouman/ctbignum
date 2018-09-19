@@ -16,7 +16,7 @@
 #include <ctbignum/division.hpp>
 #include <ctbignum/field.hpp>
 #include <ctbignum/gcd.hpp>
-#include <ctbignum/initialization.hpp>
+#include <ctbignum/decimal_literals.hpp>
 #include <ctbignum/io.hpp>
 #include <ctbignum/mod_exp.hpp>
 #include <ctbignum/montgomery.hpp>

@@ -13,7 +13,7 @@
 
 #include <ctbignum/bigint.hpp>
 #include <ctbignum/montgomery.hpp>
-#include <ctbignum/initialization.hpp>
+#include <ctbignum/decimal_literals.hpp>
 
 #include <libff/algebra/fields/fp.hpp>
 #include <libff/algebra/fields/bigint.hpp>

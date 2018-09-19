@@ -11,7 +11,7 @@
 #include "catch.hpp"
 
 #include <ctbignum/bigint.hpp>
-#include <ctbignum/initialization.hpp>
+#include <ctbignum/decimal_literals.hpp>
 #include <ctbignum/field.hpp>
 #include <type_traits>
 
