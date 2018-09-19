@@ -12,11 +12,6 @@
 
 #include <ctbignum/ctbignum.hpp>
 
-
-#include <iostream>
-
-#include <ctbignum/print.hpp>
-
 TEST_CASE("Test division invariant integer") {
 
   using namespace cbn;

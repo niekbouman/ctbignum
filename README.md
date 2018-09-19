@@ -10,6 +10,7 @@ Currently, the library is a __work in progress__ and supports the following oper
 - subtraction, 
 - multiplication (naive O(n^2) "schoolbook" multiplication) __*constant-time-verified using ct-verif*__ ![new][newpic]
 - division: short division (single-limb divisor) and Donald Knuth's "algorithm D"
+- division: Granlund--Montgomery division by invariant integer (gives constant-time modulo reduction),
 - comparison __*constant-time-verified using ct-verif*__ ![new][newpic]
 - modular addition,
 - extended GCD and modular inverse,

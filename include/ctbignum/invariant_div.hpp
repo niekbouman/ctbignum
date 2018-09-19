@@ -18,8 +18,6 @@
 #include <ctbignum/utility.hpp>
 #include <ctbignum/initialization.hpp>
 
-#include <ctbignum/print.hpp>
-
 #include <cstddef> // std::size_t
 #include <limits>
 
