@@ -51,7 +51,7 @@ constexpr auto bit_length(big_int<N, T> num) {
   auto L = tight_length(num);
   size_t bitlen = L * std::numeric_limits<T>::digits;
   T msb = num[L - 1];
-  while ((msb & (static_cast<T>(1) << (std::numeric_limits<T>::digits - 1))) == 0) {
+  while (bitlen > 0 && (msb & (static_cast<T>(1) << (std::numeric_limits<T>::digits - 1))) == 0) {
     msb <<= 1;
     --bitlen;
   }

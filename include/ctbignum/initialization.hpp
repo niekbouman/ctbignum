@@ -64,7 +64,7 @@ template <char... Chars> constexpr auto operator"" _Z() {
   constexpr size_t N = 1 + (10 * len) / (3 * std::numeric_limits<T>::digits);
 
   auto num = detail::chars_to_integer_seq(std::integer_sequence<char, Chars...>{}, std::make_index_sequence<N>{});
-  constexpr auto L = detail::tight_length(num);
+  constexpr auto L = detail::tight_length(num) + (to_big_int(num) == big_int<1, T>{});
   return detail::take_first(num, std::make_index_sequence<L>{});
 }
 

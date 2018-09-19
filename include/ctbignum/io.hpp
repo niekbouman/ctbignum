@@ -35,7 +35,8 @@ std::ostream &operator<<(std::ostream &strm, cbn::big_int<N, T> obj) {
     if (qr.first[0] > 9)
       throw std::runtime_error("division error");
     char digit = 48 + qr.first[0];
-    if (digit != '0' || (digit == '0' && !skip_zeros)) {
+    if (digit != '0' || (digit == '0' && power_of_ten == big_int<1, T>{1}) ||
+        (digit == '0' && !skip_zeros)) {
       strm << digit;
       skip_zeros = false;
     }
