@@ -35,7 +35,7 @@ chars_to_big_int(std::integer_sequence<char, Chars...>) {
   big_int<N, T> power_of_ten{1};
 
   for (int i = len - 1; i >= 0; --i) {
-    num = accumulate(num, partial_mul<N>(big_int<1, T>{static_cast<T>(digits[i]) - 48}, power_of_ten));
+    num = add_ignore_carry(num, partial_mul<N>(big_int<1, T>{static_cast<T>(digits[i]) - 48}, power_of_ten));
     power_of_ten = partial_mul<N>(big_int<1, T>{static_cast<T>(10)}, power_of_ten);
   }
   return num;
