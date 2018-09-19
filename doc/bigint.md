@@ -27,6 +27,20 @@ constexpr auto i_am_a_big_int = to_big_int(7656523141023855493084520646_Z);
 ```
 
 ## Arithmetic operations
+To start, some examples (also to show the overloaded operators)  
+```cpp
+#include <ctbignum/ctbignum.hpp>
+using namespace cbn;
+
+constexpr auto x = to_big_int(29519863647905179352825_Z);
+constexpr auto y = to_big_int(1180591620717411303424_Z);
+
+static_assert(x + y == to_big_int(30700455268622590656249_Z)); // invokes add
+static_assert(x - y == to_big_int(28339272027187768049401_Z)); // invokes subtract 
+static_assert(x * y == to_big_int(34850903667437369155084628453170676026572800_Z));  // invokes mul
+static_assert(x / y == to_big_int(25_Z));  // invokes div, selects the quotient 
+static_assert(x % y == to_big_int(5073129969896767225_Z));  // invokes div, selects the remainder
+```
 
 ### Addition / Subtraction
 Defined in header [addition.hpp](/include/ctbignum/addition.hpp)
