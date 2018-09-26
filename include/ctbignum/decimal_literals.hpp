@@ -23,13 +23,13 @@
 namespace cbn {
 namespace detail {
 
-template <typename T = uint64_t, char... Chars, std::size_t... Is>
+template <typename T = uint64_t, size_t L = 0, char... Chars> //, std::size_t... Is>
 constexpr auto 
 chars_to_big_int(std::integer_sequence<char, Chars...>) {
   // might return a 'non-tight' representation, meaning that there could be
   // leading zero-limbs
   constexpr size_t len = sizeof...(Chars);
-  constexpr size_t N = 1 + (10 * len) / (3 * std::numeric_limits<T>::digits);
+  constexpr size_t N = std::max(L, 1 + (10 * len) / (3 * std::numeric_limits<T>::digits));
   std::array<char, len> digits{Chars...};
   big_int<N, T> num{0};
   big_int<N, T> power_of_ten{1};
@@ -44,7 +44,7 @@ chars_to_big_int(std::integer_sequence<char, Chars...>) {
 template <typename T = uint64_t, char... Chars, std::size_t... Is>
 constexpr auto chars_to_integer_seq(std::integer_sequence<char, Chars...>,
                                     std::index_sequence<Is...>) {
-  constexpr auto num = detail::chars_to_big_int(std::integer_sequence<char, Chars...>{});
+  constexpr auto num = detail::chars_to_big_int<T, sizeof...(Chars)>(std::integer_sequence<char, Chars...>{});
   return std::integer_sequence<T, num[Is]...>{};
 }
 
