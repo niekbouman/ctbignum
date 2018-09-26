@@ -36,7 +36,7 @@ constexpr auto precompute_m_prime_nontight(std::integer_sequence<T, Divisor...>,
   constexpr auto pow2ell = place_at<std::max(D, limb_shifts+1)>(static_cast<T>(1) << bit_shifts, limb_shifts);
   constexpr auto pow2N = unary_encoding<N, N + 1>();
   constexpr auto divrem = div(mul(pow2N, subtract(pow2ell, d)), d);
-  constexpr auto mp = to_length<N>(add(divrem.first, big_int<1>{static_cast<T>(1)}));
+  constexpr auto mp = to_length<N>(add(divrem.quotient, big_int<1>{static_cast<T>(1)}));
   return std::integer_sequence<T, mp[Is]...>{};
 }
 

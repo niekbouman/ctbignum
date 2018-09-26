@@ -27,8 +27,8 @@ constexpr auto mod_exp(big_int<N1, T> a, big_int<N2, T> exp,
 
   constexpr auto N = modulus.size();
   constexpr big_int<N, T> m{Modulus...};
-  constexpr auto R_mod_m = div(detail::unary_encoding<N, N + 1>(), m).second;
-  constexpr auto Rsq_mod_m = div(detail::unary_encoding<2 * N, 2 * N + 1>(), m).second;
+  constexpr auto R_mod_m = div(detail::unary_encoding<N, N + 1>(), m).remainder;
+  constexpr auto Rsq_mod_m = div(detail::unary_encoding<2 * N, 2 * N + 1>(), m).remainder;
 
   auto result = R_mod_m;
   auto base = montgomery_mul(a, Rsq_mod_m, modulus);

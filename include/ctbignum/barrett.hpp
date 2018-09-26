@@ -29,7 +29,7 @@ template <typename T, T... Modulus> constexpr auto precompute_mu() {
   big_int<sizeof...(Modulus), T> modulus = {Modulus...};
   const std::size_t twoN = 2 * sizeof...(Modulus);
   auto quot_rem = div(detail::unary_encoding<twoN, twoN + 1>(), modulus);
-  return quot_rem.first;
+  return quot_rem.quotient;
 }
 } // end namespace detail
 

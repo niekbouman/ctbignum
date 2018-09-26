@@ -31,17 +31,17 @@ std::ostream &operator<<(std::ostream &strm, cbn::big_int<N, T> obj) {
   bool skip_zeros = true;
   while (power_of_ten != zero) {
     auto qr = div(obj, power_of_ten);
-    detail::assign(obj, qr.second);
-    if (qr.first[0] > 9)
+    detail::assign(obj, qr.remainder);
+    if (qr.quotient[0] > 9)
       throw std::runtime_error("division error");
-    char digit = 48 + qr.first[0];
+    char digit = 48 + qr.quotient[0];
     if (digit != '0' || (digit == '0' && power_of_ten == big_int<1, T>{1}) ||
         (digit == '0' && !skip_zeros)) {
       strm << digit;
       skip_zeros = false;
     }
     detail::assign(power_of_ten,
-                   short_div(power_of_ten, static_cast<T>(10)).first);
+                   short_div(power_of_ten, static_cast<T>(10)).quotient);
   }
   return strm;
 }

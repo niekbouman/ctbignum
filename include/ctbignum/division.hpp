@@ -23,7 +23,16 @@
 
 namespace cbn {
 
-template <size_t M, typename T> constexpr auto short_div(big_int<M, T> u, T v) {
+template <typename Q, typename R>
+struct DivisionResult
+{
+  Q quotient;
+  R remainder;  
+};
+
+template <size_t M, typename T> constexpr  
+DivisionResult<big_int<M, T>,big_int<1, T>>
+short_div(big_int<M, T> u, T v) {
   using TT = typename dbl_bitlen<T>::type;
   TT r{0};
   big_int<M, T> q{};
@@ -32,11 +41,12 @@ template <size_t M, typename T> constexpr auto short_div(big_int<M, T> u, T v) {
     q[i] = w / v;
     r = w % v;
   }
-  return std::make_pair(q, big_int<1, T>{{static_cast<T>(r)}});
+  return {q, {static_cast<T>(r)}};
 }
 
+
 template <size_t NN, size_t NplusM, typename T>
-constexpr auto div(big_int<NplusM, T> u, big_int<NN, T> v) {
+constexpr DivisionResult<big_int<NplusM,T>, big_int<NN, T>>  div(big_int<NplusM, T> u, big_int<NN, T> v) {
   // Knuth's "Algorithm D" for multiprecision division as described in TAOCP
   // Volume 2: Seminumerical Algorithms
   // combined with short division
@@ -67,7 +77,9 @@ constexpr auto div(big_int<NplusM, T> u, big_int<NN, T> v) {
       q[i] = w / v[0];
       r = w % v[0];
     }
-    return std::make_pair(q, big_int<NN, T>{{static_cast<T>(r)}});
+    //return std::make_pair(q, big_int<NN, T>{{static_cast<T>(r)}});
+    //return DivisionResult<decltype(q), big_int<NN, T>>{q, {static_cast<T>(r)}};
+    return {q, {static_cast<T>(r)}};
   }
 
   uint8_t k = 0;
@@ -110,17 +122,20 @@ constexpr auto div(big_int<NplusM, T> u, big_int<NN, T> v) {
     }
     q[j] = qhat;
   }
-  return std::make_pair(q, shift_right(detail::first<NN>(us), k));
+  //return std::make_pair(q, shift_right(detail::first<NN>(us), k));
+
+  //return DivisionResult<decltype(q), big_int<NN, T>>{q, shift_right(detail::first<NN>(us), k) };
+  return {q, shift_right(detail::first<NN>(us), k) };
 }
 
 template <typename T, size_t N1, size_t N2>
 constexpr auto operator/(big_int<N1, T> a, big_int<N2, T> b) {
-  return div(a, b).first;
+  return div(a, b).quotient;
 }
 
 template <typename T, size_t N1, size_t N2>
 constexpr auto operator%(big_int<N1, T> a, big_int<N2, T> b) {
-  return div(a, b).second;
+  return div(a, b).remainder;
 }
 
 }

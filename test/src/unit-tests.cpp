@@ -277,12 +277,21 @@ TEST_CASE("Division") {
 
   constexpr auto ans = div(u,v);
 
-  static_assert(detail::first<3>(ans.first) == quot, "fail");
-  static_assert(ans.second == rem, "fail");
+  static_assert(detail::first<3>(ans.quotient) == quot, "fail");
+  static_assert(ans.remainder == rem, "fail");
 
   //static_assert(montgomery_reduction(T,modulus,mprime) == ans, "fail");
   //REQUIRE(montgomery_reduction(T,modulus,mprime) == ans);
 }
+
+TEST_CASE("Division where divisor is larger than dividend") {
+  using namespace cbn;
+
+
+  static_assert(div(to_big_int(8712634_Z),to_big_int(18374598123740981237509874103891_Z)).quotient == big_int<1>{0} );
+  static_assert(div(to_big_int(8712634_Z),to_big_int(18374598123740981237509874103891_Z)).remainder == to_big_int(8712634_Z));
+}
+
 
 TEST_CASE("short div") {
 
@@ -296,11 +305,11 @@ TEST_CASE("short div") {
 
   constexpr auto quotrem = cbn::short_div(a,b[0]);
 
-  static_assert(quotrem.first[0] == 4182905975247458, "fail");
-  static_assert(quotrem.second[0] == 936917791, "fail");
+  static_assert(quotrem.quotient[0] == 4182905975247458, "fail");
+  static_assert(quotrem.remainder[0] == 936917791, "fail");
 
-  REQUIRE(quotrem.first[0] == 4182905975247458);
-  REQUIRE(quotrem.second[0] ==936917791);
+  REQUIRE(quotrem.quotient[0] == 4182905975247458);
+  REQUIRE(quotrem.remainder[0] ==936917791);
 
 }
 
