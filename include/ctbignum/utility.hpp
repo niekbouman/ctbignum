@@ -71,7 +71,14 @@ constexpr void assign(big_int<N1, T>& dst, big_int<N2, T> src) {
     dst[i] = 0;
 }
 
+
 } // end of detail namespace
+
+template <size_t ExplicitLength = 0, typename T, T... Limbs>
+constexpr auto to_big_int(std::integer_sequence<T, Limbs...>) {
+  return big_int<ExplicitLength ? ExplicitLength : sizeof...(Limbs),T>{ Limbs... };
+}
+
 } // end of cbn namespace
 
 #endif

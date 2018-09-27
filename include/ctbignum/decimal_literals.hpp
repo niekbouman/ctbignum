@@ -50,11 +50,6 @@ constexpr auto chars_to_integer_seq(std::integer_sequence<char, Chars...>,
 
 } //end of detail namespace
 
-template <size_t ExplicitLength = 0, typename T, T... Limbs>
-constexpr auto to_big_int(std::integer_sequence<T, Limbs...>) {
-  return big_int<ExplicitLength ? ExplicitLength : sizeof...(Limbs),T>{ Limbs... };
-}
-
 template <char... Chars> constexpr auto operator"" _Z() {
 
   using T = uint64_t; // Question: How to elegantly expose the choice of this
