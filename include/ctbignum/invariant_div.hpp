@@ -16,7 +16,6 @@
 #include <ctbignum/mult.hpp>
 #include <ctbignum/slicing.hpp>
 #include <ctbignum/utility.hpp>
-#include <ctbignum/decimal_literals.hpp>
 
 #include <cstddef> // std::size_t
 #include <limits>
@@ -49,8 +48,8 @@ constexpr auto precompute_m_prime(std::integer_sequence<T, Divisor...>) {
 
 } // end of detail namespace
 
-template <typename T, std::size_t N1, T... Divisor>
-CBN_ALWAYS_INLINE constexpr auto div(big_int<N1, T> n,
+template <typename T, std::size_t N, T... Divisor>
+CBN_ALWAYS_INLINE constexpr auto div(big_int<N, T> n,
                                      std::integer_sequence<T, Divisor...>) {
   // Integer division with compile-time divisor
   // as described in "Division by Invariant Integers using Multiplication",
@@ -62,27 +61,27 @@ CBN_ALWAYS_INLINE constexpr auto div(big_int<N1, T> n,
   //  Divisor...  compile-time divisor
   //
 
+  using detail::to_length;
   using detail::skip;
-  using detail::first;
 
-  if constexpr (sizeof...(Divisor) > N1) 
-    return big_int<1,T>{0};
+  constexpr big_int<sizeof...(Divisor), T> d{Divisor...};
+  if constexpr (sizeof...(Divisor) > N) 
+    return big_int<1,T>{static_cast<T>(0)};
+  else if constexpr (d == big_int<1,T>{static_cast<T>(1)})
+    return n;
   else {
     // Compile-time precomputation of m_prime
-    constexpr big_int<sizeof...(Divisor), T> d{Divisor...};
     constexpr auto ell = detail::bit_length(d);
-    static_assert(d > to_big_int(1_Z));
-  
     constexpr auto w = std::numeric_limits<T>::digits;
-    constexpr auto m_prime = to_big_int(detail::precompute_m_prime<N1>(std::integer_sequence<T, Divisor...>{}));
+    constexpr auto m_prime = to_big_int(detail::precompute_m_prime<N>(std::integer_sequence<T, Divisor...>{}));
     // end of pre-computation
   
     // Perform the division
-    auto t1 = skip<N1>(mul(m_prime, n));
+    auto t1 = skip<N>(mul(m_prime, n));
     auto q = shift_right(
-        skip<(ell - 1) / w>(add(t1, shift_right(subtract_ignore_carry(n, detail::to_length<N1>(t1)), 1))),
+        skip<(ell - 1) / w>(add(t1, shift_right(subtract_ignore_carry(n, to_length<N>(t1)), 1))),
         (ell - 1) % w); // n >= t1
-    return detail::to_length<N1>(q);
+    return to_length<N>(q);
   }
 }
 
