@@ -24,12 +24,9 @@ namespace cbn {
 template <size_t N, typename T>
 CBN_ALWAYS_INLINE
 auto to_decimal(cbn::big_int<N, T> obj) {
-  // constant time?
+  // Return a base-10 representation of the big-integer to an array
+  // this should be constant time (not verified yet)
 
-  // Write a base-10 representation of the big-integer to the stream
-  //
-  // Idea of this algorithm: we "peel off" enough digits by repeatedly dividing by ten,
-  // so that we are left with some digits that the built-in <<-operator can handle 
   using namespace cbn;
 
   constexpr size_t bit_length_upper_bound = N * std::numeric_limits<T>::digits;
