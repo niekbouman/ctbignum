@@ -13,6 +13,7 @@
 
 #include <ctbignum/addition.hpp>
 #include <ctbignum/config.hpp>
+#include <ctbignum/division.hpp>
 #include <ctbignum/mult.hpp>
 #include <ctbignum/slicing.hpp>
 #include <ctbignum/utility.hpp>
@@ -49,8 +50,8 @@ constexpr auto precompute_m_prime(std::integer_sequence<T, Divisor...>) {
 } // end of detail namespace
 
 template <typename T, std::size_t N, T... Divisor>
-CBN_ALWAYS_INLINE constexpr auto div(big_int<N, T> n,
-                                     std::integer_sequence<T, Divisor...>) {
+CBN_ALWAYS_INLINE constexpr auto
+quotient(big_int<N, T> n, std::integer_sequence<T, Divisor...>) {
   // Integer division with compile-time divisor
   // as described in "Division by Invariant Integers using Multiplication",
   // by Granlund and Montgomery, 1994
@@ -90,9 +91,22 @@ CBN_ALWAYS_INLINE constexpr auto mod(big_int<N, T> n,
                                      std::integer_sequence<T, Modulus...>)
 // Constant-time modulo operation with a fixed modulus
 {
-  auto d = div(n, std::integer_sequence<T, Modulus...>{});
+  auto d = quotient(n, std::integer_sequence<T, Modulus...>{});
   constexpr auto M = sizeof...(Modulus);
   return detail::to_length<M>(subtract_ignore_carry(n, partial_mul<N>(big_int<M, T>{Modulus...}, d)));
+}
+
+template <typename T, std::size_t N, T... Modulus>
+CBN_ALWAYS_INLINE constexpr DivisionResult<big_int<N, T>,
+                                           big_int<sizeof...(Modulus), T>>
+div(big_int<N, T> n, std::integer_sequence<T, Modulus...>)
+{
+  auto quot = quotient(n, std::integer_sequence<T, Modulus...>{});
+  constexpr auto M = sizeof...(Modulus);
+  auto rem = detail::to_length<M>(subtract_ignore_carry(
+      n, partial_mul<N>(big_int<M, T>{Modulus...}, quot)));
+
+  return {quot, rem};
 }
 
 } // end of cbn namespace
