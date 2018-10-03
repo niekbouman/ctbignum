@@ -12,40 +12,56 @@
 #define CT_INPUTOUTPUT_HPP
 
 #include <ctbignum/bigint.hpp>
-#include <ctbignum/division.hpp>
-#include <ctbignum/pow.hpp>
+#include <ctbignum/config.hpp>
+#include <ctbignum/invariant_div.hpp>
 #include <ctbignum/utility.hpp>
 
-#include <cmath>
-#include <cstddef>
 #include <ostream>
 #include <limits>
 
 namespace cbn {
-template <std::size_t N, typename T>
-std::ostream &operator<<(std::ostream &strm, cbn::big_int<N, T> obj) {
+
+template <size_t N, typename T>
+CBN_ALWAYS_INLINE
+auto to_decimal(cbn::big_int<N, T> obj) {
+  // constant time?
+
+  // Write a base-10 representation of the big-integer to the stream
+  //
+  // Idea of this algorithm: we "peel off" enough digits by repeatedly dividing by ten,
+  // so that we are left with some digits that the built-in <<-operator can handle 
   using namespace cbn;
-  size_t bitlen = detail::bit_length(obj);
-  auto power_of_ten = pow(big_int<N, T>{10}, static_cast<T>(25 * bitlen / 83));
-  auto zero = big_int<N, T>{};
-  bool skip_zeros = true;
-  while (power_of_ten != zero) {
-    auto qr = div(obj, power_of_ten);
-    detail::assign(obj, qr.remainder);
-    if (qr.quotient[0] > 9)
-      throw std::runtime_error("division error");
-    char digit = 48 + qr.quotient[0];
-    if (digit != '0' || (digit == '0' && power_of_ten == big_int<1, T>{1}) ||
-        (digit == '0' && !skip_zeros)) {
-      strm << digit;
-      skip_zeros = false;
-    }
-    detail::assign(power_of_ten,
-                   short_div(power_of_ten, static_cast<T>(10)).quotient);
+
+  constexpr size_t bit_length_upper_bound = N * std::numeric_limits<T>::digits;
+  constexpr size_t max_digits = (25 * bit_length_upper_bound + 82) / 83;
+  std::array<char, max_digits> decimal_chars;
+
+  for (auto i = 0; i < max_digits; ++i) {
+    auto qr = div(obj, std::integer_sequence<T,10>{});
+    detail::assign(obj, qr.quotient);
+    decimal_chars[max_digits - 1 - i] = 48 + static_cast<unsigned char>(qr.remainder[0]);
   }
-  return strm;
+
+  return decimal_chars;
 }
 
+template <size_t N, typename T>
+std::ostream &operator<<(std::ostream &strm, cbn::big_int<N, T> obj) {
+
+  // Write a base-10 representation of the big-integer to the stream
+  auto buf = to_decimal(obj);
+
+  // remove leading zeros, except the last zero if obj == 0
+  int offset = 0;
+  auto one_before_end = buf.cend() - 1;
+  for (auto it = buf.cbegin(); it != one_before_end; ++it) {
+    if (*it != 48)
+      break;
+    ++offset;
+  }
+  strm.write(buf.cbegin() + offset, buf.size() - offset);
+  return strm;
+}
 }
 
 
