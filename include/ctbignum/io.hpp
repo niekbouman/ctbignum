@@ -21,45 +21,74 @@
 
 namespace cbn {
 
-template <size_t N, typename T>
-CBN_ALWAYS_INLINE
-auto to_decimal(cbn::big_int<N, T> obj) {
-  // Return a base-10 representation of the big-integer to an array
+template <typename T> struct Radix10 {
+  using character_t = char;
+  static constexpr T radix = 10;
+  static constexpr size_t
+  representation_length_upper_bound(size_t bit_length_upper_bound) {
+    return (25 * bit_length_upper_bound + 82) / 83; // 25/83 =approx= log(2)/log(10)
+  }
+  static character_t represent(T x) { return 48 + static_cast<character_t>(x); }
+  static constexpr const char *prefix = "";
+};
+
+template <typename T> struct Radix16 {
+  using character_t = char;
+  static constexpr T radix = 16;
+  static constexpr size_t
+  representation_length_upper_bound(size_t bit_length_upper_bound) {
+    return (bit_length_upper_bound + 3) / 4;
+  }
+  static character_t represent(T x) {
+    if (x <= 9)
+      return 48 + static_cast<character_t>(x); // ascii: 0..9
+    else
+      return 87 + static_cast<character_t>(x); // ascii: a..f
+  }
+  static constexpr const char *prefix = "0x";
+};
+
+template <class Radix, size_t N, typename T>
+auto convert_radix(cbn::big_int<N, T> obj) {
+  // Return a representation of the big-integer in a user-specified radix
+  //
   // this should be constant time (not verified yet)
 
   using namespace cbn;
 
   constexpr size_t bit_length_upper_bound = N * std::numeric_limits<T>::digits;
-  constexpr size_t max_digits = (25 * bit_length_upper_bound + 82) / 83;
-  std::array<char, max_digits> decimal_chars;
+  constexpr size_t max_digits =
+      Radix::representation_length_upper_bound(bit_length_upper_bound);
+  std::array<typename Radix::character_t, max_digits> radix_repr;
 
   for (auto i = 0; i < max_digits; ++i) {
-    auto qr = div(obj, std::integer_sequence<T,10>{});
+    auto qr = div(obj, std::integer_sequence<T, Radix::radix>{});
     detail::assign(obj, qr.quotient);
-    decimal_chars[max_digits - 1 - i] = 48 + static_cast<unsigned char>(qr.remainder[0]);
+    radix_repr[max_digits - 1 - i] = Radix::represent(qr.remainder[0]);
   }
 
-  return decimal_chars;
+  return radix_repr;
 }
 
 template <size_t N, typename T>
-std::ostream &operator<<(std::ostream &strm, cbn::big_int<N, T> obj) {
+std::ostream &operator<<(std::ostream &strm, cbn::big_int<N, T> num) {
 
   // Write a base-10 representation of the big-integer to the stream
-  auto buf = to_decimal(obj);
+  using Radix = Radix10<T>;
+  auto buf = convert_radix<Radix>(num);
 
   // remove leading zeros, except the last zero if obj == 0
   int offset = 0;
   auto one_before_end = buf.cend() - 1;
   for (auto it = buf.cbegin(); it != one_before_end; ++it) {
-    if (*it != 48)
+    if (*it != Radix::represent(static_cast<T>(0)))
       break;
     ++offset;
   }
+  strm << Radix::prefix;
   strm.write(buf.cbegin() + offset, buf.size() - offset);
   return strm;
 }
 }
-
 
 #endif
