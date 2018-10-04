@@ -29,6 +29,14 @@ TEST_CASE("Test division invariant integer") {
 
   }
 
+  SECTION("Division by power of two") {
+    REQUIRE(
+        quotient(to_big_int(983475380176018765409862740849389839818376450874681244_Z), 16_Z) 
+        ==
+        to_big_int(61467211261001172838116421303086864988648528179667577_Z)
+    );
+  }
+
   SECTION("Modulo reduction") {
     auto x = to_big_int(31892671234697813764376159476_Z);
     auto reduced = mod(x, 837201975682367548938754_Z);

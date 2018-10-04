@@ -72,7 +72,7 @@ quotient(big_int<N, T> n, std::integer_sequence<T, Divisor...>) {
     return n;
   else {
     // Compile-time precomputation of m_prime
-    constexpr auto ell = detail::bit_length(d);
+    constexpr auto ell = detail::bit_length(d - big_int<1, T>{1});
     constexpr auto w = std::numeric_limits<T>::digits;
     constexpr auto m_prime = to_big_int(detail::precompute_m_prime<N>(std::integer_sequence<T, Divisor...>{}));
     // end of pre-computation
