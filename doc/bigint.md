@@ -26,6 +26,16 @@ constexpr auto to_big_int(std::integer_sequence<T, Limbs...>);
 constexpr auto i_am_a_big_int = to_big_int(7656523141023855493084520646_Z);
 ```
 
+### Iteration over the limbs
+`big_int` "feels" like a `std::array`, so things like indexing (`operator[]`), `begin()`, `end()` and range-for work as you would expect.
+```cpp
+big_int<3, uint64_t> x { 1, 2, 3}; 
+
+for(uint64_t limb: x){
+  // do something with limb
+}
+
+```
 ## Arithmetic operations
 To start, some examples (also to show the overloaded operators)  
 ```cpp
@@ -195,3 +205,17 @@ std::ostream &operator<<(std::ostream &strm, cbn::big_int<N, T> obj)
 using namespace cbn;
 std::cout << to_big_int(123456789012345678901234567890_Z) << '\n';
 ```
+
+## Misc 
+### Creating a big_int "view" of existing limbs in memory
+We can create a big_int reference of existing limbs in memory via a `reinterpret_cast`:
+```cpp
+
+std::vector<uint64_t> some_limbs_on_the_heap = {1,2,3,4,5,6,7};
+
+// let's create a big_int<3, uint64_t> reference that is
+// a view on the second to fourth entry in the vector
+auto bigint_ptr = reinterpret_cast<big_int<3, uint64_t>*>(some_limbs_on_the_heap.begin() + 1);
+auto& big_int_ref = *bigint_ptr;
+```
+Of course, you can also just `memcpy` the limbs into a freshly constructed big_int.
