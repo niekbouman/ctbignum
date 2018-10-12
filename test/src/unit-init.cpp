@@ -18,7 +18,8 @@
 TEST_CASE("Initialization") {
 
   using namespace cbn;
-  
+  using namespace cbn::literals;
+ 
   auto num = 6513020836420374401749667047018991798096360820_Z;
   constexpr big_int<3> res = {{1315566964, 326042948, 19140048}};
 
@@ -31,6 +32,8 @@ TEST_CASE("Initialization") {
 TEST_CASE("Initialization of Zq") {
 
   using namespace cbn;
+  using namespace cbn::literals;
+
   using GF101 = decltype(Zq(1267650600228229401496703205653_Z));
 
   GF101 x {6765060022822940149_Z};

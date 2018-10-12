@@ -20,6 +20,7 @@
 #include <libff/algebra/fields/fp.hpp>
 #include <libff/algebra/fields/bigint.hpp>
 
+using namespace cbn::literals;
 
 
 static void modexp_ntl(benchmark::State &state) {

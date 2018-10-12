@@ -29,6 +29,7 @@
 #include <random>
 
 using namespace std;
+using namespace cbn::literals;
 
 TEST_CASE("Addition") {
 

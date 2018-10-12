@@ -17,6 +17,7 @@
 TEST_CASE("Finite Field class") {
 
   using namespace cbn;
+  using namespace cbn::literals;
 
   SECTION("Initialization") {
 
@@ -61,6 +62,7 @@ TEST_CASE("Finite Field class") {
 TEST_CASE("Finite Field class - output to stream") {
 
   using namespace cbn;
+  using namespace cbn::literals;
 
   auto modulus = 83124387682521574012837928367540946873_Z;
   // some dummy modulus

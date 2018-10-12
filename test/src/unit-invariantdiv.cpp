@@ -15,6 +15,8 @@
 TEST_CASE("Test division invariant integer") {
 
   using namespace cbn;
+  using namespace cbn::literals;
+
   SECTION("Division by invariant integer") {
     auto divisor = 12676500229401496703205653_Z;
     constexpr auto divident = to_big_int(1237940039285380274899124054_Z);
