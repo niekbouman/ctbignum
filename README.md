@@ -42,6 +42,7 @@ Because this is a header-only library, installation is as easy as downloading an
 // Initialization via (user-defined) literal 
 // (with automatic deduction of number of limbs)
 
+using namespace cbn::literals;
 constexpr auto number = cbn::to_big_int(6513020836420374401749667047018991798096360820_Z);
 constexpr big_int<3> expected_result = {1315566964, 326042948, 19140048};
 
