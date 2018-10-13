@@ -22,6 +22,8 @@
 
 //template <size_t N> using big_int = sprout::array<uint64_t, N>;
 
+using namespace cbn::literals;
+
 static void modadd(benchmark::State &state) {
   using namespace cbn;
   constexpr auto prime = to_big_int(1606938044258990275541962092341162602522202993782792835301611_Z);

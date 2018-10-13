@@ -18,6 +18,8 @@
 #include <libff/algebra/fields/fp.hpp>
 #include <libff/algebra/fields/bigint.hpp>
 
+using namespace cbn::literals;
+
 
 template <size_t Len> static void montmul_cbn(benchmark::State &state) {
 

@@ -50,6 +50,7 @@ constexpr auto chars_to_integer_seq(std::integer_sequence<char, Chars...>,
 
 } //end of detail namespace
 
+namespace literals {
 template <char... Chars> constexpr auto operator"" _Z() {
 
   using T = uint64_t; // Question: How to elegantly expose the choice of this
@@ -61,6 +62,7 @@ template <char... Chars> constexpr auto operator"" _Z() {
   auto num = detail::chars_to_integer_seq(std::integer_sequence<char, Chars...>{}, std::make_index_sequence<N>{});
   constexpr auto L = detail::tight_length(num) + (to_big_int(num) == big_int<1, T>{});
   return detail::take_first(num, std::make_index_sequence<L>{});
+}
 }
 
 } // end of cbn namespace
