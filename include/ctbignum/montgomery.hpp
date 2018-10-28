@@ -85,37 +85,33 @@ constexpr auto montgomery_mul(big_int<N, T> x, big_int<N, T> y,
                                integer_sequence<T, 0, 1>{}); // m^{-1} mod 2^64
   constexpr T mprime = -inv[0];
 
-  big_int<N + 2, T> A{};
+  big_int<N + 1, T> A{};
   for (auto i = 0; i < N; ++i) {
     T u_i = (A[0] + x[i] * y[0]) * mprime;
 
-    A = first<N+2>(A + short_mul(y,x[i]) + short_mul(m,u_i));
-
-
-
-    // A += x[i] * y + u_i * m
-    //
-    /*
+    // A += x[i] * y + u_i * m followed by a 1 limb-shift to the right
     T k = 0;
     T k2 = 0;
 
-    for (auto j = 0; j < N; ++j) {
-      TT t = static_cast<TT>(y[j]) * static_cast<TT>(x[i]) + A[j] + k;
-      TT t2 =
-          static_cast<TT>(m[j]) * static_cast<TT>(u_i) + static_cast<T>(t) + k2;
+    TT z = static_cast<TT>(y[0]) * static_cast<TT>(x[i]) + A[0] + k;
+    TT z2 = static_cast<TT>(m[0]) * static_cast<TT>(u_i) + static_cast<T>(z) + k2;
+    k = z >> std::numeric_limits<T>::digits;
+    k2 = z2 >> std::numeric_limits<T>::digits;
 
-      A[j] = t2;
+    for (auto j = 1; j < N; ++j) {
+      TT t = static_cast<TT>(y[j]) * static_cast<TT>(x[i]) + A[j] + k;
+      TT t2 = static_cast<TT>(m[j]) * static_cast<TT>(u_i) + static_cast<T>(t) + k2;
+      A[j-1] = t2;
       k = t >> std::numeric_limits<T>::digits;
       k2 = t2 >> std::numeric_limits<T>::digits;
     }
-    A[N] += k + k2;
-    */
 
-    // shift-right A by 1 limb while preserving A's limb-length
-    A = skip<1, 1>(A);
+    TT tmp = static_cast<TT>(A[N]) + k + k2;
+    A[N-1] = tmp;
+    A[N] = tmp >> std::numeric_limits<T>::digits;
   }
 
-  auto padded_mod = pad<2>(m);
+  auto padded_mod = pad<1>(m);
   if (A >= padded_mod)
     A = subtract_ignore_carry(A, padded_mod);
   return first<N>(A);
@@ -182,66 +178,34 @@ constexpr auto montgomery_mul(big_int<N, T> x, big_int<N, T> y, big_int<N, T> m,
   using detail::pad;
 
   using TT = typename dbl_bitlen<T>::type;
-  big_int<N + 2, T> A{};
+  big_int<N + 1, T> A{};
 
   for (auto i = 0; i < N; ++i) {
     T u_i = (A[0] + x[i] * y[0]) * mprime;
 
-    // A += x[i] * y + u_i * m
+    // A += x[i] * y + u_i * m followed by a 1 limb-shift to the right
     T k = 0;
     T k2 = 0;
 
-    for (auto j = 0; j < N; ++j) {
+    TT z = static_cast<TT>(y[0]) * static_cast<TT>(x[i]) + A[0] + k;
+    TT z2 = static_cast<TT>(m[0]) * static_cast<TT>(u_i) + static_cast<T>(z) + k2;
+    k = z >> std::numeric_limits<T>::digits;
+    k2 = z2 >> std::numeric_limits<T>::digits;
+
+    for (auto j = 1; j < N; ++j) {
       TT t = static_cast<TT>(y[j]) * static_cast<TT>(x[i]) + A[j] + k;
       TT t2 = static_cast<TT>(m[j]) * static_cast<TT>(u_i) + static_cast<T>(t) + k2;
-      A[j] = t2;
+      A[j-1] = t2;
       k = t >> std::numeric_limits<T>::digits;
       k2 = t2 >> std::numeric_limits<T>::digits;
     }
+
     TT tmp = static_cast<TT>(A[N]) + k + k2;
-    A[N] = tmp;
-    A[N+1] = tmp >> std::numeric_limits<T>::digits;
-
-    /*
-
-
-  //using TT = typename dbl_bitlen<T>::type;
-  //big_int<N + 1, T> p{};
-  //big_int<N + 1, T> q{};
-  //
-  T k = 0;
-  T k2 = 0;
-  T k3 = 0;
-
-  for (auto j = 0; j < N; ++j) {
-    TT t = static_cast<TT>(y[j]) * static_cast<TT>(x[i]) + k;
-    TT t2 = static_cast<TT>(m[j]) * static_cast<TT>(u_i) + k2;
-    //p[j] = t;
-    //q[j] = t2;
-    
-    //TT t3 = static_cast<TT>(A[j]) + (t & static_cast<T>(-1)  ) + (t2 & static_cast<T>(-1)) + static_cast<TT>(k3);
-    TT t3 = static_cast<TT>(A[j]) + static_cast<T>(t)   + static_cast<T>(t2) + k3;
-    A[j] = t3;
-
-    k = t >> std::numeric_limits<T>::digits;
-    k2 = t2 >> std::numeric_limits<T>::digits;
-    k3 = t3 >> std::numeric_limits<T>::digits;
-  }
-  //p[N] = k;
-  //q[N] = k2;
-
-  TT tmp = static_cast<TT>(A[N]) + k + k2 + k3;
-  A[N] = tmp;
-  A[N+1] = (tmp >> std::numeric_limits<T>::digits);
-       //+=
-*/
-
-
-    // shift-right A by 1 limb while preserving A's limb-length
-    A = skip<1, 1>(A);
+    A[N-1] = tmp;
+    A[N] = tmp >> std::numeric_limits<T>::digits;
   }
 
-  auto padded_mod = pad<2>(m);
+  auto padded_mod = pad<1>(m);
   if (A >= padded_mod)
     A = subtract_ignore_carry(A, padded_mod);
   return first<N>(A);
