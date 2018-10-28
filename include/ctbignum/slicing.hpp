@@ -58,6 +58,13 @@ constexpr auto skip(big_int<N1, T> t) {
   return take<N, N1, Padding>(t);
 }
 
+template <typename T, size_t N1>
+constexpr auto skip(big_int<N1, T> t, size_t N) {
+  // skip first N limbs, runtime version
+  // skip<N>(x) corresponds with right-shifting x by N limbs
+  return take<N1>(t, N, N1);
+}
+
 template <size_t N, typename T,
           size_t N1>
 constexpr auto first(big_int<N1, T> t) {
