@@ -23,6 +23,7 @@
 namespace cbn {
 
 template <typename T, std::size_t N>
+CBN_ALWAYS_INLINE 
 constexpr auto short_mul(big_int<N, T> a, T b) {
 
   using TT = typename dbl_bitlen<T>::type;
