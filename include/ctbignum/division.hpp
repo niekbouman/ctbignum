@@ -106,7 +106,7 @@ constexpr DivisionResult<big_int<M, T>, big_int<N, T>> div(big_int<M, T> u,
                                mul(v, big_int<1, T>{{static_cast<T>(qhat)}}));
     if (true_value[tight_N]) {
       auto corrected =
-          add_ignore_carry(true_value, detail::unary_encoding<N + 2>(tight_N + 1));
+          add_ignore_carry(true_value, detail::unary_encoding<N + 2, T>(tight_N + 1));
       auto new_us_part = add_ignore_carry(corrected, detail::pad<2>(v));
       for (auto i = 0; i <= tight_N; ++i)
         us[j + i] = new_us_part[i];
