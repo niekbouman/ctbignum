@@ -20,6 +20,7 @@
 
 #include <cstddef> // std::size_t
 #include <limits>
+#include <utility>
 
 namespace cbn {
 namespace detail {
@@ -29,20 +30,20 @@ constexpr auto precompute_m_prime_nontight(std::integer_sequence<T, Divisor...>,
                                            std::index_sequence<Is...>) {
   constexpr auto D = sizeof...(Divisor);
   constexpr big_int<D, T> d{Divisor...};
-  constexpr auto ell = bit_length(d);
+  constexpr auto ell = bit_length(d - big_int<1, T>{1}); // TODO: should this indeed be d-1 ???
   constexpr auto w = std::numeric_limits<T>::digits;
   constexpr auto limb_shifts = ell / w;
   constexpr auto bit_shifts = ell % w;
-  constexpr auto pow2ell = place_at<std::max(D, limb_shifts+1)>(static_cast<T>(1) << bit_shifts, limb_shifts);
-  constexpr auto pow2N = unary_encoding<N, N + 1>();
+  constexpr auto pow2ell = place_at<std::max(D, limb_shifts + 1), T>(static_cast<T>(1) << bit_shifts, limb_shifts);
+  constexpr auto pow2N = unary_encoding<N, N + 1, T>();
   constexpr auto divrem = div(mul(pow2N, subtract(pow2ell, d)), d);
-  constexpr auto mp = to_length<N>(add(divrem.quotient, big_int<1>{static_cast<T>(1)}));
+  constexpr auto mp = to_length<N>(add(divrem.quotient, big_int<1, T>{static_cast<T>(1)}));
   return std::integer_sequence<T, mp[Is]...>{};
 }
 
 template <std::size_t N, typename T = uint64_t, T... Divisor>
 constexpr auto precompute_m_prime(std::integer_sequence<T, Divisor...>) {
-  auto m = precompute_m_prime_nontight<N>(std::integer_sequence<T, Divisor...>{},
+  auto m = precompute_m_prime_nontight<N, T>(std::integer_sequence<T, Divisor...>{},
                                        std::make_index_sequence<N>{});
   return take_first(m, std::make_index_sequence<tight_length(m)>{});
 }
