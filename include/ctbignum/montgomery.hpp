@@ -210,6 +210,20 @@ constexpr auto montgomery_mul(big_int<N, T> x, big_int<N, T> y, big_int<N, T> m,
     A = subtract_ignore_carry(A, padded_mod);
   return first<N>(A);
 }
+
+namespace detail {
+template <typename T> 
+CBN_ALWAYS_INLINE  
+constexpr T inverse_mod(T a) {
+  // inverse modulo 2^(limb-width) (needed for the montgomery representation)
+  T x = ((a << 1 ^ a) & 4) << 1 ^ a;
+  x += x - a * x * x;
+  if constexpr (std::numeric_limits<T>::digits >= 16) x += x - a * x * x;
+  if constexpr (std::numeric_limits<T>::digits >= 32) x += x - a * x * x;
+  if constexpr (std::numeric_limits<T>::digits >= 64) x += x - a * x * x;
+  return x;
+}
+}
 }
 #endif
 
