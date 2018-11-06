@@ -65,7 +65,7 @@ constexpr auto ext_gcd_impl(std::integer_sequence<T, A...>,
 }
 }
 
-template <typename T, T... A, T... B, T... Is>
+template <typename T, T... A, T... B>
 constexpr auto ext_gcd(std::integer_sequence<T, A...>,
                        std::integer_sequence<T, B...>) {
   constexpr std::size_t N = std::max(sizeof...(A), sizeof...(B));
