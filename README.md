@@ -54,6 +54,12 @@ static_assert(number == expected_result, "initialization failure");
 ### Documentation
 - [A Fixed-Size Big-Integer Type: `big_int`](doc/bigint.md)
 - [Arithmetic modulo *q*](doc/finitefield.md)
+- [Presentation at CPPCon 2018 (slides, pdf, 1.7 MB)](https://github.com/CppCon/CppCon2018/raw/master/Presentations/multiprecision_arithmetic_for_cryptology_in_cpp/multiprecision_arithmetic_for_cryptology_in_cpp__niek_j_bouman__cppcon_2018.pdf)
+
+  Or, watch the video:
+  
+[![ctbignum - Multi-Precision Arithmetic for Cryptology in C++, at Run-Time and at Compile-Time](https://github.com/niekbouman/ctbignum/raw/master/doc/youtube.png)](https://www.youtube.com/watch?v=G33yF26UGMo&t=1s)
+
 
 ### Citing our work
 If you would like to mention our library in your academic publication, then please cite the following work:
