@@ -22,6 +22,9 @@ Currently, the library is a __work in progress__ and supports the following oper
 
 [newpic]: https://github.com/niekbouman/ctbignum/raw/master/doc/new.png
 
+### Playground ![new][newpic]
+ctbignum is available in Matt Godbolt's [*Compiler Explorer*](https://godbolt.org/z/_Cslx0)! Play around with ctbignum's API,  and see the assembly code it gets compiles down to, for the compiler of your choice..!
+
 ### Installation
 Because this is a header-only library, installation is as easy as downloading and copying the contents of the `include` directory into your system's `include` directory (e.g. `/usr/local/include` or `/opt/local/include`).
 
