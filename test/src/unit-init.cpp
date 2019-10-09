@@ -37,7 +37,7 @@ TEST_CASE("Initialization of Zq") {
   using GF101 = decltype(Zq(1267650600228229401496703205653_Z));
 
   GF101 x {6765060022822940149_Z};
-  constexpr cbn::ZqElement<uint64_t, 277, 68719476736> y {6765060022822940149};
+  constexpr cbn::ZqElement<uint64_t, 277, 68719476736> y {6765060022822940149_Z};
 
   static_assert(std::is_same<decltype(x), cbn::ZqElement<uint64_t, 277, 68719476736>>::value);
   REQUIRE(x.data == y.data);
