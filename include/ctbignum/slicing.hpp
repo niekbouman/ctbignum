@@ -73,6 +73,13 @@ constexpr auto first(big_int<N1, T> t) {
   return take<0, N>(t);
 }
 
+template <typename T, size_t N1>
+constexpr auto first(big_int<N1, T> t, size_t N) {
+  // take first N limbs, runtime version
+  // first(x,N) corresponds with x modulo (2^64)^N
+  return take<N1>(t, 0, N);
+}
+
 
 
 template <size_t N, typename T,
