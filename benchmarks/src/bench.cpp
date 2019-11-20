@@ -13,7 +13,6 @@
 #include <NTL/ZZ_p.h>
 #include <benchmark/benchmark.h>
 #include <random>
-#include <sprout/array.hpp>
 
 #include <ctbignum/ctbignum.hpp>
 #include <ctbignum/bigint.hpp>
