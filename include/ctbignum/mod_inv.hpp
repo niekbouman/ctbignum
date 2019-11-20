@@ -24,23 +24,32 @@ namespace cbn {
 
 template <typename T, size_t N>
 constexpr auto mod_inv(big_int<N, T> a, big_int<N, T> modulus) {
-  big_int<N, T> t{0};
-  big_int<N, T> newt{1};
-  auto r = modulus;
-  auto newr = a;
+  // compute a^-1 mod m, where m = modulus
+  big_int<N, T> u1{1};
+  big_int<N, T> u3{a};
 
-  while (newr != big_int<1, T>{0}) {
-    auto qr = div(r, newr);
-    auto tmp = t;
-    t = newt;
-    newt = subtract_ignore_carry(tmp, partial_mul<N>(qr.quotient, newt));
-    r = newr;
-    newr = qr.remainder;
+  big_int<N, T> v1{0};
+  big_int<N, T> v3{modulus};
+
+  bool iter_parity = false;
+  while (v3 != big_int<1, T>{0}) {
+
+    auto qr = div(u3, v3);
+    auto tmp = add_ignore_carry(u1, partial_mul<N>(v1, qr.quotient));
+    u1 = v1;
+    v1 = tmp;
+    u3 = v3;
+    v3 = qr.remainder;
+
+    iter_parity = !iter_parity;
   }
-  // if r > 1 then return "a is not invertible"
-  if (t > modulus)
-    t = add_ignore_carry(t, modulus);
-  return t;
+
+  // if u3 != 1 then we could notify the caller that "a is not invertible"
+  // TODO: maybe via a pointer-to-bool (that is passed by the caller)?
+
+  if (iter_parity)
+    u1 = subtract_ignore_carry(modulus, u1);
+  return u1;
 }
 
 }
