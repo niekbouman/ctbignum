@@ -42,6 +42,9 @@ Because this is a header-only library, installation is as easy as downloading an
 
 ### Example
 ```cpp
+// compile with: -std=c++17 (or a more recent standard)
+#include <ctbignum/ctbignum.hpp>
+
 // Initialization via (user-defined) literal 
 // (with automatic deduction of number of limbs)
 
