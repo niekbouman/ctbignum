@@ -100,16 +100,28 @@ constexpr auto short_mul(big_int<N, T> a, T b);
 ### Division
 Defined in header [division.hpp](/include/ctbignum/division.hpp)
 
-Division. The function returns the pair (quotient, remainder).
+The division functions return a `DivisionResult` struct:
 ```cpp
-template <size_t N, size_t M, typename T>
-constexpr std::pair<big_int<M, T>, big_int<N, T>> div(big_int<M, T> u, big_int<N, T> v);
+template <typename Q, typename R> 
+struct DivisionResult {
+  Q quotient;
+  R remainder;
+};
 ```
+
+Division. 
+```cpp
+template <size_t M, size_t N, typename T>
+constexpr DivisionResult<big_int<M, T>, big_int<N, T>> 
+div(big_int<M, T> u, big_int<N, T> v);
+```
+
 Short division (second operand, the divisor, is a single limb).
 The function returns the pair (quotient, remainder).
 ```cpp
-template <size_t M, typename T> 
-constexpr std::pair<big_int<M, T>, big_int<1, T>> short_div(big_int<M, T> u, T v);
+template <size_t M, typename T>
+constexpr DivisionResult<big_int<M, T>,big_int<1, T>> 
+short_div(big_int<M, T> u, T v);
 ```
 
 #### Division and modular reduction by an invariant (compile-time) divisor/modulus
@@ -124,6 +136,15 @@ Remainder (modulo) operation
 ```cpp
 template <typename T, size_t N, T... Modulus>
 constexpr auto mod(big_int<N, T> n, std::integer_sequence<T, Modulus...>);
+```
+
+### Modular Inverse
+Defined in header [mod_inv.hpp](/include/ctbignum/mod_inv.hpp)
+
+```cpp
+template <typename T, size_t N>
+constexpr auto 
+mod_inv(big_int<N, T> a, big_int<N, T> modulus) -> big_int<N, T>
 ```
 
 ### Exponentiation
