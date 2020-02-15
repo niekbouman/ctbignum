@@ -4,6 +4,8 @@
 This is a header-only template library for fixed-width "small big-integer" computations, for use during run-time as well as compile-time. By "small big integers", we mean numbers with a few limbs (in other words, a few hundred bits), typically
 occurring in cryptographic applications.
 
+Important note: __not all functions in the library are constant-time__ (when used at run-time); only those for which this is explicitly indicated.
+
 Currently, the library is a __work in progress__ and supports the following operations
 - addition, __*formal verification: correctness using [SAW](https://saw.galois.com/) and constant-timeness using [ct-verif](https://www.usenix.org/system/files/conference/usenixsecurity16/sec16_paper_almeida.pdf)*__ ![new][newpic] 
 - subtraction, 
