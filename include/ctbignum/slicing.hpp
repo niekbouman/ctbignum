@@ -131,7 +131,7 @@ constexpr auto unary_encoding(size_t K) {
 }
 
 template <size_t N, typename T = uint64_t>
-constexpr auto place_at(uint64_t value, size_t K) {
+constexpr auto place_at(T value, size_t K) {
   // N limbs, Kth limb set to value
   big_int<N, T> res{};
   res[K] = value;
