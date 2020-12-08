@@ -23,10 +23,10 @@ namespace detail {
 
 template <size_t N, typename T>
 constexpr bool equal(big_int<N, T> a, big_int<N, T> b) {
-  size_t x = 0;
-  for (auto i = 0; i < N; ++i)
+  size_t x = 0U;
+  for (auto i = 0U; i < N; ++i)
     x += (a[i] != b[i]);
-  return (x == 0);
+  return (x == 0U);
 }
 
 template <size_t N, typename T>

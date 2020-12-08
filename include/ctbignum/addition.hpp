@@ -44,7 +44,7 @@ constexpr auto add_same(big_int<N, T> a, big_int<N, T> b) {
   T carry{};
   big_int<N + 1, T> r{};
 
-  for (auto i = 0; i < N; ++i) {
+  for (auto i = 0U; i < N; ++i) {
     auto aa = a[i];
     auto sum = aa + b[i];
     auto res = sum + carry;
@@ -62,7 +62,7 @@ constexpr auto subtract_same(big_int<N, T> a, big_int<N, T> b) {
   T carry{};
   big_int<N + 1, T> r{};
 
-  for (auto i = 0; i < N; ++i) {
+  for (auto i = 0U; i < N; ++i) {
     auto aa = a[i];
     auto diff = aa - b[i];
     auto res = diff - carry;
@@ -80,7 +80,7 @@ constexpr auto add_ignore_carry(big_int<N, T> a, big_int<N, T> b) {
   T carry{};
   big_int<N, T> r{};
 
-  for (auto i = 0; i < N; ++i) {
+  for (auto i = 0U; i < N; ++i) {
     T aa = a[i];
     T sum = aa + b[i];
     T res = sum + carry;
@@ -96,7 +96,7 @@ constexpr auto subtract_ignore_carry(big_int<N, T> a, big_int<N, T> b) {
   T carry{};
   big_int<N, T> r{};
 
-  for (auto i = 0; i < N; ++i) {
+  for (auto i = 0U; i < N; ++i) {
     auto aa = a[i];
     auto diff = aa - b[i];
     auto res = diff - carry;
@@ -113,7 +113,7 @@ constexpr auto mod_add(big_int<N, T> a, big_int<N, T> b,
   T carry{};
   big_int<N, T> r{};
 
-  for (auto i = 0; i < N; ++i) {
+  for (auto i = 0U; i < N; ++i) {
     auto aa = a[i];
     auto sum = aa + b[i];
     auto res = sum + carry;
@@ -132,7 +132,7 @@ constexpr auto mod_sub(big_int<N, T> a, big_int<N, T> b,
   T carry{};
   big_int<N, T> r{};
 
-  for (auto i = 0; i < N; ++i) {
+  for (auto i = 0U; i < N; ++i) {
     auto aa = a[i];
     auto diff = aa - b[i];
     auto res = diff - carry;

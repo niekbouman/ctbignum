@@ -28,8 +28,8 @@ constexpr auto short_mul(big_int<N, T> a, T b) {
 
   using TT = typename dbl_bitlen<T>::type;
   big_int<N + 1, T> p{};
-  T k = 0;
-  for (auto j = 0; j < N; ++j) {
+  T k = 0U;
+  for (auto j = 0U; j < N; ++j) {
     TT t = static_cast<TT>(a[j]) * static_cast<TT>(b) + k;
     p[j] = t;
     k = t >> std::numeric_limits<T>::digits;
@@ -38,18 +38,18 @@ constexpr auto short_mul(big_int<N, T> a, T b) {
   return p;
 }
 
-template <size_t padding_limbs = 0, size_t M, size_t N, typename T>
+template <size_t padding_limbs = 0U, size_t M, size_t N, typename T>
 CBN_ALWAYS_INLINE 
 constexpr auto mul(big_int<M, T> u, big_int<N, T> v) {
 
   using TT = typename dbl_bitlen<T>::type;
   big_int<M + N + padding_limbs, T> w{};
-  for (auto j = 0; j < N; ++j) {
+  for (auto j = 0U; j < N; ++j) {
     // if (v[j] == 0)
     //  w[j + M] = static_cast<uint64_t>(0);
     // else {
-    T k = 0;
-    for (auto i = 0; i < M; ++i) {
+    T k = 0U;
+    for (auto i = 0U; i < M; ++i) {
       TT t = static_cast<TT>(u[i]) * static_cast<TT>(v[j]) + w[i + j] + k;
       w[i + j] = static_cast<T>(t);
       k = t >> std::numeric_limits<T>::digits;
@@ -65,14 +65,14 @@ constexpr auto partial_mul(big_int<M, T> u, big_int<N, T> v) {
 
   using TT = typename dbl_bitlen<T>::type;
   big_int<ResultLength, T> w{};
-  for (auto j = 0; j < N; ++j) {
+  for (auto j = 0U; j < N; ++j) {
     // if (v[j] == 0) {
     //  if (j + M < ResultLength)
     //    w[j + M] = static_cast<T>(0);
     //} else {
-    T k = 0;
+    T k = 0U;
     const auto m = std::min(M, ResultLength - j);
-    for (auto i = 0; i < m; ++i) {
+    for (auto i = 0U; i < m; ++i) {
       TT t = static_cast<TT>(u[i]) * static_cast<TT>(v[j]) + w[i + j] + k;
       w[i + j] = static_cast<T>(t);
       k = t >> std::numeric_limits<T>::digits;

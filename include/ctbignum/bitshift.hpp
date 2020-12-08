@@ -24,9 +24,9 @@ constexpr auto shift_right(big_int<N, T> a, size_t k) {
   // shift-right the big integer a by k bits
   big_int<N, T> res{};
 
-  if (k == 0) return a;
+  if (k == 0U) return a;
   
-  for (auto i = 0; i < N - 1; ++i) {
+  for (auto i = 0U; i < N - 1; ++i) {
     res[i] = (a[i] >> k) | (a[i + 1] << (std::numeric_limits<T>::digits - k));
   }
   res[N - 1] = (a[N - 1] >> k);
@@ -39,13 +39,13 @@ constexpr auto shift_left(big_int<N, T> a, size_t k) {
   // answer has 1 limb more
   //
   
-  if (k == 0) return detail::pad<1>(a);
+  if (k == 0U) return detail::pad<1>(a);
 
   big_int<N + 1, T> res{};
 
   res[0] = (a[0] << k);
 
-  for (auto i = 1; i < N; ++i) {
+  for (auto i = 1U; i < N; ++i) {
     res[i] = (a[i] << k) | (a[i - 1] >> (std::numeric_limits<T>::digits - k));
   }
 
