@@ -66,6 +66,9 @@ constexpr DivisionResult<big_int<M, T>, big_int<N, T>> div(big_int<M, T> u,
   while (tight_N > 0 && v[tight_N - 1] == 0)
     --tight_N;
 
+  if (tight_N == 0)
+    return {}; // division by zero
+
   big_int<M, T> q{};
 
   if (tight_N == 1) { // short division
