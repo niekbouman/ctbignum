@@ -11,47 +11,64 @@
 #ifndef CT_MODINV_HPP
 #define CT_MODINV_HPP
 
+#include <cstddef>
 #include <ctbignum/addition.hpp>
 #include <ctbignum/bigint.hpp>
-#include <ctbignum/division.hpp>
-#include <ctbignum/mult.hpp>
 #include <ctbignum/slicing.hpp>
 #include <ctbignum/utility.hpp>
-
-#include <cstddef>
+#include <tuple>
 
 namespace cbn {
 
-template <typename T, size_t N>
-constexpr auto mod_inv(big_int<N, T> a, big_int<N, T> modulus) {
-  // compute a^-1 mod m, where m = modulus
-  big_int<N, T> u1{1};
-  big_int<N, T> u3{a};
+// Niels Moller's inversion algorithm
+// see: 
+// "Fast Software Polynomial Multiplication
+// on ARM Processors Using the NEON Engine", Algorithm 5
+// (its exposition contains a typo: v must be initialized to 0 instead of 1)
+//
+// This version is not constant-time;
+// it can be made constant-time using conditional adds/subs/swaps.
+template <size_t N, typename T>
+constexpr auto mod_inv(big_int<N, T> const &x, big_int<N, T> const &n) {
+  using detail::first;
+  using detail::to_length;
+  using std::tie;
+  using std::tuple;
 
-  big_int<N, T> v1{0};
-  big_int<N, T> v3{modulus};
+  big_int<N, T> a{x};
+  big_int<N, T> b{n};
+  big_int<N, T> u{1};
+  big_int<N, T> v{0};
 
-  bool iter_parity = false;
-  while (v3 != big_int<1, T>{0}) {
+  int ell = detail::bit_length(n);
 
-    auto qr = div(u3, v3);
-    auto tmp = add_ignore_carry(u1, partial_mul<N>(v1, qr.quotient));
-    u1 = v1;
-    v1 = tmp;
-    u3 = v3;
-    v3 = qr.remainder;
+  for (int i = 0; i < 2 * ell; ++i) {
 
-    iter_parity = !iter_parity;
+    T odd = a[0] & 1;
+    T gteq = (a >= b);
+    if (odd && gteq) {
+      a = subtract_ignore_carry(a, b);
+    } else if (odd && !gteq) {
+      tie(a, b, u, v) = tuple(subtract_ignore_carry(b, a), a, v, u);
+    }
+    a = shift_right(a, 1);
+
+    T gteq2 = (u >= v);
+
+    if (odd && gteq2) {
+      u = subtract_ignore_carry(u, v);
+    } else if (odd && !gteq2) {
+      u = first<N>(subtract(add_same(u, n), v));
+    }
+
+    auto tmp = to_length<N + 1>(u);
+    if (u[0] & 1) {
+      tmp = add(u, n);
+    }
+    u = detail::first<N>(shift_right(tmp, 1));
   }
-
-  // if u3 != 1 then we could notify the caller that "a is not invertible"
-  // TODO: maybe via a pointer-to-bool (that is passed by the caller)?
-
-  if (iter_parity)
-    u1 = subtract_ignore_carry(modulus, u1);
-  return u1;
+  return v;
 }
-
 }
 #endif
 
