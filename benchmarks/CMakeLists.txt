@@ -12,7 +12,7 @@
 add_executable(bench src/bench.cpp)
 
 set_target_properties(bench PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED ON
 )
 
@@ -55,7 +55,7 @@ foreach(file ${files})
 
     add_executable(${benchmark} ${file})
     set_target_properties(${benchmark} PROPERTIES
-        CXX_STANDARD 17
+        CXX_STANDARD 20
         CXX_STANDARD_REQUIRED ON
         #COMPILE_DEFINITIONS "$<$<CXX_COMPILER_ID:MSVC>:_SCL_SECURE_NO_WARNINGS>"
         #COMPILE_OPTIONS "$<$<CXX_COMPILER_ID:MSVC>:/EHsc;$<$<CONFIG:Release>:/Od>>"

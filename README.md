@@ -1,4 +1,4 @@
-# Constexpr C++17 Big-Integer / Finite-Field library
+# Constexpr C++20 Big-Integer / Finite-Field library
 
 ### Description
 This is a header-only template library for fixed-width "small big-integer" computations, for use during run-time as well as compile-time. By "small big integers", we mean numbers with a few limbs (in other words, a few hundred bits), typically
@@ -31,7 +31,8 @@ ctbignum is available in Matt Godbolt's [*Compiler Explorer*](https://godbolt.or
 Because this is a header-only library, installation is as easy as downloading and copying the contents of the `include` directory into your system's `include` directory (e.g. `/usr/local/include` or `/opt/local/include`).
 
 ### Required compiler
-- Clang 5 or Apple LLVM/Clang 9.00 (C++17 compliant, older compilers may work but are untested)
+- newer: C++20 compliant compiler
+- Until v0.3: Clang 5 or Apple LLVM/Clang 9.00 (C++17 compliant, older compilers may work but are untested)
 
 ### Dependencies
 - C++ Standard library
@@ -44,7 +45,7 @@ Because this is a header-only library, installation is as easy as downloading an
 
 ### Example
 ```cpp
-// compile with: -std=c++17 (or a more recent standard)
+// compile with: -std=c++20 (or a more recent standard)
 #include <ctbignum/ctbignum.hpp>
 
 // Initialization via (user-defined) literal 

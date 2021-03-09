@@ -11,15 +11,17 @@
 #ifndef CT_BIGNUM_HPP
 #define CT_BIGNUM_HPP
 
+#include <cstddef>
+#include <cstdint>
 #include <ctbignum/addition.hpp>
 #include <ctbignum/barrett.hpp>
 #include <ctbignum/bigint.hpp>
 #include <ctbignum/bitshift.hpp>
+#include <ctbignum/decimal_literals.hpp>
 #include <ctbignum/division.hpp>
-#include <ctbignum/invariant_div.hpp>
 #include <ctbignum/field.hpp>
 #include <ctbignum/gcd.hpp>
-#include <ctbignum/decimal_literals.hpp>
+#include <ctbignum/invariant_div.hpp>
 #include <ctbignum/io.hpp>
 #include <ctbignum/mod_exp.hpp>
 #include <ctbignum/montgomery.hpp>

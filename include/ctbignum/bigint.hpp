@@ -12,11 +12,12 @@
 #define CT_BIGINT_HPP
 
 #include <array>
+#include <cstdint>
+#include <concepts>
 
 namespace cbn {
 
-template <size_t N, typename T = uint64_t,
-          typename = std::enable_if_t<std::is_integral<T>::value>>
+template <size_t N, std::unsigned_integral T = uint64_t>
 struct big_int : std::array<T, N> {};
 
 }
