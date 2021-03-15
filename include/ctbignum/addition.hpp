@@ -13,7 +13,6 @@
 #define CT_ADDITION_HPP
 
 #include <ctbignum/bigint.hpp>
-#include <ctbignum/relational_ops.hpp>
 #include <ctbignum/config.hpp>
 #include <ctbignum/slicing.hpp>
 
@@ -121,8 +120,9 @@ constexpr auto mod_add(big_int<N, T> a, big_int<N, T> b,
     r[i] = res;
   }
 
-  auto reduced = subtract_ignore_carry(r, modulus);
-  big_int<N, T> res = (carry + (r >= modulus) != 0) ? reduced : r;
+  auto reduced = subtract(r, modulus);
+  T r_geq_modulus = reduced[N] ? 0 : 1;
+  big_int<N, T> res = (carry + r_geq_modulus != 0) ? detail::first<N>(reduced) : r;
   return res;
 }
 
