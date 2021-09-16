@@ -12,8 +12,9 @@
 #define CT_BIGINT_HPP
 
 #include <array>
-#include <cstdint>
 #include <concepts>
+#include <cstddef>
+#include <cstdint>
 
 namespace cbn {
 
