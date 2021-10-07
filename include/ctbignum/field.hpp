@@ -15,7 +15,7 @@
 #include <ctbignum/invariant_div.hpp>
 #include <ctbignum/io.hpp>
 #include <ctbignum/mult.hpp>
-#include <ctbignum/mod_inv.hpp>
+#include <ctbignum/mod_exp.hpp>
 #include <ctbignum/slicing.hpp>
 
 #include <cstddef>

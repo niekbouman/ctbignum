@@ -48,10 +48,7 @@ constexpr auto chars_to_integer_seq(std::integer_sequence<char, Chars...>,
   return std::integer_sequence<T, num[Is]...>{};
 }
 
-} //end of detail namespace
-
-namespace literals {
-template <char... Chars> constexpr auto operator"" _Z() {
+template <char... Chars> constexpr auto chars_to_index_sequence() {
 
   using T = uint64_t; // Question: How to elegantly expose the choice of this
                       // type to the user?
@@ -63,6 +60,23 @@ template <char... Chars> constexpr auto operator"" _Z() {
   constexpr auto L = detail::tight_length(num) + (to_big_int(num) == big_int<1, T>{});
   return detail::take_first(num, std::make_index_sequence<L>{});
 }
+
+} //end of detail namespace
+
+namespace literals {
+template <char... Chars> constexpr auto operator"" _Zq() {
+  return Zq(detail::chars_to_index_sequence<Chars...>());
+}
+
+template <char... Chars> constexpr auto operator"" _I() {
+  return to_big_int(detail::chars_to_index_sequence<Chars...>());
+}
+
+
+template <char... Chars> constexpr auto operator"" _Z() {
+  return detail::chars_to_index_sequence<Chars...>();
+}
+
 }
 
 } // end of cbn namespace
