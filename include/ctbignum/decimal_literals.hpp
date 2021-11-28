@@ -51,20 +51,28 @@ constexpr auto chars_to_integer_seq(std::integer_sequence<char, Chars...>,
 } //end of detail namespace
 
 namespace literals {
-template <char... Chars> constexpr auto operator"" _Z() {
-
-  using T = uint64_t; // Question: How to elegantly expose the choice of this
-                      // type to the user?
-
+template <typename T, char... Chars> constexpr auto generic_limb_literal() {
   constexpr size_t len = sizeof...(Chars);
   constexpr size_t N = 1 + (10 * len) / (3 * std::numeric_limits<T>::digits);
-
   auto num = detail::chars_to_integer_seq(std::integer_sequence<char, Chars...>{}, std::make_index_sequence<N>{});
   constexpr auto L = detail::tight_length(num) + (to_big_int(num) == big_int<1, T>{});
   return detail::take_first(num, std::make_index_sequence<L>{});
 }
+
+template <char... Chars> constexpr auto operator"" _Z() // for backwards compatibility
+{
+    return generic_limb_literal<uint64_t, Chars...>();
 }
 
+template <char... Chars> constexpr auto operator"" _Z64() {
+    return generic_limb_literal<uint64_t, Chars...>();
+}
+
+template <char... Chars> constexpr auto operator"" _Z32() {
+    return generic_limb_literal<uint32_t, Chars...>();
+}
+
+} // namespace literals
 } // end of cbn namespace
 
 #endif
