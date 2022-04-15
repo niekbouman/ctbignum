@@ -61,7 +61,7 @@ auto convert_radix(cbn::big_int<N, T> obj) {
       Radix::representation_length_upper_bound(bit_length_upper_bound);
   std::array<typename Radix::character_t, max_digits> radix_repr;
 
-  for (auto i = 0; i < max_digits; ++i) {
+  for (size_t i = 0; i < max_digits; ++i) {
     auto qr = div(obj, std::integer_sequence<T, Radix::radix>{});
     detail::assign(obj, qr.quotient);
     radix_repr[max_digits - 1 - i] = Radix::represent(qr.remainder[0]);

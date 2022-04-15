@@ -86,7 +86,7 @@ constexpr auto montgomery_mul(big_int<N, T> x, big_int<N, T> y,
   constexpr T mprime = -inv[0];
 
   big_int<N + 1, T> A{};
-  for (auto i = 0; i < N; ++i) {
+  for (std::size_t i = 0; i < N; ++i) {
     T u_i = (A[0] + x[i] * y[0]) * mprime;
 
     // A += x[i] * y + u_i * m followed by a 1 limb-shift to the right
@@ -98,7 +98,7 @@ constexpr auto montgomery_mul(big_int<N, T> x, big_int<N, T> y,
     k = z >> std::numeric_limits<T>::digits;
     k2 = z2 >> std::numeric_limits<T>::digits;
 
-    for (auto j = 1; j < N; ++j) {
+    for (std::size_t j = 1; j < N; ++j) {
       TT t = static_cast<TT>(y[j]) * static_cast<TT>(x[i]) + A[j] + k;
       TT t2 = static_cast<TT>(m[j]) * static_cast<TT>(u_i) + static_cast<T>(t) + k2;
       A[j-1] = t2;

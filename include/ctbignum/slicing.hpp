@@ -99,10 +99,10 @@ template <typename T,
 constexpr auto join(big_int< N1, T> a, big_int< N2, T> b) {
   big_int< N1+N2, T> result {};
 
-  for (auto i = 0; i<N1; ++i)
+  for (size_t i = 0; i<N1; ++i)
     result[i] = a[i];
 
-  for (auto i = 0; i<N2; ++i)
+  for (size_t i = 0; i<N2; ++i)
     result[N1+i] = b[i];
   
   return result;
