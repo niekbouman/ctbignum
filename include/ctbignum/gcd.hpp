@@ -11,14 +11,14 @@
 #ifndef CT_GCD_HPP
 #define CT_GCD_HPP
 
+#include <cstddef>
 #include <ctbignum/addition.hpp>
 #include <ctbignum/bigint.hpp>
 #include <ctbignum/division.hpp>
 #include <ctbignum/mult.hpp>
 #include <ctbignum/slicing.hpp>
 #include <ctbignum/utility.hpp>
-
-#include <cstddef>
+#include <stdexcept>
 
 namespace cbn {
 namespace detail {
