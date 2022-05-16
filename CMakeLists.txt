@@ -38,7 +38,7 @@ option(default_cxx_standard "C++ standard" 20)
 set(CMAKE_CXX_STANDARD default_cxx_standard)
 
 option(CTBIGNUM_BuildTests "Build the unit tests when BUILD_TESTING is enabled." ON)
-option(CTBIGNUM_BuildBenchmarks "Build the benchmarks." ON)
+option(CTBIGNUM_BuildBenchmarks "Build the benchmarks." OFF)
 
 ##
 ## CONFIGURATION
