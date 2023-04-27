@@ -14,6 +14,7 @@
 #include <ctbignum/addition.hpp>
 #include <ctbignum/bigint.hpp>
 #include <ctbignum/mult.hpp>
+#include <ctbignum/relational_ops.hpp>
 #include <ctbignum/slicing.hpp>
 #include <ctbignum/utility.hpp>
 
