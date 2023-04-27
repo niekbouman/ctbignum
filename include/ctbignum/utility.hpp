@@ -48,10 +48,13 @@ constexpr auto tight_length(std::integer_sequence<T, Is...>)
 
 template <std::size_t N, typename T>
 constexpr auto bit_length(big_int<N, T> num) {
+  // we define bit_length(0) := 1
+
   auto L = tight_length(num);
+  L += (L == 0U); // ensure L > 0
   size_t bitlen = L * std::numeric_limits<T>::digits;
   T msb = num[L - 1];
-  while (bitlen > 0 && (msb & (static_cast<T>(1) << (std::numeric_limits<T>::digits - 1))) == 0) {
+  while (bitlen > 1 && (msb & (static_cast<T>(1) << (std::numeric_limits<T>::digits - 1))) == 0) {
     msb <<= 1;
     --bitlen;
   }
