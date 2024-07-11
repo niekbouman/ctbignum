@@ -20,18 +20,6 @@ cmake_minimum_required(VERSION 3.0.0)
 project(ctbignum VERSION 0.1 LANGUAGES CXX)
 
 ##
-## INCLUDE
-##
-##
-include(ExternalProject)
-
-## External dependencies
-find_package(Boost 1.61 REQUIRED)
-if(Boost_FOUND)
-  include_directories(${Boost_INCLUDE_DIRS})
-endif()
-
-##
 ## OPTIONS
 ##
 option(default_cxx_standard "C++ standard" 20)
