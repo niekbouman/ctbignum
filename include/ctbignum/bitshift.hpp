@@ -22,6 +22,7 @@ namespace cbn {
 template <size_t N, typename T>
 constexpr auto shift_right(big_int<N, T> a, size_t k) {
   // shift-right the big integer a by k bits
+  // note that k must be strictly smaller than std::numeric_limits<T>::digits
   big_int<N, T> res{};
 
   if (k == 0U) return a;
@@ -36,8 +37,8 @@ constexpr auto shift_right(big_int<N, T> a, size_t k) {
 template <size_t N, typename T>
 constexpr auto shift_left(big_int<N, T> a, size_t k) {
   // shift-left the big integer a by k bits
-  // answer has 1 limb more
-  //
+  // note that k must be strictly smaller than std::numeric_limits<T>::digits  
+  // answer has length of N+1 limbs
   
   if (k == 0U) return detail::pad<1>(a);
 
