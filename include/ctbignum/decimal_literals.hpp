@@ -8,8 +8,7 @@
 //
 // This file is distributed under the Apache License, Version 2.0. See the LICENSE
 // file for details.
-#ifndef CT_STRINGINIT_HPP
-#define CT_STRINGINIT_HPP
+#pragma once
 
 #include <ctbignum/addition.hpp>
 #include <ctbignum/bigint.hpp>
@@ -18,8 +17,11 @@
 #include <ctbignum/slicing.hpp>
 #include <ctbignum/utility.hpp>
 
+#include <algorithm>
+#include <cstdint>
 #include <cstddef>
 #include <limits>
+#include <utility>
 
 namespace cbn {
 namespace detail {
@@ -36,7 +38,10 @@ chars_to_big_int(std::integer_sequence<char, Chars...>) {
   big_int<N, T> power_of_ten{1};
 
   for (int i = len - 1; i >= 0; --i) {
-    num = add_ignore_carry(num, partial_mul<N>(big_int<1, T>{static_cast<T>(digits[i]) - 48}, power_of_ten));
+    num = add_ignore_carry(
+        num, partial_mul<N>(big_int<1, T>{static_cast<T>(
+                                digits[static_cast<size_t>(i)] - 48)},
+                            power_of_ten));
     power_of_ten = partial_mul<N>(big_int<1, T>{static_cast<T>(10)}, power_of_ten);
   }
   return num;
@@ -60,20 +65,18 @@ template <typename T, char... Chars> constexpr auto generic_limb_literal() {
   return detail::take_first(num, std::make_index_sequence<L>{});
 }
 
-template <char... Chars> constexpr auto operator"" _Z() // for backwards compatibility
+template <char... Chars> constexpr auto operator""_Z() // for backwards compatibility
 {
     return generic_limb_literal<uint64_t, Chars...>();
 }
 
-template <char... Chars> constexpr auto operator"" _Z64() {
+template <char... Chars> constexpr auto operator""_Z64() {
     return generic_limb_literal<uint64_t, Chars...>();
 }
 
-template <char... Chars> constexpr auto operator"" _Z32() {
+template <char... Chars> constexpr auto operator""_Z32() {
     return generic_limb_literal<uint32_t, Chars...>();
 }
 
 } // namespace literals
 } // end of cbn namespace
-
-#endif

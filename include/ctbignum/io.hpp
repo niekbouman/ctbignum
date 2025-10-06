@@ -1,4 +1,3 @@
-//
 // This file is part of
 //
 // CTBignum 	
@@ -8,16 +7,17 @@
 //
 // This file is distributed under the Apache License, Version 2.0. See the LICENSE
 // file for details.
-#ifndef CT_INPUTOUTPUT_HPP
-#define CT_INPUTOUTPUT_HPP
+#pragma once
 
+#include <cstddef>
 #include <ctbignum/bigint.hpp>
 #include <ctbignum/config.hpp>
 #include <ctbignum/invariant_div.hpp>
 #include <ctbignum/utility.hpp>
 
+#include <ios>
+#include <iterator>
 #include <ostream>
-#include <limits>
 
 namespace cbn {
 
@@ -28,7 +28,7 @@ template <typename T> struct Radix10 {
   representation_length_upper_bound(size_t bit_length_upper_bound) {
     return (25 * bit_length_upper_bound + 82) / 83; // 25/83 =approx= log(2)/log(10)
   }
-  static character_t represent(T x) { return 48 + static_cast<character_t>(x); }
+  static character_t represent(T x) { return static_cast<character_t>('0' + static_cast<character_t>(x)); }
   static constexpr const char *prefix = "";
 };
 
@@ -78,17 +78,21 @@ std::ostream &operator<<(std::ostream &strm, cbn::big_int<N, T> num) {
   auto buf = convert_radix<Radix>(num);
 
   // remove leading zeros, except the last zero if obj == 0
-  int offset = 0;
-  auto one_before_end = buf.cend() - 1;
-  for (auto it = buf.cbegin(); it != one_before_end; ++it) {
-    if (*it != Radix::represent(static_cast<T>(0)))
-      break;
-    ++offset;
+  size_t offset = 0;
+
+  auto size = buf.size();
+  if(size >= 1){
+    for(auto& el: std::span{buf}.first(size - 1))
+    {
+      if (el != Radix::represent(static_cast<T>(0))) {
+        break;
+      }
+      ++offset;
+    }
   }
+
   strm << Radix::prefix;
-  strm.write(buf.cbegin() + offset, buf.size() - offset);
+  strm.write(&buf[offset], std::ssize(buf) - static_cast<std::streamsize>(offset));
   return strm;
 }
 }
-
-#endif

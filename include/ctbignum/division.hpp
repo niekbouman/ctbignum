@@ -8,10 +8,10 @@
 //
 // This file is distributed under the Apache License, Version 2.0. See the LICENSE
 // file for details.
-#ifndef CT_DIVISION_HPP
-#define CT_DIVISION_HPP
+#pragma once
 
 #include <cstddef>
+
 #include <ctbignum/addition.hpp>
 #include <ctbignum/bigint.hpp>
 #include <ctbignum/bitshift.hpp>
@@ -19,7 +19,6 @@
 #include <ctbignum/slicing.hpp>
 #include <ctbignum/type_traits.hpp>
 #include <ctbignum/utility.hpp>
-#include <limits>
 
 namespace cbn {
 
@@ -73,9 +72,10 @@ constexpr DivisionResult<big_int<M, T>, big_int<N, T>> div(big_int<M, T> u,
 
   if (tight_N == 1) { // short division
     TT r {};
-    for (int i = M - 1; i >= 0; --i) {
+    for (size_t j = 0; j < M; ++j) {
+      auto i = M - 1 - j;
       TT w = (r << std::numeric_limits<T>::digits) + u[i];
-      q[i] = w / v[0];
+      q[i] = static_cast<T>(w / v[0]);
       r = w % v[0];
     }
     return {q, {static_cast<T>(r)}};
@@ -89,7 +89,9 @@ constexpr DivisionResult<big_int<M, T>, big_int<N, T>> div(big_int<M, T> u,
   }
   auto us = shift_left(u, k);
 
-  for (int j = M - tight_N; j >= 0; --j) {
+  for (size_t m = 0; m < M - tight_N; ++m) {
+    //    int j = static_cast<int>(M - tight_N); j >= 0; --j) {
+    auto j = M - tight_N - m;
     TT tmp = us[j + tight_N - 1];
     TT tmp2 = us[j + tight_N];
     tmp += (tmp2 << std::numeric_limits<T>::digits);
@@ -118,7 +120,7 @@ constexpr DivisionResult<big_int<M, T>, big_int<N, T>> div(big_int<M, T> u,
       for (size_t i = 0; i <= tight_N; ++i)
         us[j + i] = true_value[i];
     }
-    q[j] = qhat;
+    q[j] = static_cast<T>(qhat);
   }
   return {q, shift_right(detail::first<N>(us), k) };
 }
@@ -134,4 +136,3 @@ constexpr auto operator%(big_int<N1, T> a, big_int<N2, T> b) {
 }
 
 }
-#endif
