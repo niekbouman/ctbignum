@@ -13,6 +13,7 @@
 #include "addition.hpp"
 #include "bigint.hpp"
 #include "mult.hpp"
+#include "relational_ops.hpp"
 #include "slicing.hpp"
 #include "utility.hpp"
 
