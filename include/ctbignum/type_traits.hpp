@@ -8,8 +8,7 @@
 //
 // This file is distributed under the Apache License, Version 2.0. See the LICENSE
 // file for details.
-#ifndef CT_TYPE_TRAITS_HPP
-#define CT_TYPE_TRAITS_HPP
+#pragma once
 
 #include <cstdint>
 
@@ -22,4 +21,3 @@ template <> struct dbl_bitlen<uint32_t> { using type = uint64_t; };
 template <> struct dbl_bitlen<uint64_t> { using type = __uint128_t; };
 //template <> struct dbl_bitlen<unsigned long> { using type = __uint128_t; };
 }
-#endif

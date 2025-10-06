@@ -12,13 +12,12 @@
 
 #include <cstddef>
 
-#include <ctbignum/addition.hpp>
-#include <ctbignum/bigint.hpp>
-#include <ctbignum/bitshift.hpp>
-#include <ctbignum/mult.hpp>
-#include <ctbignum/slicing.hpp>
-#include <ctbignum/type_traits.hpp>
-#include <ctbignum/utility.hpp>
+#include "addition.hpp"
+#include "bigint.hpp"
+#include "bitshift.hpp"
+#include "mult.hpp"
+#include "slicing.hpp"
+#include "type_traits.hpp"
 
 namespace cbn {
 

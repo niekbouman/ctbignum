@@ -8,15 +8,14 @@
 //
 // This file is distributed under the Apache License, Version 2.0. See the LICENSE
 // file for details.
-#ifndef CT_INVAR_DIV_HPP
-#define CT_INVAR_DIV_HPP
+#pragma once
 
-#include <ctbignum/addition.hpp>
-#include <ctbignum/config.hpp>
-#include <ctbignum/division.hpp>
-#include <ctbignum/mult.hpp>
-#include <ctbignum/slicing.hpp>
-#include <ctbignum/utility.hpp>
+#include "addition.hpp"
+#include "config.hpp"
+#include "division.hpp"
+#include "mult.hpp"
+#include "slicing.hpp"
+#include "utility.hpp"
 
 #include <cstddef> // std::size_t
 #include <limits>
@@ -111,5 +110,3 @@ div(big_int<N, T> n, std::integer_sequence<T, Modulus...>)
 }
 
 } // end of cbn namespace
-
-#endif

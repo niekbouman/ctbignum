@@ -10,12 +10,11 @@
 // file for details.
 #pragma once
 
-#include <ctbignum/addition.hpp>
-#include <ctbignum/bigint.hpp>
-#include <ctbignum/mult.hpp>
-#include <ctbignum/relational_ops.hpp>
-#include <ctbignum/slicing.hpp>
-#include <ctbignum/utility.hpp>
+#include "addition.hpp"
+#include "bigint.hpp"
+#include "mult.hpp"
+#include "slicing.hpp"
+#include "utility.hpp"
 
 #include <algorithm>
 #include <cstdint>

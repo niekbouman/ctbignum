@@ -9,12 +9,11 @@
 // file for details.
 #pragma once
 
+#include "bigint.hpp"
+#include "config.hpp"
+#include "invariant_div.hpp"
+#include "utility.hpp"
 #include <cstddef>
-#include <ctbignum/bigint.hpp>
-#include <ctbignum/config.hpp>
-#include <ctbignum/invariant_div.hpp>
-#include <ctbignum/utility.hpp>
-
 #include <ios>
 #include <iterator>
 #include <ostream>

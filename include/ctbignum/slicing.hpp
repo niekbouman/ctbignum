@@ -8,10 +8,9 @@
 //
 // This file is distributed under the Apache License, Version 2.0. See the LICENSE
 // file for details.
-#ifndef CT_SLICING_HPP
-#define CT_SLICING_HPP
+#pragma once
 
-#include <ctbignum/bigint.hpp>
+#include "bigint.hpp"
 #include <cstddef>
 
 namespace cbn {
@@ -139,4 +138,3 @@ constexpr auto place_at(T value, size_t K) {
 }
 }
 }
-#endif

@@ -8,11 +8,10 @@
 //
 // This file is distributed under the Apache License, Version 2.0. See the LICENSE
 // file for details.
-#ifndef CT_POW_HPP
-#define CT_POW_HPP
+#pragma once
 
-#include <ctbignum/bigint.hpp>
-#include <ctbignum/mult.hpp>
+#include "bigint.hpp"
+#include "mult.hpp"
 
 #include <cstddef>
 
@@ -40,4 +39,3 @@ constexpr auto pow(big_int<N1, T> base, T exp) {
   return result;
 }
 }
-#endif

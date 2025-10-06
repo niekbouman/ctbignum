@@ -11,9 +11,9 @@
 
 #pragma once
 
-#include <ctbignum/bigint.hpp>
-#include <ctbignum/config.hpp>
-#include <ctbignum/slicing.hpp>
+#include "bigint.hpp"
+#include "config.hpp"
+#include "slicing.hpp"
 
 #include <algorithm>
 #include <cstddef>

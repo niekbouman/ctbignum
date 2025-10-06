@@ -10,9 +10,9 @@
 // file for details.
 #pragma once
 
-#include <ctbignum/bigint.hpp>
-#include <ctbignum/config.hpp>
-#include <ctbignum/type_traits.hpp>
+#include "bigint.hpp"
+#include "config.hpp"
+#include "type_traits.hpp"
 
 #include <algorithm>
 #include <cstddef>

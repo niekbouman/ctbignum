@@ -8,10 +8,9 @@
 //
 // This file is distributed under the Apache License, Version 2.0. See the LICENSE
 // file for details.
-#ifndef CT_UTILITY_HPP
-#define CT_UTILITY_HPP
+#pragma once
 
-#include <ctbignum/bigint.hpp>
+#include "bigint.hpp"
 
 #include <array>
 #include <cstddef>
@@ -83,5 +82,3 @@ constexpr auto to_big_int(std::integer_sequence<T, Limbs...>) {
 }
 
 } // end of cbn namespace
-
-#endif

@@ -8,11 +8,10 @@
 //
 // This file is distributed under the Apache License, Version 2.0. See the LICENSE
 // file for details.
-#ifndef CT_BITSHIFTS_HPP
-#define CT_BITSHIFTS_HPP
+#pragma once
 
-#include <ctbignum/bigint.hpp>
-#include <ctbignum/slicing.hpp>
+#include "bigint.hpp"
+#include "slicing.hpp"
 
 #include <cstddef>
 #include <limits>
@@ -54,4 +53,3 @@ constexpr auto shift_left(big_int<N, T> a, size_t k) {
   return res;
 }
 }
-#endif

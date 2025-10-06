@@ -8,14 +8,13 @@
 //
 // This file is distributed under the Apache License, Version 2.0. See the LICENSE
 // file for details.
-#ifndef CT_MODINV_HPP
-#define CT_MODINV_HPP
+#pragma once
 
+#include "addition.hpp"
+#include "bigint.hpp"
+#include "slicing.hpp"
+#include "utility.hpp"
 #include <cstddef>
-#include <ctbignum/addition.hpp>
-#include <ctbignum/bigint.hpp>
-#include <ctbignum/slicing.hpp>
-#include <ctbignum/utility.hpp>
 #include <tuple>
 
 namespace cbn {
@@ -70,5 +69,3 @@ constexpr auto mod_inv(big_int<N, T> const &x, big_int<N, T> const &n) {
   return v;
 }
 }
-#endif
-
