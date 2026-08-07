@@ -11,10 +11,10 @@
 #ifndef CT_UTILITY_HPP
 #define CT_UTILITY_HPP
 
-#include <ctbignum/bigint.hpp>
-
 #include <array>
 #include <cstddef>
+#include <cstdint>
+#include <ctbignum/bigint.hpp>
 #include <limits>
 
 namespace cbn {
@@ -47,18 +47,22 @@ constexpr auto tight_length(std::integer_sequence<T, Is...>)
 }
 
 template <std::size_t N, typename T>
-constexpr auto bit_length(big_int<N, T> num) {
-  // we define bit_length(0) := 1
-
-  auto L = tight_length(num);
-  L += (L == 0U); // ensure L > 0
-  size_t bitlen = L * std::numeric_limits<T>::digits;
-  T msb = num[L - 1];
-  while (bitlen > 1 && (msb & (static_cast<T>(1) << (std::numeric_limits<T>::digits - 1))) == 0) {
-    msb <<= 1;
-    --bitlen;
-  }
-  return bitlen;
+constexpr size_t bit_length(big_int<N, T> num)
+{
+    // we define bit_length(0) := 0, like std::bit_width
+    auto L = tight_length(num);
+    if (!L)
+    {
+        return static_cast<size_t>(0);
+    }
+    size_t bitlen = L * std::numeric_limits<T>::digits;
+    T msb = num[L - 1];
+    while (bitlen > 1 && (msb & (static_cast<T>(1) << (std::numeric_limits<T>::digits - 1))) == 0)
+    {
+        msb <<= 1;
+        --bitlen;
+    }
+    return bitlen;
 }
 
 template <std::size_t N1, std::size_t N2, typename T>
