@@ -8,19 +8,16 @@
 //
 // This file is distributed under the Apache License, Version 2.0. See the LICENSE
 // file for details.
-#ifndef CT_BARRETT_HPP
-#define CT_BARRETT_HPP
+#pragma once
 
 #include <algorithm>
 #include <cstddef> // std::size_t
-#include <cmath>
 
-#include <ctbignum/addition.hpp>
-#include <ctbignum/bigint.hpp>
-#include <ctbignum/division.hpp>
-#include <ctbignum/mult.hpp>
-#include <ctbignum/relational_ops.hpp>
-#include <ctbignum/slicing.hpp>
+#include "addition.hpp"
+#include "bigint.hpp"
+#include "division.hpp"
+#include "mult.hpp"
+#include "slicing.hpp"
 
 namespace cbn {
 
@@ -117,4 +114,3 @@ constexpr auto barrett_reduction(big_int<N1, T> x, big_int<N2, T> modulus,
   return first<N2>(r);
 }
 }
-#endif

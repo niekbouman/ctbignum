@@ -8,26 +8,21 @@
 //
 // This file is distributed under the Apache License, Version 2.0. See the LICENSE
 // file for details.
-#ifndef CT_BIGNUM_HPP
-#define CT_BIGNUM_HPP
+#pragma once
 
-#include <cstddef>
-#include <cstdint>
-#include <ctbignum/addition.hpp>
-#include <ctbignum/barrett.hpp>
-#include <ctbignum/bigint.hpp>
-#include <ctbignum/bitshift.hpp>
-#include <ctbignum/decimal_literals.hpp>
-#include <ctbignum/division.hpp>
-#include <ctbignum/field.hpp>
-#include <ctbignum/gcd.hpp>
-#include <ctbignum/invariant_div.hpp>
-#include <ctbignum/io.hpp>
-#include <ctbignum/mod_exp.hpp>
-#include <ctbignum/montgomery.hpp>
-#include <ctbignum/mult.hpp>
-#include <ctbignum/relational_ops.hpp>
-#include <ctbignum/slicing.hpp>
-#include <ctbignum/utility.hpp>
-
-#endif
+#include "addition.hpp"
+#include "barrett.hpp"
+#include "bigint.hpp"
+#include "bitshift.hpp"
+#include "decimal_literals.hpp"
+#include "division.hpp"
+#include "field.hpp"
+#include "gcd.hpp"
+#include "invariant_div.hpp"
+#include "io.hpp"
+#include "mod_exp.hpp"
+#include "montgomery.hpp"
+#include "mult.hpp"
+#include "relational_ops.hpp"
+#include "slicing.hpp"
+#include "utility.hpp"

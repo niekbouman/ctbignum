@@ -8,12 +8,11 @@
 //
 // This file is distributed under the Apache License, Version 2.0. See the LICENSE
 // file for details.
-#ifndef CT_RELATIONAL_HPP
-#define CT_RELATIONAL_HPP
+#pragma once
 
-#include <ctbignum/addition.hpp>
-#include <ctbignum/bigint.hpp>
-#include <ctbignum/slicing.hpp>
+#include "addition.hpp"
+#include "bigint.hpp"
+#include "slicing.hpp"
 
 #include <algorithm>
 #include <cstddef>
@@ -69,4 +68,3 @@ constexpr bool operator>=(big_int<N1, T> a, big_int<N2, T> b) {
 }
 
 }
-#endif

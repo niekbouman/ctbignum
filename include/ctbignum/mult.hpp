@@ -8,15 +8,13 @@
 //
 // This file is distributed under the Apache License, Version 2.0. See the LICENSE
 // file for details.
-#ifndef CT_MULT_HPP
-#define CT_MULT_HPP
+#pragma once
 
-#include <ctbignum/bigint.hpp>
-#include <ctbignum/config.hpp>
-#include <ctbignum/type_traits.hpp>
+#include "bigint.hpp"
+#include "config.hpp"
+#include "type_traits.hpp"
 
 #include <algorithm>
-#include <cmath>
 #include <cstddef>
 #include <limits>
 
@@ -45,17 +43,13 @@ constexpr auto mul(big_int<M, T> u, big_int<N, T> v) {
   using TT = typename dbl_bitlen<T>::type;
   big_int<M + N + padding_limbs, T> w{};
   for (auto j = 0U; j < N; ++j) {
-    // if (v[j] == 0)
-    //  w[j + M] = static_cast<uint64_t>(0);
-    // else {
     T k = 0U;
     for (auto i = 0U; i < M; ++i) {
       TT t = static_cast<TT>(u[i]) * static_cast<TT>(v[j]) + w[i + j] + k;
       w[i + j] = static_cast<T>(t);
-      k = t >> std::numeric_limits<T>::digits;
+      k = static_cast<T>(t >> std::numeric_limits<T>::digits);
     }
     w[j + M] = k;
-    //}
   }
   return w;
 }
@@ -66,20 +60,15 @@ constexpr auto partial_mul(big_int<M, T> u, big_int<N, T> v) {
   using TT = typename dbl_bitlen<T>::type;
   big_int<ResultLength, T> w{};
   for (auto j = 0U; j < N; ++j) {
-    // if (v[j] == 0) {
-    //  if (j + M < ResultLength)
-    //    w[j + M] = static_cast<T>(0);
-    //} else {
     T k = 0U;
     const auto m = std::min(M, ResultLength - j);
     for (auto i = 0U; i < m; ++i) {
       TT t = static_cast<TT>(u[i]) * static_cast<TT>(v[j]) + w[i + j] + k;
       w[i + j] = static_cast<T>(t);
-      k = t >> std::numeric_limits<T>::digits;
+      k = static_cast<T>(t >> std::numeric_limits<T>::digits);
     }
     if (j + M < ResultLength)
       w[j + M] = k;
-    //}
   }
   return w;
 }
@@ -90,4 +79,3 @@ constexpr auto operator*(big_int<N1, T> a, big_int<N2, T> b) {
 }
 
 }
-#endif

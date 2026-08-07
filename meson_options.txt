@@ -1,0 +1,1 @@
+option('src_based_coverage', type: 'boolean', value : false, description : 'Enable Clang\'s source-based code coverage, which will add instrumentation-code to each compiled binary. Requires use of the Clang compiler; for more information, see: https://clang.llvm.org/docs/SourceBasedCodeCoverage.html')

@@ -8,17 +8,15 @@
 //
 // This file is distributed under the Apache License, Version 2.0. See the LICENSE
 // file for details.
-#ifndef CT_MODULAR_EXP_HPP
-#define CT_MODULAR_EXP_HPP
+#pragma once
 
-#include <ctbignum/bigint.hpp>
-#include <ctbignum/bitshift.hpp>
-#include <ctbignum/division.hpp>
-#include <ctbignum/montgomery.hpp>
-#include <ctbignum/slicing.hpp>
+#include "bigint.hpp"
+#include "bitshift.hpp"
+#include "division.hpp"
+#include "montgomery.hpp"
+#include "slicing.hpp"
 
 #include <cstddef>
-#include <limits>
 
 namespace cbn {
 
@@ -90,4 +88,3 @@ constexpr auto mod_exp(big_int<N1, T> a, big_int<N2, T> exp,
 }
 
 }
-#endif

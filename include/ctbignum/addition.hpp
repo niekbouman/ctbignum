@@ -9,16 +9,14 @@
 // This file is distributed under the Apache License, Version 2.0. See the LICENSE
 // file for details.
 
-#ifndef CT_ADDITION_HPP
-#define CT_ADDITION_HPP
+#pragma once
 
-#include <ctbignum/bigint.hpp>
-#include <ctbignum/config.hpp>
-#include <ctbignum/slicing.hpp>
+#include "bigint.hpp"
+#include "config.hpp"
+#include "slicing.hpp"
 
 #include <algorithm>
 #include <cstddef>
-
 
 namespace cbn {
 
@@ -169,8 +167,4 @@ constexpr auto mod_sub(big_int<N, T> a, big_int<N, T> b, std::integer_sequence<T
   return mod_sub(a, b, modulus);
 }
 
-
-
 } // end namespace cbn
-
-#endif

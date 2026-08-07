@@ -8,18 +8,15 @@
 //
 // This file is distributed under the Apache License, Version 2.0. See the LICENSE
 // file for details.
-#ifndef CT_FIELD_HPP
-#define CT_FIELD_HPP
+#pragma once
 
-#include <ctbignum/addition.hpp>
-#include <ctbignum/invariant_div.hpp>
-#include <ctbignum/io.hpp>
-#include <ctbignum/mult.hpp>
-#include <ctbignum/mod_inv.hpp>
-#include <ctbignum/slicing.hpp>
+#include "addition.hpp"
+#include "invariant_div.hpp"
+#include "mult.hpp"
+#include "mod_inv.hpp"
+#include "slicing.hpp"
 
 #include <cstddef>
-#include <type_traits>
 
 namespace cbn {
 
@@ -157,4 +154,3 @@ constexpr bool operator!=(ZqElement<T, M...> a, ZqElement<T, M...> b) {
 
 
 }
-#endif
